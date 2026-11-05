@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>难点 3 · 插入顺序与树退化</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar">
+      <a href="index.html">← 首页</a>
+      <span class="crumb">难点 3 / 3</span>
+      <span class="spacer"></span>
+      <a href="d1.html">← 难点 1 · 插入路径</a>
+      <a href="d2.html">← 难点 2 · 删除双孩子</a>
+    </nav>
+
+    <header class="page-head">
+      <span class="kicker">难点 3 · 对照比较型</span>
+      <h1 id="page-title">插入顺序与树退化</h1>
+      <p class="subtitle" id="page-subtitle">同一批数据，换个顺序，树高差一倍</p>
+      <p class="howto" id="page-howto">拖「规模」和「有序程度」两个滑块，两棵树会按同一批数据重新生成。</p>
+      <p class="status-note" id="page-status"></p>
+    </header>
+
+    <div class="layout">
+      <section class="stage">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <svg id="canvas-left" role="img" aria-label="左：随机顺序插入的树"></svg>
+          <svg id="canvas-right" role="img" aria-label="右：升序插入的树"></svg>
+        </div>
+        <div id="metrics" class="metrics" style="margin-top:12px;"></div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h2>参数</h2>
+          <div id="params"></div>
+          <p id="status" class="hint">骨架阶段：交互在第 13—14 周完成。</p>
+        </div>
+
+        <div class="card">
+          <h2>这一步在说什么</h2>
+          <p id="panel-step">—</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/d3.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      D3.mount();
+    });
+  </script>
+</body>
+</html>

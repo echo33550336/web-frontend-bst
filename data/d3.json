@@ -1,0 +1,29 @@
+{
+  "id": "d3",
+  "kicker": "难点 3",
+  "title": "插入顺序与树退化",
+  "subtitle": "同一批数据，换个顺序，树高差一倍",
+  "interactionType": "对照比较型",
+  "howToUse": "拖「规模」和「有序程度」两个滑块，左右两棵树会按同一批数据重新生成；点「演示」看两边同步长高，下面三个读数跟着变。",
+  "status": "骨架：本页的双画布与统计面板在第 13—14 周完成（见开题说明第 5 节）。",
+  "dataset": {
+    "note": "同一批数：先用固定种子生成 n 个数，排序后得到「升序序列」；左树用随机顺序、右树用升序插入。",
+    "seed": 20261105
+  },
+  "params": [
+    { "key": "size", "label": "规模 n", "min": 5, "max": 60, "step": 1, "default": 20 },
+    { "key": "orderedness", "label": "有序程度", "min": 0, "max": 100, "step": 1, "default": 100,
+      "note": "0 = 完全随机，100 = 完全升序；中间值定义为「排序后做 k 次相邻交换」，k 由这个百分比换算。" },
+    { "key": "speed", "label": "演示速度", "min": 1, "max": 5, "step": 1, "default": 2 }
+  ],
+  "metrics": [
+    { "key": "height", "label": "树高", "unit": "层" },
+    { "key": "avgSteps", "label": "平均查找步数", "unit": "次" },
+    { "key": "worstSteps", "label": "最坏查找步数", "unit": "次" }
+  ],
+  "captions": {
+    "left": "左：随机顺序插入",
+    "right": "右：升序插入"
+  },
+  "conclusion": "同一批 {n} 个数：随机顺序的树高是 {hLeft}，升序插入的树高是 {hRight}；平均查找步数 {aLeft} 对 {aRight}。规则一直被满足，形状却完全不同——这就是退化。"
+}

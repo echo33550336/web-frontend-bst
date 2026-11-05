@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>难点 1 · 插入时的比较路径</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar">
+      <a href="index.html">← 首页</a>
+      <span class="crumb">难点 1 / 3</span>
+      <span class="spacer"></span>
+      <a href="d2.html">难点 2 · 删除双孩子 →</a>
+      <a href="d3.html">难点 3 · 插入顺序 →</a>
+    </nav>
+
+    <header class="page-head">
+      <span class="kicker">难点 1 · 参数探索型</span>
+      <h1 id="page-title">插入时的比较路径</h1>
+      <p class="subtitle" id="page-subtitle">每比较一次，可能的位置就少一半</p>
+      <p class="howto" id="page-howto">拖动下面的滑块改动「待插入值」，树上的比较路径、区间标注、候选位置计数会实时重算。</p>
+    </header>
+
+    <div class="layout">
+      <section class="stage">
+        <svg id="canvas" role="img" aria-label="二叉搜索树：高亮节点是当前比较路径，节点下方标注允许的取值范围"></svg>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h2>参数</h2>
+          <div id="params"></div>
+          <div class="controls">
+            <button id="btn-insert" class="primary">插入演示</button>
+            <button id="btn-regen">随机重生成</button>
+          </div>
+          <div class="controls">
+            <button id="btn-play">播放</button>
+            <button id="btn-pause">暂停</button>
+            <button id="btn-prev">上一步</button>
+            <button id="btn-next">下一步</button>
+            <button id="btn-reset">重置</button>
+          </div>
+          <p id="status">第 1 / 1 步</p>
+        </div>
+
+        <div class="card">
+          <h2>允许区间</h2>
+          <ul id="panel-interval"></ul>
+          <p class="hint">候选位置：<b id="panel-candidates">—</b> 个</p>
+        </div>
+
+        <div class="card">
+          <h2>中序序列</h2>
+          <p id="panel-inorder" class="hint">—</p>
+        </div>
+
+        <div class="card">
+          <h2>这一步在说什么</h2>
+          <p id="panel-step">—</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/d1.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      D1.mount();
+    });
+  </script>
+</body>
+</html>

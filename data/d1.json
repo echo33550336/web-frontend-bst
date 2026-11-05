@@ -1,0 +1,34 @@
+{
+  "id": "d1",
+  "kicker": "难点 1",
+  "title": "插入时的比较路径",
+  "subtitle": "每比较一次，可能的位置就少一半",
+  "interactionType": "参数探索型",
+  "howToUse": "拖动下面的滑块改动「待插入值」，树上的比较路径、区间标注、候选位置计数会实时重算。想看完整过程就点「插入演示」。",
+  "tree": {
+    "initial": [50, 30, 70, 20, 40, 60, 80],
+    "note": "初始树是 7 个节点的教材例子；滑块范围 1—99，与现有值重复时会有提示。"
+  },
+  "params": [
+    { "key": "value", "label": "待插入值", "min": 1, "max": 99, "step": 1, "default": 65 },
+    { "key": "speed", "label": "演示速度", "min": 1, "max": 5, "step": 1, "default": 2 }
+  ],
+  "labels": {
+    "interval": "允许区间",
+    "candidates": "候选位置",
+    "inorder": "中序序列",
+    "path": "比较路径"
+  },
+  "steps": {
+    "set": "准备插入 {value}。当前允许区间是 {interval}，树上还有 {candidates} 个位置符合条件。",
+    "hop": "{value} {cmp} {node}，只能往{dir}走——另一个方向上的值都不落在 {interval} 里。区间收窄为 {nextInterval}，候选位置从 {candBefore} 个降到 {candAfter} 个。",
+    "land": "走到空位。候选位置只剩 1 个：{value} 的位置，被前面每一次比较唯一地确定了。",
+    "attach": "挂接完成。中序序列是 {inorder}，仍然递增——插入没有破坏有序性。"
+  },
+  "titles": {
+    "set": "设定插入值与区间",
+    "hop": "与 {node} 比较",
+    "land": "落到空位",
+    "attach": "挂接并校验"
+  }
+}

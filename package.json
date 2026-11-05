@@ -1,0 +1,14 @@
+{
+  "name": "web-frontend-bst",
+  "version": "0.9.0",
+  "private": true,
+  "description": "二叉搜索树的可交互演示（Web 前端开发课程项目）",
+  "scripts": {
+    "test": "node test/d1.test.js",
+    "smoke": "node test/mount.smoke.js",
+    "serve": "python -m http.server 8000"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
+}

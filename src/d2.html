@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>难点 2 · 删除双孩子节点</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar">
+      <a href="index.html">← 首页</a>
+      <span class="crumb">难点 2 / 3</span>
+      <span class="spacer"></span>
+      <a href="d1.html">← 难点 1 · 插入路径</a>
+      <a href="d3.html">难点 3 · 插入顺序 →</a>
+    </nav>
+
+    <header class="page-head">
+      <span class="kicker">难点 2 · 步进推演型 + 一次操作判定</span>
+      <h1 id="page-title">删除双孩子节点：为什么用中序后继替换</h1>
+      <p class="subtitle" id="page-subtitle">把后继从原位置摘下来，挂到被删节点的位置</p>
+      <p class="howto" id="page-howto">先点一个节点当目标，再按「下一步」推进。</p>
+      <p class="status-note" id="page-status"></p>
+    </header>
+
+    <div class="layout">
+      <section class="stage">
+        <svg id="canvas" role="img" aria-label="二叉搜索树：被删节点标红，指针用箭头单独绘制"></svg>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h2>播放控件</h2>
+          <div class="controls">
+            <button id="btn-play">播放</button>
+            <button id="btn-pause">暂停</button>
+            <button id="btn-prev">上一步</button>
+            <button id="btn-next">下一步</button>
+            <button id="btn-reset">重置</button>
+          </div>
+          <p id="status">第 1 / 1 步</p>
+        </div>
+
+        <div class="card">
+          <h2>这一步在说什么</h2>
+          <p id="panel-step">—</p>
+        </div>
+
+        <div class="card">
+          <h2>八个步骤（内容来自 data/d2.json）</h2>
+          <ol id="panel-steps" class="hint"></ol>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/d2.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      D2.mount();
+    });
+  </script>
+</body>
+</html>
