@@ -1,7 +1,7 @@
 # 二叉搜索树：有序性是怎么被维护的
 
 > Web 前端开发课程项目 · 个人项目 · 第 9—16 周
-> 在线访问：https://echo33550336.gitee.io/web-frontend-bst/ （第 16 周上线）
+> 仓库：https://gitee.com/AzureHyu/web-frontend-bst ｜ 在线访问：https://azurehyu.gitee.io/web-frontend-bst/ （第 16 周上线）
 
 三个难点，三种交互，串成一条学习路径：
 
