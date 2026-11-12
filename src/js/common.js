@@ -150,6 +150,37 @@
     }
   };
 
+  /** 学习进度持久化：记录哪几页已经看过。localStorage 不可用时静默降级，不影响演示。 */
+  var PROGRESS_KEY = "bst-progress-v1";
+
+  function readProgress() {
+    try {
+      return JSON.parse(global.localStorage.getItem(PROGRESS_KEY) || "{}") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function visit(page) {
+    var p = readProgress();
+    p[page] = true;
+    try {
+      global.localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+    } catch (e) {
+      /* 隐私模式 / 禁用存储：忽略即可 */
+    }
+    return p;
+  }
+
+  function progressSummary(pages) {
+    var list = pages || ["d1", "d2", "d3"];
+    var p = readProgress();
+    var done = list.filter(function (x) {
+      return !!p[x];
+    });
+    return { done: done, total: list.length, all: done.length === list.length };
+  }
+
   /** 三个页面共用的错误提示：JSON 加载失败时不要把页面卡死 */
   function showError(node, err) {
     if (!node) return;
@@ -171,5 +202,10 @@
     format: format,
     Playback: Playback,
     showError: showError,
+    progress: {
+      read: readProgress,
+      visit: visit,
+      summary: progressSummary,
+    },
   };
 })(typeof window !== "undefined" ? window : globalThis);

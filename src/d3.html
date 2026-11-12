@@ -5,6 +5,227 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>难点 3 · 插入顺序与树退化</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 双画布：两棵树并排，共用同一批数据；窄屏改成上下堆叠 */
+    .canvases {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .canvas-col {
+      min-width: 0;
+    }
+
+    .canvas-col svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fbfcfe;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .canvas-col .caption {
+      margin: 8px 0 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--sub);
+      text-align: center;
+    }
+
+    /* 节点/连线尺寸随规模缩放：这两条自定义属性由 d3.js 按 n 写进每个 svg */
+    .canvas-col svg .edge,
+    .canvas-col svg .node-circle {
+      stroke-width: var(--d3-stroke, 2);
+    }
+
+    .canvas-col svg .node-value {
+      font-size: var(--d3-font, 15px);
+    }
+
+    /* 节点小到写不下数字时只留轮廓，看形状和读数 */
+    .canvas-col svg.compact .node-value {
+      display: none;
+    }
+
+    /* 读数：三张卡，每张同时给左、右两个值，颜色与两棵树呼应（左深蓝、右橙红） */
+    .stage .metrics {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .stage .metric-value {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stage .mv {
+      white-space: nowrap;
+    }
+
+    .stage .mv-left {
+      color: var(--accent);
+    }
+
+    .stage .mv-right {
+      color: var(--path);
+    }
+
+    .stage .metric-sep {
+      color: var(--line);
+      font-weight: 400;
+    }
+
+    #metrics-hint {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* 读数折线：左边深蓝、右边橙红，图例与两棵树一致 */
+    .chart-block {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .chart-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .chart-title {
+      margin: 0;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-swatch {
+      display: inline-block;
+      width: 16px;
+      height: 2px;
+      border-radius: 1px;
+    }
+
+    .legend-left {
+      background: var(--accent);
+    }
+
+    .legend-right {
+      background: var(--path);
+    }
+
+    #chart {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #chart .chart-grid {
+      stroke: #e7ecf3;
+      stroke-width: 1;
+      stroke-dasharray: 3 3;
+    }
+
+    #chart .chart-axis {
+      stroke: var(--line);
+      stroke-width: 1;
+    }
+
+    #chart .chart-line {
+      fill: none;
+      stroke-width: 2.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    #chart .chart-line-left {
+      stroke: var(--accent);
+    }
+
+    #chart .chart-line-right {
+      stroke: var(--path);
+    }
+
+    #chart .chart-dot-left {
+      fill: var(--accent);
+    }
+
+    #chart .chart-dot-right {
+      fill: var(--path);
+    }
+
+    #chart .chart-cursor {
+      stroke: var(--line);
+      stroke-width: 1;
+      stroke-dasharray: 3 3;
+    }
+
+    #chart .chart-tick {
+      font-size: 10px;
+      fill: var(--sub);
+    }
+
+    #chart .chart-axis-label {
+      font-size: 11px;
+      fill: var(--sub);
+    }
+
+    .chart-note {
+      margin: 6px 0 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--sub);
+      text-align: center;
+    }
+
+    /* 结论卡：只在最后一步出现 */
+    #conclusion-card {
+      border-left: 4px solid var(--new);
+    }
+
+    #conclusion-card h2 {
+      color: var(--new);
+    }
+
+    #conclusion-card p {
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 900px) {
+      .canvases {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -12,43 +233,80 @@
       <a href="index.html">← 首页</a>
       <span class="crumb">难点 3 / 3</span>
       <span class="spacer"></span>
-      <a href="d1.html">← 难点 1 · 插入路径</a>
+      <a href="d1.html">← 难点 1 · 插入比较路径</a>
       <a href="d2.html">← 难点 2 · 删除双孩子</a>
     </nav>
 
     <header class="page-head">
-      <span class="kicker">难点 3 · 对照比较型</span>
+      <span class="kicker" id="page-kicker">难点 3 · 对照比较型</span>
       <h1 id="page-title">插入顺序与树退化</h1>
       <p class="subtitle" id="page-subtitle">同一批数据，换个顺序，树高差一倍</p>
-      <p class="howto" id="page-howto">拖「规模」和「有序程度」两个滑块，两棵树会按同一批数据重新生成。</p>
+      <p class="howto" id="page-howto">拖「规模」和「有序程度」两个滑块，左右两棵树会按同一批数据重新生成；点「播放」看两边同步长高，下面三个读数跟着变。</p>
       <p class="status-note" id="page-status"></p>
     </header>
 
     <div class="layout">
       <section class="stage">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <svg id="canvas-left" role="img" aria-label="左：随机顺序插入的树"></svg>
-          <svg id="canvas-right" role="img" aria-label="右：升序插入的树"></svg>
+        <div class="canvases">
+          <div class="canvas-col">
+            <svg id="canvas-left" role="img" aria-label="左树：按有序程度控制的插入顺序建成的二叉搜索树"></svg>
+            <p class="caption" id="caption-left">左：有序程度 100% 的插入顺序</p>
+          </div>
+          <div class="canvas-col">
+            <svg id="canvas-right" role="img" aria-label="右树：按升序插入建成的二叉搜索树"></svg>
+            <p class="caption" id="caption-right">右：升序插入（100%）</p>
+          </div>
         </div>
-        <div id="metrics" class="metrics" style="margin-top:12px;"></div>
+
+        <div class="metrics" id="metrics"></div>
+        <p class="hint" id="metrics-hint" hidden>规模较大时节点上的数字会自动隐去，只保留树形轮廓——这时看形状和读数更直观。</p>
+
+        <div class="chart-block">
+          <div class="chart-head">
+            <h2 class="chart-title" id="chart-title">读数随插入怎么长</h2>
+            <div class="chart-legend">
+              <span class="legend-item"><i class="legend-swatch legend-left"></i><span id="chart-legend-left">左</span></span>
+              <span class="legend-item"><i class="legend-swatch legend-right"></i><span id="chart-legend-right">右</span></span>
+            </div>
+          </div>
+          <svg id="chart" role="img" aria-label="左右两棵树的读数随插入步数变化的折线图"></svg>
+          <p class="chart-note" id="chart-note"></p>
+        </div>
       </section>
 
       <aside class="side">
         <div class="card">
-          <h2>参数</h2>
+          <h2 id="label-params">参数与播放</h2>
           <div id="params"></div>
-          <p id="status" class="hint">骨架阶段：交互在第 13—14 周完成。</p>
+          <div class="controls">
+            <button id="btn-play" class="primary">播放</button>
+            <button id="btn-pause">暂停</button>
+            <button id="btn-prev">上一步</button>
+            <button id="btn-next">下一步</button>
+            <button id="btn-reset">重置</button>
+          </div>
+          <div class="controls">
+            <button id="btn-reshuffle">重排</button>
+          </div>
+          <p class="hint" id="reshuffle-hint"></p>
+          <p id="status">第 1 / 20 步</p>
         </div>
 
         <div class="card">
-          <h2>这一步在说什么</h2>
+          <h2 id="label-step">这一步在说什么</h2>
           <p id="panel-step">—</p>
+        </div>
+
+        <div class="card" id="conclusion-card" hidden>
+          <h2 id="label-conclusion">结论</h2>
+          <p id="panel-conclusion">—</p>
         </div>
       </aside>
     </div>
   </div>
 
   <script src="js/common.js"></script>
+  <script src="js/tree.js"></script>
   <script src="js/d3.js"></script>
   <script>
     window.addEventListener("DOMContentLoaded", function () {

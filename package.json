@@ -1,11 +1,12 @@
 {
   "name": "web-frontend-bst",
-  "version": "0.9.0",
+  "version": "0.14.0",
   "private": true,
   "description": "二叉搜索树的可交互演示（Web 前端开发课程项目）",
   "scripts": {
-    "test": "node test/d1.test.js",
-    "smoke": "node test/mount.smoke.js",
+    "test": "node test/d1.test.js && node test/tree.test.js && node test/d2.test.js && node test/d3.test.js",
+    "smoke": "node test/mount.smoke.js && node test/mount-d2.smoke.js && node test/mount-d3.smoke.js",
+    "test:all": "npm test && npm run smoke",
     "serve": "python -m http.server 8000"
   },
   "devDependencies": {

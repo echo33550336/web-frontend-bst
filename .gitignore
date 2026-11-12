@@ -1,5 +1,13 @@
-*.log
+# 依赖（本项目只测试用 jsdom，页面本身零依赖）
+node_modules/
+
+# npm 走仓库内缓存安装（沙箱环境默认缓存目录不可写）
+.npm-cache/
+npm-debug.log*
+package-lock.json
+
+# 系统与编辑器
 .DS_Store
 Thumbs.db
-node_modules/
-docs/img/*.tmp
+.vscode/
+.idea/

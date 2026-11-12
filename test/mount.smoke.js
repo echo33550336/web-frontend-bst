@@ -33,6 +33,7 @@ win.fetch = async function (p) {
 };
 
 win.eval(fs.readFileSync(path.join(ROOT, "src", "js", "common.js"), "utf8"));
+win.eval(fs.readFileSync(path.join(ROOT, "src", "js", "tree.js"), "utf8"));
 win.eval(fs.readFileSync(path.join(ROOT, "src", "js", "d1.js"), "utf8"));
 
 win.D1.mount();

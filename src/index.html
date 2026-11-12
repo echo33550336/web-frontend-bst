@@ -13,6 +13,7 @@
       <h1>二叉搜索树：有序性是怎么被维护的</h1>
       <p class="subtitle">三个难点，三种交互，串成一条学习路径：路径决定位置 → 删除不动规则 → 顺序决定形状。</p>
       <p class="howto">建议按 1 → 2 → 3 的顺序看。每一页都可以暂停、单步、重置。</p>
+      <p id="progress" class="progress-note" hidden></p>
     </header>
 
     <div class="cards">
@@ -42,5 +43,23 @@
       <p class="hint">知识内容全部在 <code>data/</code> 下的 JSON 里，页面只负责渲染与交互。</p>
     </section>
   </div>
+  <script src="js/common.js"></script>
+  <script>
+    // 学习进度：只做本地记忆（localStorage），不上传任何数据
+    (function () {
+      if (!window.App || !App.progress) return;
+      var pages = ["d1", "d2", "d3"];
+      var s = App.progress.summary(pages);
+      if (!s.done.length) return;
+      var note = document.getElementById("progress");
+      note.hidden = false;
+      note.textContent = "学习进度：" + s.done.length + " / " + s.total + " 个难点已经探索过（" +
+        s.done.join("、") + "）。换台设备或清空浏览器数据会重置。";
+      s.done.forEach(function (key) {
+        var link = document.querySelector('a[href="' + key + '.html"]');
+        if (link) link.classList.add("visited");
+      });
+    })();
+  </script>
 </body>
 </html>

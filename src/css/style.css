@@ -198,5 +198,50 @@ button.primary:hover { background: #162c48; color: #fff; }
   border-radius: 999px;
   padding: 1px 9px;
 }
+.card-link.visited { border-color: var(--new); background: #f3fbf5; }
+.card-link.visited .type { color: var(--new); background: #e3f4e8; }
+
+/* 首页学习进度（localStorage 记忆，见 common.js 的 App.progress） */
+.progress-note {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+/* 过渡与动画：让「下一步」的树变化看得出方向，而不是硬切 */
+.node-circle,
+.edge {
+  transition: stroke 0.2s ease, fill 0.2s ease, stroke-width 0.2s ease;
+}
+.node-circle.is-new {
+  animation: node-pop 0.45s ease-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes node-pop {
+  from { transform: scale(0.5); opacity: 0.3; }
+  60% { transform: scale(1.15); }
+  to { transform: scale(1); opacity: 1; }
+}
+/* 判定/选择时的目标节点（难点 2 用） */
+.node-circle.target { stroke: var(--path); stroke-width: 3; stroke-dasharray: 5 3; }
+
+@media (max-width: 680px) {
+  body { padding: 18px 12px 40px; }
+  .page-head h1 { font-size: 22px; }
+  .topbar { flex-wrap: wrap; gap: 10px; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .card { padding: 12px 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 
 .error { color: #a12; font-weight: 600; }

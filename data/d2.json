@@ -4,31 +4,206 @@
   "title": "删除双孩子节点：为什么用中序后继替换",
   "subtitle": "把后继从原位置摘下来，挂到被删节点的位置",
   "interactionType": "步进推演型（第 5 步内嵌一次操作判定）",
-  "howToUse": "先点一个节点当目标，再按「下一步」推进；到选候选那一步，你要先在 A / B / C 里选一个，系统会告诉你对不对。",
-  "status": "骨架：本页的判定与指针动画在第 13—14 周完成（见开题说明第 5 节）。",
+  "howToUse": "先点树上的任意节点当目标（也可以直接用参数里的三种预设）；按「下一步」一步一步看指针怎么改；到第 5 步要在 A / B / C 里选一个，选错会当场演示后果，选对才继续。",
+  "status": "第 14 周版本：三种删除情形、后继/前驱两种策略、A/B/C 判定与「摘下—挂接」分步指针演示均已可用。",
   "tree": {
     "initial": [50, 30, 70, 20, 40, 60, 80, 65],
-    "note": "初始树故意让 65 成为 70 的后继候选之一，方便演示「后继没有左孩子」。"
+    "note": "初始树故意让 65 成为 70 的后继候选之一，方便演示「后继没有左孩子」。点击任意节点可以换目标。"
   },
   "params": [
-    { "key": "case", "label": "删除情形", "type": "select", "options": ["叶子", "单孩子", "双孩子"], "default": "双孩子" },
-    { "key": "strategy", "label": "替换方案", "type": "select", "options": ["中序后继", "中序前驱"], "default": "中序后继" },
-    { "key": "speed", "label": "演示速度", "min": 1, "max": 5, "step": 1, "default": 2 }
+    {
+      "key": "case",
+      "label": "删除情形",
+      "type": "select",
+      "options": [
+        { "value": "leaf", "label": "叶子" },
+        { "value": "single", "label": "单孩子" },
+        { "value": "double", "label": "双孩子" }
+      ],
+      "default": "double",
+      "hint": "切换情形会把目标换成该情形的预设节点：叶子 20 / 单孩子 60 / 双孩子 50。点画布上的节点可以随时改选。"
+    },
+    {
+      "key": "strategy",
+      "label": "替换方案",
+      "type": "select",
+      "options": [
+        { "value": "successor", "label": "中序后继" },
+        { "value": "predecessor", "label": "中序前驱" }
+      ],
+      "default": "successor",
+      "hint": "只影响双孩子情形：后继 = 右子树最小值，前驱 = 左子树最大值。"
+    },
+    {
+      "key": "speed",
+      "label": "演示速度",
+      "type": "range",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    }
   ],
-  "steps": [
-    { "key": "pick", "title": "第 1 步 · 选中目标节点", "text": "点击树上的节点，先判断它属于叶子、单孩子还是双孩子。" },
-    { "key": "enterRight", "title": "第 2 步 · 进入右子树", "text": "被删节点有两个孩子，它的直接后继一定在右子树里，先往右走一步。" },
-    { "key": "walkLeft", "title": "第 3 步 · 一路向左", "text": "从右孩子出发，只要有左孩子就继续往左——右子树里最小的那个，藏在最左边。" },
-    { "key": "found", "title": "第 4 步 · 找到后继", "text": "到达后继节点 {succ}。注意它没有左孩子：如果它有左孩子，它就不是右子树里最小的了。" },
-    { "key": "choose", "title": "第 5 步 · 选一个替换节点", "text": "在 A / B / C 三个候选里选一个。选错会当场演示断链或有序性被破坏的后果。" },
-    { "key": "detach", "title": "第 6 步 · 摘下后继", "text": "把后继从原来的位置摘下来：改它父节点的指针，让它父节点的左孩子（或右孩子）指向后继的右孩子。" },
-    { "key": "attach", "title": "第 7 步 · 挂到被删位置", "text": "把后继挂到被删节点的位置，接上被删节点原来的左右孩子。" },
-    { "key": "verify", "title": "第 8 步 · 校验", "text": "中序序列仍是 {inorder}，每个节点也都落在自己的允许区间内——有序性没有被破坏。" }
-  ],
+  "cases": {
+    "leaf": {
+      "label": "叶子",
+      "target": 20,
+      "hint": "没有孩子",
+      "desc": "摘掉叶子只改一处父指针。"
+    },
+    "single": {
+      "label": "单孩子",
+      "target": 60,
+      "hint": "只有一个孩子",
+      "desc": "让孩子顶替上来。"
+    },
+    "double": {
+      "label": "双孩子",
+      "target": 50,
+      "hint": "有两个孩子",
+      "desc": "先找后继/前驱，再摘下、挂接。"
+    }
+  },
+  "steps": {
+    "pick": {
+      "title": "选中目标节点",
+      "text": "选中的目标节点是 {target}。它{childrenDesc}，属于「{caseLabel}」情形——先确认这一点，再决定接下来要改哪几处指针。"
+    },
+    "detachLeaf": {
+      "title": "摘掉叶子",
+      "text": "叶子没有孩子：把父节点 {parentText} 指向它的指针（{sideLabel}孩子）置空即可。树里少了一个节点，其余节点的中序顺序完全不变。"
+    },
+    "attachOnlyChild": {
+      "title": "孩子顶替上来",
+      "text": "{target} 只有一个孩子 {child}（{childDirLabel}孩子）：让 {child} 直接顶到 {target} 的位置，父节点 {parentText} 改指向 {child}。孩子子树里的所有值仍然满足原来的大小关系。"
+    },
+    "enterRight": {
+      "title": "进入右子树",
+      "text": "{target} 有两个孩子，不能一摘了之。它的中序后继是「右子树里最小的节点」，所以先进入右子树：从 {target} 走到 {start}。"
+    },
+    "enterLeft": {
+      "title": "进入左子树",
+      "text": "{target} 有两个孩子，不能一摘了之。本演示改用中序前驱——「左子树里最大的节点」，所以先进入左子树：从 {target} 走到 {start}。"
+    },
+    "walkLeft": {
+      "title": "一路向左",
+      "text": "从 {start} 出发，只要有左孩子就往左走：{walkPath}。停在 {succ} 上——再往左没有节点，所以它是右子树里最小的。"
+    },
+    "walkRight": {
+      "title": "一路向右",
+      "text": "从 {start} 出发，只要有右孩子就往右走：{walkPath}。停在 {succ} 上——再往右没有节点，所以它是左子树里最大的。"
+    },
+    "found": {
+      "title": "找到替换节点",
+      "text": "找到 {succ}。它的父节点是 {succParentText}，它自己没有{succFreeDirLabel}孩子——这正是「最靠边」的含义。下一步要决定用谁顶替 {target}。"
+    },
+    "choose": {
+      "title": "选一个替换节点",
+      "text": "{target} 有两个孩子，必须找一个节点顶替它。三个候选都已标在画布上，选出本演示策略要求的那个——选错会当场看到后果。"
+    },
+    "detach": {
+      "title": "摘下{replWord}",
+      "text": "把 {succ} 从原位置摘下来：改它父节点 {succParent} 的指针，接到 {succ} 的{succFreeDirLabel}孩子（{succChildText}）。这一步只动一处指针——摘下来的 {succ} 先悬空，下一步再挂。"
+    },
+    "attach": {
+      "title": "挂到被删位置",
+      "text": "{succ} 现在顶到 {target} 的位置：让它接上 {target} 原来的左孩子（{leftText}）和右孩子（{rightText}）。{rootText}"
+    },
+    "verify": {
+      "title": "校验中序与区间",
+      "text": "中序序列是 {inorder}，仍然严格递增；每个节点也都落在自己的允许区间内——删除没有破坏有序性。共 {count} 个节点。"
+    }
+  },
+  "choose": {
+    "heading": "A / B / C 判定",
+    "prompt": "选一个节点顶替 {target}：A / B / C 里只有一个符合当前策略。「中序后继」对应 A，「中序前驱」对应 B；C 是直接拿孩子顶替，永远错误。",
+    "options": [
+      { "key": "A", "role": "successor", "text": "A · {succ}（右子树最小值 = 中序后继）" },
+      { "key": "B", "role": "predecessor", "text": "B · {pred}（左子树最大值 = 中序前驱）" },
+      { "key": "C", "role": "child", "text": "C · {child}（直接拿{childDirLabel}孩子顶替）" }
+    ],
+    "answer": { "successor": "A", "predecessor": "B" },
+    "correct": {
+      "successor": {
+        "title": "选对了：中序后继",
+        "text": "A 是 {succ}，右子树最小值。把它摘下来挂到 {target} 的位置，左右子树的大小关系仍然成立。"
+      },
+      "predecessor": {
+        "title": "选对了：中序前驱",
+        "text": "B 是 {pred}，左子树最大值。把它摘下来挂到 {target} 的位置，左右子树的大小关系仍然成立。"
+      }
+    },
+    "consequences": {
+      "successor": {
+        "B": {
+          "title": "B 不是当前策略要求的节点",
+          "kind": "wrong-strategy",
+          "text": "B 是 {pred}（中序前驱）。用它替换其实也能保持有序，但本演示锁定「中序后继」，前面第 2—4 步一路找到的是 {succ}。请选 A；想看前驱的完整过程，把「替换方案」切到「中序前驱」。"
+        },
+        "C": {
+          "title": "C 会断链：子树丢失",
+          "kind": "broken",
+          "text": "C 是 {child}，{target} 的{childDirLabel}孩子。直接把它提上来，它自己还带着一棵子树，被删节点另一侧的子树就无处安放——{lostText} 与这棵树断开。中序序列不再覆盖原来的所有节点，有序性无从谈起。"
+        }
+      },
+      "predecessor": {
+        "A": {
+          "title": "A 不是当前策略要求的节点",
+          "kind": "wrong-strategy",
+          "text": "A 是 {succ}（中序后继）。用它替换其实也能保持有序，但本演示锁定「中序前驱」，前面找到的是 {pred}。请选 B；想看后继的完整过程，把「替换方案」切到「中序后继」。"
+        },
+        "C": {
+          "title": "C 会断链：子树丢失",
+          "kind": "broken",
+          "text": "C 是 {child}，{target} 的{childDirLabel}孩子。直接把它提上来会把它自己那侧的子树和被删节点另一侧的子树挤在一起——{lostText} 与这棵树断开。中序序列不再覆盖原来的所有节点，有序性无从谈起。"
+        }
+      }
+    },
+    "retry": "选错了可以重试：先看懂画布上的错误结果和面板里的「可达中序」，再选一次。"
+  },
+  "statusTemplates": {
+    "step": "第 {i} / {total} 步",
+    "playing": " · 播放中",
+    "waiting": " · 等待选择",
+    "empty": "未生成步骤"
+  },
   "labels": {
     "target": "被删节点",
-    "succ": "候选后继",
+    "succ": "替换节点（后继）",
+    "pred": "候选前驱",
     "attach": "待挂接位置",
-    "inorder": "中序序列"
+    "inorder": "中序序列",
+    "left": "左",
+    "right": "右",
+    "root": "同时把根指针改成它",
+    "rootNode": "根",
+    "replWordSucc": "后继",
+    "replWordPred": "前驱",
+    "replSucc": "替换节点（后继）",
+    "replPred": "替换节点（前驱）",
+    "none": "无",
+    "stepTitle": "第 {index} 步 · {title}",
+    "orderOk": "中序递增 ✔",
+    "orderBad": "中序不再递增 ✘",
+    "intervalOk": "每个节点仍在允许区间内 ✔",
+    "intervalBad": "允许区间被破坏 ✘",
+    "inorderReachable": "可达中序（错误结果）",
+    "inorderExpected": "原树中序",
+    "lost": "丢失的节点",
+    "brokenFlag": "断链：可达节点不完整 ✘",
+    "strategyMismatch": "方案与当前策略不符（不过这种替换本身有序）",
+    "alternativeInorder": "换用另一种方案的最终中序",
+    "ghostDetached": "替换节点 {value}（已摘下）",
+    "ghostRemoved": "被删节点 {value}",
+    "brokenLink": "断链",
+    "arrowWalkSucc": "后继路径",
+    "arrowWalkPred": "前驱路径",
+    "arrowDetach": "改这里",
+    "arrowAttach": "挂到这里",
+    "arrowNew": "新连接",
+    "arrowCut": "父指针置空",
+    "candidateTag": "{key}",
+    "wrongTag": "策略不符",
+    "stepWait": "先完成第 5 步的 A / B / C 判定，再继续。"
   }
 }

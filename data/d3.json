@@ -4,26 +4,81 @@
   "title": "插入顺序与树退化",
   "subtitle": "同一批数据，换个顺序，树高差一倍",
   "interactionType": "对照比较型",
-  "howToUse": "拖「规模」和「有序程度」两个滑块，左右两棵树会按同一批数据重新生成；点「演示」看两边同步长高，下面三个读数跟着变。",
-  "status": "骨架：本页的双画布与统计面板在第 13—14 周完成（见开题说明第 5 节）。",
+  "howToUse": "拖「规模」和「有序程度」两个滑块，两棵树会用同一批数重新生成；点「播放」看两边同步长高，三张读数卡和下面的折线图会跟着走。点「重排」在数值集合不变的情况下换一组左树插入顺序；上一步、重置都会让折线截断回当前这一步。",
+  "status": "同一批数据、同一个规模，唯一的变量只有插入顺序：右树恒为升序，左树的有序程度由滑块控制。",
   "dataset": {
-    "note": "同一批数：先用固定种子生成 n 个数，排序后得到「升序序列」；左树用随机顺序、右树用升序插入。",
-    "seed": 20261105
+    "note": "同一批数：用固定种子生成 n 个 1—999 之间互不相同的数，排序后得到「升序序列」。右树永远按升序插入；左树的插入顺序 = 升序序列做 k 次随机相邻交换，k = round((100 − orderedness) / 100 × 4n)。种子、n、orderedness 相同，结果就完全相同。",
+    "seed": 20261105,
+    "valueRange": [1, 999],
+    "maxSwapsPerNode": 4
   },
   "params": [
-    { "key": "size", "label": "规模 n", "min": 5, "max": 60, "step": 1, "default": 20 },
-    { "key": "orderedness", "label": "有序程度", "min": 0, "max": 100, "step": 1, "default": 100,
-      "note": "0 = 完全随机，100 = 完全升序；中间值定义为「排序后做 k 次相邻交换」，k 由这个百分比换算。" },
-    { "key": "speed", "label": "演示速度", "min": 1, "max": 5, "step": 1, "default": 2 }
+    {
+      "key": "size",
+      "label": "规模 n",
+      "min": 5,
+      "max": 60,
+      "step": 1,
+      "default": 20,
+      "note": "两棵树使用同一批 n 个数、节点个数始终相同，唯一不同的是插入顺序。"
+    },
+    {
+      "key": "orderedness",
+      "label": "有序程度",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 100,
+      "note": "0 = 完全随机，100 = 完全升序；中间值定义为「升序序列做 k 次相邻交换」，k = round((100 − orderedness) / 100 × 4n)。"
+    },
+    {
+      "key": "speed",
+      "label": "演示速度",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    }
   ],
   "metrics": [
     { "key": "height", "label": "树高", "unit": "层" },
     { "key": "avgSteps", "label": "平均查找步数", "unit": "次" },
     { "key": "worstSteps", "label": "最坏查找步数", "unit": "次" }
   ],
+  "chart": {
+    "title": "随插入推进的树高",
+    "metric": "height",
+    "yLabel": "树高（层）",
+    "xLabel": "已插入个数",
+    "legendLeft": "左：有序程度 {orderedness}%",
+    "legendRight": "右：升序插入",
+    "note": "横轴是已插入个数，纵轴是当前树高，每插入一个数两条线各延长一格；上一步、重置都会把折线截断回当前这一步。右树是升序链，折线一路斜着涨到 n；左边的线越平，说明插入顺序越随机。"
+  },
+  "labels": {
+    "left": "左",
+    "right": "右",
+    "sideValue": "{side} {value}",
+    "playing": " · 播放中",
+    "statusLine": "第 {i} / {n} 步",
+    "reshuffle": "重排",
+    "reshuffleHint": "「重排」保持同一批数和同一个 n，只换左树的插入顺序；有序程度是 100% 时插入顺序唯一（升序），此时重排会先把有序程度降为 0%（充分随机）再换一组顺序。",
+    "paramsTitle": "参数与播放",
+    "stepTitle": "这一步在说什么",
+    "conclusionTitle": "结论",
+    "compactHint": "规模较大时节点上的数字会自动隐去，只保留树形轮廓——这时看形状和读数更直观。",
+    "play": "播放",
+    "pause": "暂停",
+    "prev": "上一步",
+    "next": "下一步",
+    "reset": "重置"
+  },
+  "steps": {
+    "insert": "第 {i} / {n} 步：左树插入 {leftValue}，右树插入 {rightValue}。此刻左树高 {hLeft}、右树高 {hRight}；平均查找步数 {aLeft} 对 {aRight}。",
+    "done": "全部 {n} 个数插入完毕。两棵树装的是同一批数，中序序列完全一样；但高度和查找代价差很多。"
+  },
   "captions": {
-    "left": "左：随机顺序插入",
-    "right": "右：升序插入"
+    "left": "左：有序程度 {orderedness}% 的插入顺序",
+    "right": "右：升序插入（100%）"
   },
   "conclusion": "同一批 {n} 个数：随机顺序的树高是 {hLeft}，升序插入的树高是 {hRight}；平均查找步数 {aLeft} 对 {aRight}。规则一直被满足，形状却完全不同——这就是退化。"
 }
