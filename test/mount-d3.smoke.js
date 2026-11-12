@@ -98,16 +98,20 @@ async function main() {
 
   check("参数区有 3 个滑块", doc.querySelectorAll("#params input[type=range]").length === 3);
   check("规模默认 20", doc.getElementById("param-size").value === "20");
-  check("有序程度默认 100", doc.getElementById("param-orderedness").value === "100");
+  check("有序程度默认 0（左随机 / 右升序）", doc.getElementById("param-orderedness").value === "0");
   check("速度默认 2", doc.getElementById("param-speed").value === "2");
   check("状态栏显示第 1 / 20 步", /^第 1 \/ 20 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
+  check("状态栏有 aria-live（读屏能感知步数变化）",
+    doc.getElementById("status").getAttribute("aria-live") === "polite");
+  check("首步「上一步」被禁用", doc.getElementById("btn-prev").disabled === true);
+  check("首步「下一步」可用", doc.getElementById("btn-next").disabled === false);
 
   check("左右说明文字来自 JSON captions",
-    textOf(doc, "caption-left") === fmt(cfg.captions.left, { orderedness: 100 }),
+    textOf(doc, "caption-left") === fmt(cfg.captions.left, { orderedness: 0 }),
     textOf(doc, "caption-left"));
   check("右图说明写明升序", textOf(doc, "caption-right") === cfg.captions.right);
 
-  const caseDefault = D3.makeCase(cfg.dataset.seed, 20, 100, {
+  const caseDefault = D3.makeCase(cfg.dataset.seed, 20, 0, {
     min: cfg.dataset.valueRange[0],
     max: cfg.dataset.valueRange[1],
   });
@@ -129,7 +133,7 @@ async function main() {
   const step2 = D3.stepState(caseDefault, 1);
   check("第 2 步右树高 2（升序插入 = 链）", valueOf(doc, "height", "right") === "右 2",
     valueOf(doc, "height", "right"));
-  check("第 2 步左树高 2（默认也是升序）", valueOf(doc, "height", "left") === "左 2",
+  check("第 2 步左树高 2（两个节点的树高必为 2）", valueOf(doc, "height", "left") === "左 2",
     valueOf(doc, "height", "left"));
   check("升序链的平均查找步数 = (1+2)/2",
     valueOf(doc, "avgSteps", "right") === "右 " + D3.fmtNumber(step2.rightStats.avgSteps),
@@ -137,10 +141,12 @@ async function main() {
   check("第 2 步过程文案含两个新值",
     textOf(doc, "panel-step").includes(String(step2.newLeft)) &&
     textOf(doc, "panel-step").includes(String(step2.newRight)));
+  check("第 2 步「上一步」已可用", doc.getElementById("btn-prev").disabled === false);
 
   doc.getElementById("btn-prev").dispatchEvent(new win.Event("click"));
   check("上一步回到 1 个节点", leftSvg.querySelectorAll("circle").length === 1);
   check("上一步回到第 1 / 20 步", /^第 1 \/ 20 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
+  check("回到首步后「上一步」重新禁用", doc.getElementById("btn-prev").disabled === true);
 
   doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
   doc.getElementById("btn-reset").dispatchEvent(new win.Event("click"));
@@ -150,20 +156,23 @@ async function main() {
 
   /* ---------- 3. 有序程度滑块：重新生成数据并重置 ---------- */
   const ordered = doc.getElementById("param-orderedness");
-  check("有序程度读数显示 100", ordered.parentNode.querySelector(".readout").textContent === "100");
-  ordered.value = "0";
+  check("有序程度读数默认显示 0", ordered.parentNode.querySelector(".readout").textContent === "0");
+  ordered.value = "100";
   ordered.dispatchEvent(new win.Event("input"));
-  check("拖动滑块后读数变成 0", ordered.parentNode.querySelector(".readout").textContent === "0");
-  check("拖动后重置到第 1 / 20 步", /^第 1 \/ 20 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
-  check("左图说明跟着变成 0%",
-    textOf(doc, "caption-left") === fmt(cfg.captions.left, { orderedness: 0 }), textOf(doc, "caption-left"));
+  check("拖到 100 后读数变成 100", ordered.parentNode.querySelector(".readout").textContent === "100");
+  check("拖到 100 后重置到第 1 / 20 步", /^第 1 \/ 20 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
+  check("左图说明跟着变成 100%",
+    textOf(doc, "caption-left") === fmt(cfg.captions.left, { orderedness: 100 }), textOf(doc, "caption-left"));
   check("拖动后左右仍是各 1 个节点",
     leftSvg.querySelectorAll("circle").length === 1 && rightSvg.querySelectorAll("circle").length === 1);
 
-  const caseRandom = D3.makeCase(cfg.dataset.seed, 20, 0, {
-    min: cfg.dataset.valueRange[0],
-    max: cfg.dataset.valueRange[1],
-  });
+  ordered.value = "0";
+  ordered.dispatchEvent(new win.Event("input"));
+  check("拖回 0 后读数变成 0", ordered.parentNode.querySelector(".readout").textContent === "0");
+  check("拖回 0 后左图说明恢复",
+    textOf(doc, "caption-left") === fmt(cfg.captions.left, { orderedness: 0 }), textOf(doc, "caption-left"));
+
+  const caseRandom = caseDefault;
   check("随机顺序确实不同于升序（页面内部数据可用）",
     JSON.stringify(caseRandom.leftOrder) !== JSON.stringify(caseRandom.values));
 
@@ -201,6 +210,13 @@ async function main() {
     last.rightStats.height === 20 && D3.fmtNumber(last.rightStats.avgSteps) === "10.5");
   check("随机左树比升序右树矮", last.leftStats.height < last.rightStats.height,
     "left=" + last.leftStats.height + " right=" + last.rightStats.height);
+  check("随机左树的平均查找步数也明显更低",
+    last.leftStats.avgSteps < last.rightStats.avgSteps,
+    "left=" + D3.fmtNumber(last.leftStats.avgSteps) + " right=" + D3.fmtNumber(last.rightStats.avgSteps));
+  check("0% 默认下左树高就是随机 BST 的量级（不是 20 层链）", last.leftStats.height <= 12,
+    "height=" + last.leftStats.height);
+  check("末步「下一步」被禁用", doc.getElementById("btn-next").disabled === true);
+  check("末步「上一步」可用", doc.getElementById("btn-prev").disabled === false);
 
   /* ---------- 5. 规模滑块：n=9 与 n=60 ---------- */
   const size = doc.getElementById("param-size");
@@ -349,6 +365,95 @@ async function main() {
   check("播放中点重排会先暂停",
     !textOf(doc, "status").includes(cfg.labels.playing), textOf(doc, "status"));
   check("播放中重排后回到第 1 / 9 步", /^第 1 \/ 9 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
+
+  /* ---------- 9. 折线读数下拉框：选项来自 JSON，切换只重画折线 ---------- */
+  const metricSelect = doc.getElementById("chart-metric");
+  check("折线读数下拉框存在", Boolean(metricSelect));
+  check("下拉框选项数 = 读数卡数量", metricSelect && metricSelect.options.length === cfg.metrics.length,
+    "options=" + (metricSelect ? metricSelect.options.length : "无"));
+  check("下拉框选项文案来自 JSON",
+    metricSelect && Array.from(metricSelect.options).map((o) => o.textContent).join(",") ===
+      cfg.chart.metricOptions.map((o) => o.label).join(","),
+    metricSelect ? Array.from(metricSelect.options).map((o) => o.textContent).join(",") : "");
+  check("默认选中树高", metricSelect && metricSelect.value === cfg.chart.metric);
+
+  doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
+  doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
+  doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
+  const stepBeforeSwitch = textOf(doc, "status");
+  const pointsBeforeSwitch = chartPoints(".chart-line-left").length;
+
+  metricSelect.value = "avgSteps";
+  metricSelect.dispatchEvent(new win.Event("change"));
+  check("切换后折线标题来自 JSON 选项",
+    textOf(doc, "chart-title") === cfg.chart.metricOptions[1].title, textOf(doc, "chart-title"));
+  check("切换后纵轴标签来自 JSON 选项",
+    chartSvg.textContent.includes(cfg.chart.metricOptions[1].yLabel),
+    chartSvg.textContent.replace(/\s+/g, " ").slice(0, 80));
+  check("切换后说明来自 JSON 选项", textOf(doc, "chart-note") === cfg.chart.metricOptions[1].note);
+  check("切换读数不影响当前步数", textOf(doc, "status") === stepBeforeSwitch,
+    textOf(doc, "status") + " vs " + stepBeforeSwitch);
+  check("切换读数后折线点数不变", chartPoints(".chart-line-left").length === pointsBeforeSwitch,
+    "points=" + chartPoints(".chart-line-left").length);
+
+  metricSelect.value = "worstSteps";
+  metricSelect.dispatchEvent(new win.Event("change"));
+  check("再切到最坏步数：纵轴标签跟着换",
+    chartSvg.textContent.includes(cfg.chart.metricOptions[2].yLabel));
+  metricSelect.value = "height";
+  metricSelect.dispatchEvent(new win.Event("change"));
+  check("切回树高：标题恢复默认", textOf(doc, "chart-title") === cfg.chart.metricOptions[0].title);
+
+  /* ---------- 10. 有序程度偏高、n 偏小：公式 k 被取整成 0，重排要自动降到 0% ---------- */
+  size.value = "5";
+  size.dispatchEvent(new win.Event("input"));
+  ordered.value = "98";
+  ordered.dispatchEvent(new win.Event("input"));
+  const p98 = D3.makeCase(cfg.dataset.seed, 5, 98, rngRange);
+  check("n=5、98% 时公式交换次数确实被取整成 0", D3.swapsFor(5, 98) === 0);
+  check("此时左树顺序就是升序（重排没有第二种顺序可换）",
+    p98.leftOrder.join(",") === p98.values.join(","));
+  const rehashNote = doc.getElementById("reshuffle-note");
+  check("重排兜底提示元素存在且默认隐藏", Boolean(rehashNote) && rehashNote.hidden === true);
+
+  reshuffleBtn.click();
+  check("重排把 98% 直接降为 0%（覆盖 k=0 的情况）", ordered.value === "0", ordered.value);
+  check("降为 0% 后滑块读数同步", ordered.parentNode.querySelector(".readout").textContent === "0");
+  check("重排后回到第 1 / 5 步", /^第 1 \/ 5 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
+
+  for (let i = 0; i < 4; i += 1) {
+    doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
+  }
+  const p0salt1 = D3.makeCase(cfg.dataset.seed, 5, 0, rngRange, 1);
+  const p0salt1Last = D3.stepState(p0salt1, 4);
+  check("降为 0% 后左树顺序确实换了（与 Node 侧 salt=1 一致）",
+    p0salt1.leftOrder.join(",") !== p98.values.join(","));
+  check("降为 0% 后左树高与 Node 侧 salt=1 计算一致",
+    valueOf(doc, "height", "left") === "左 " + p0salt1Last.leftStats.height,
+    valueOf(doc, "height", "left") + " vs 左 " + p0salt1Last.leftStats.height);
+  check("确实换出了不同顺序时，兜底提示保持隐藏", rehashNote.hidden === true);
+
+  /* ---------- 11. 100% 同序：结论改说「形状相同」，不能仍宣称树高不同 ---------- */
+  ordered.value = "100";
+  ordered.dispatchEvent(new win.Event("input"));
+  for (let i = 0; i < 4; i += 1) {
+    doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
+  }
+  const sameCase = D3.makeCase(cfg.dataset.seed, 5, 100, rngRange);
+  const sameLast = D3.stepState(sameCase, 4);
+  check("100% 时左右插入顺序相同（页面也按同序处理）",
+    sameCase.leftOrder.join(",") === sameCase.rightOrder.join(","));
+  check("同序末步结论用 JSON 的 conclusionSame",
+    textOf(doc, "panel-conclusion") === fmt(cfg.conclusionSame, {
+      n: 5,
+      hRight: sameLast.rightStats.height,
+      aRight: D3.fmtNumber(sameLast.rightStats.avgSteps),
+    }), textOf(doc, "panel-conclusion"));
+  check("同序末步过程文案用 doneSame 模板",
+    textOf(doc, "panel-step") === fmt(cfg.steps.doneSame, { n: 5 }),
+    textOf(doc, "panel-step"));
+  check("同序时结论不再声称「差出好几倍」",
+    !textOf(doc, "panel-conclusion").includes("差出好几倍"));
 
   console.log(pass + " 项通过" + (fails.length ? "，" + fails.length + " 项失败：" : "，全部通过"));
   fails.forEach((f) => console.log("  ✗ " + f));

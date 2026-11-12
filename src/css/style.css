@@ -153,7 +153,21 @@ button:hover { border-color: var(--accent); color: var(--accent); }
 button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 button.primary:hover { background: #162c48; color: #fff; }
 
-#status { font-size: 13px; color: var(--sub); margin-top: 8px; }
+#status { font-size: 13px; color: var(--sub); margin: 8px 0 0; }
+
+/* 页面底部（画布下方）的播放控件：与开题「底部是播放控件」对应 */
+.transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.transport #status { margin: 0 0 0 auto; }
 
 /* SVG 里的元素 */
 .edge { stroke: #b8c2cf; stroke-width: 2; }
@@ -200,6 +214,39 @@ button.primary:hover { background: #162c48; color: #fff; }
 }
 .card-link.visited { border-color: var(--new); background: #f3fbf5; }
 .card-link.visited .type { color: var(--new); background: #e3f4e8; }
+
+/* 首页主按钮与页脚 */
+.cta {
+  display: inline-block;
+  margin: 2px 0 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cta:hover { background: #162c48; }
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 26px 0 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.site-footer a { color: var(--sub); text-decoration: none; }
+.site-footer a:hover { color: var(--accent); text-decoration: underline; }
+
+/* 步骤小标题（难点 1 的当前步在讲什么） */
+.step-title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
 
 /* 首页学习进度（localStorage 记忆，见 common.js 的 App.progress） */
 .progress-note {

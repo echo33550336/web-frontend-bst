@@ -88,8 +88,11 @@
   }
 
   /**
-   * 左树的插入顺序：在升序序列上做 k 次随机相邻交换。
-   * orderedness = 100 → k = 0，原样返回（与右树完全相同）；0 → 4n 次，充分打乱。
+   * 左树的插入顺序（全部由「有序程度」控制，且同 seed + 同 salt 完全可复现）：
+   *   orderedness = 100 → 原样返回升序，与右树完全同序；
+   *   orderedness = 0   → 带种子的 Fisher–Yates 全排列，才是真正的“完全随机”；
+   *   0 < orderedness < 100 → 升序序列做 k 次随机相邻交换，k = round((100 − p) / 100 × 4n)，
+   *                        局部有序程度在两个极端之间平滑变化。
    * salt 是「重排」的计数器：同一批数据、同一个有序程度，换 salt 就换一组随机顺序；
    * salt = 0 时与不传完全等价（初始状态永远稳定）。
    */
@@ -97,10 +100,21 @@
     var arr = values.slice();
     var n = arr.length;
     if (n < 2) return arr;
-    var k = swapsFor(n, orderedness);
-    if (k <= 0) return arr;
+    var pct = normOrderedness(orderedness);
     var s = Number(salt) || 0;
     var rng = mulberry32(((seed >>> 0) ^ 0x9e3779b9 ^ Math.imul(s, 0x27d4eb2d)) >>> 0);
+    if (pct <= 0) {
+      /* 全排列：每个插入顺序等概率出现，树高才有“随机 BST”的典型分布 */
+      for (var i = n - 1; i > 0; i -= 1) {
+        var r = Math.floor(rng() * (i + 1));
+        var swap = arr[i];
+        arr[i] = arr[r];
+        arr[r] = swap;
+      }
+      return arr;
+    }
+    var k = swapsFor(n, pct);
+    if (k <= 0) return arr;
     for (var t = 0; t < k; t += 1) {
       var j = Math.floor(rng() * (n - 1));
       var tmp = arr[j];
@@ -310,8 +324,11 @@
     var captionLeft = document.getElementById("caption-left");
     var captionRight = document.getElementById("caption-right");
     var chartSvg = document.getElementById("chart");
+    var chartMetricSelect = document.getElementById("chart-metric");
+    var chartMetricLabel = document.getElementById("chart-metric-label");
     var chartLegendLeft = document.getElementById("chart-legend-left");
     var chartLegendRight = document.getElementById("chart-legend-right");
+    var reshuffleNote = document.getElementById("reshuffle-note");
 
     var state = {
       data: null,
@@ -324,6 +341,11 @@
       geo: null,
       /* 折线：画哪个读数由 JSON chart.metric 指定，纵轴上限按整场演示算 */
       chartMetric: "height",
+      /* 当前折线读数的元信息（标题、纵轴标签、注释），随下拉框切换 */
+      chartMeta: null,
+      chartMetricOptions: [],
+      /* 最近一次渲染的步骤快照：切换折线读数时不用重新走播放器 */
+      lastSt: null,
       yMax: 1,
       /* 「重排」计数器：0 = 初始顺序，每点一次 +1，用派生种子换一组随机顺序 */
       shuffleSalt: 0,
@@ -338,6 +360,11 @@
         statusEl.textContent =
           App.format(state.data.labels.statusLine, { i: index + 1, n: total }) +
           (playing ? state.data.labels.playing : "");
+        /* 边界步骤把按钮点亮/置灰，读屏与键盘用户也能知道「到头了」 */
+        var prevBtn = document.getElementById("btn-prev");
+        var nextBtn = document.getElementById("btn-next");
+        if (prevBtn) prevBtn.disabled = index <= 0;
+        if (nextBtn) nextBtn.disabled = index >= total - 1;
       },
     });
 
@@ -371,6 +398,8 @@
         setText("chart-note", data.chart.note);
         if (chartSvg && data.chart.title) chartSvg.setAttribute("aria-label", data.chart.title);
 
+        buildChartMetric(data);
+        applyChartMeta(state.chartMetric);
         buildParams(data);
         buildMetrics(data);
         bindButtons();
@@ -443,6 +472,59 @@
       });
     }
 
+    /**
+     * 折线读数下拉框：选项同样来自 JSON（chart.metricOptions），默认 chart.metric。
+     * 切换只重画折线，不动当前步、树和读数卡。
+     */
+    function buildChartMetric(data) {
+      var chart = data.chart;
+      var options = chart.metricOptions && chart.metricOptions.length
+        ? chart.metricOptions
+        : data.metrics.map(function (m) {
+          return {
+            key: m.key,
+            label: m.label,
+            title: chart.title,
+            yLabel: chart.yLabel,
+            note: chart.note,
+          };
+        });
+      state.chartMetricOptions = options;
+      if (chartMetricLabel) chartMetricLabel.textContent = chart.metricLabel || "折线读数";
+      if (!chartMetricSelect) return;
+      App.clear(chartMetricSelect);
+      options.forEach(function (opt) {
+        chartMetricSelect.appendChild(App.el("option", { value: opt.key, text: opt.label }));
+      });
+      chartMetricSelect.value = state.chartMetric;
+      chartMetricSelect.addEventListener("change", function () {
+        applyChartMeta(chartMetricSelect.value);
+        if (!state.caseData) return;
+        state.yMax = chartYMax(state.caseData, state.chartMetric);
+        if (state.lastSt) drawChart(state.lastSt);
+      });
+    }
+
+    /** 把当前读数的标题 / 纵轴标签 / 注释同步到页面，坐标轴文字也在 drawChart 里用 chartMeta。 */
+    function applyChartMeta(key) {
+      var chart = state.data.chart;
+      var options = state.chartMetricOptions || [];
+      var meta = null;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].key === key) meta = options[i];
+      }
+      if (!meta) meta = chart;
+      if (!meta.key) meta = { key: key, label: chart.title, title: chart.title, yLabel: chart.yLabel, note: chart.note };
+      state.chartMetric = meta.key;
+      state.chartMeta = meta;
+      setText("chart-title", meta.title || chart.title);
+      setText("chart-note", meta.note || chart.note);
+      if (chartSvg && meta.title) chartSvg.setAttribute("aria-label", meta.title);
+      if (chartMetricSelect && chartMetricSelect.value !== state.chartMetric) {
+        chartMetricSelect.value = state.chartMetric;
+      }
+    }
+
     function bindButtons() {
       document.getElementById("btn-play").addEventListener("click", function () {
         playback.play();
@@ -469,25 +551,34 @@
 
     /**
      * 「重排」：n 和数值集合都不变，只换左树的插入顺序，然后回到第 1 步。
-     * 有序程度 = 100 时升序是唯一顺序，重排没有意义 —— 所以先把有序程度降为 0
-     * （滑块与读数同步更新），让用户真正看到「同一批数换一种顺序」的差别。
-     * salt 自增后如果碰巧还是同一顺序（小 n 有可能），就继续换下一个 salt，
-     * 保证每次点击都真的换了一组顺序。
+     * 有序程度偏高、n 偏小时，相邻交换次数会被 round 成 0（升序是唯一顺序），
+     * 所以先把有序程度降到 0（滑块与读数同步更新），再按 salt 换一组随机顺序。
+     * 0 时是 Fisher–Yates 全排列，8 个 salt 必然换出不同顺序；万一小 n 仍撞车，
+     * 就在 hint 里如实说明，而不是让用户以为按钮坏了。
      */
     function reshuffle() {
       var prev = state.caseData ? state.caseData.leftOrder.join(",") : null;
-      if (state.orderedness >= 100) {
+      if (swapsFor(state.n, state.orderedness) === 0) {
         state.orderedness = 0;
         setParamValue("orderedness", 0);
+        updateCaptions();
       }
       var salt = state.shuffleSalt;
       var candidate = null;
+      var changed = false;
       for (var tries = 0; tries < 8; tries += 1) {
         salt += 1;
         candidate = makeCase(state.seed, state.n, state.orderedness, state.range, salt);
-        if (!prev || prev !== candidate.leftOrder.join(",")) break;
+        if (!prev || prev !== candidate.leftOrder.join(",")) {
+          changed = true;
+          break;
+        }
       }
       state.shuffleSalt = salt;
+      if (reshuffleNote) {
+        reshuffleNote.textContent = state.data ? state.data.labels.reshuffleSame : "";
+        reshuffleNote.hidden = changed;
+      }
       updateCaptions();
       regenerate();
     }
@@ -532,6 +623,7 @@
     function renderStep(step) {
       if (!step || !state.data || !state.caseData) return;
       var st = stepState(state.caseData, step.index);
+      state.lastSt = st;
       drawTree(leftSvg, st.leftRoot, state.geo, st.newLeft);
       drawTree(rightSvg, st.rightRoot, state.geo, st.newRight);
       updateMetrics(st);
@@ -579,6 +671,7 @@
      */
     function drawChart(st) {
       var chart = state.data.chart;
+      var meta = state.chartMeta || chart;
       var series = chartSeries(state.caseData, st.index, state.chartMetric);
       var yMax = state.yMax;
       var left = CHART_PAD.left;
@@ -645,7 +738,7 @@
         "text-anchor": "middle",
         transform: "rotate(-90 12 " + (top + plotH / 2) + ")",
       });
-      yLabel.textContent = chart.yLabel;
+      yLabel.textContent = meta.yLabel || chart.yLabel;
       chartSvg.appendChild(yLabel);
 
       var xLabel = App.svg("text", {
@@ -707,9 +800,15 @@
         wRight: st.rightStats.worstSteps,
         orderedness: state.orderedness,
       };
-      stepBox.textContent = App.format(isLast ? data.steps.done : data.steps.insert, vars);
+      /* 左右插入顺序完全相同时（有序程度 100%，或 k 被取整成 0），要把话说明白：
+         这时就不该再说“树高差很多”，而是指出“顺序相同 → 形状相同”，并引导降低有序程度。 */
+      var sameOrder =
+        state.caseData.leftOrder.join(",") === state.caseData.rightOrder.join(",");
+      var doneTemplate = sameOrder && data.steps.doneSame ? data.steps.doneSame : data.steps.done;
+      stepBox.textContent = App.format(isLast ? doneTemplate : data.steps.insert, vars);
       if (isLast) {
-        conclusionBox.textContent = App.format(data.conclusion, vars);
+        var conclusionTemplate = sameOrder && data.conclusionSame ? data.conclusionSame : data.conclusion;
+        conclusionBox.textContent = App.format(conclusionTemplate, vars);
         conclusionCard.hidden = false;
       } else {
         conclusionCard.hidden = true;

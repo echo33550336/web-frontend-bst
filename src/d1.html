@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="难点 1：拖动插入值，看二叉搜索树的比较路径如何一步步收窄区间，从 8 个候选位置收敛到唯一位置。">
   <title>难点 1 · 插入时的比较路径</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -26,40 +27,42 @@
     <div class="layout">
       <section class="stage">
         <svg id="canvas" role="img" aria-label="二叉搜索树：高亮节点是当前比较路径，节点下方标注允许的取值范围"></svg>
+        <div class="transport">
+          <button id="btn-play" class="primary">播放</button>
+          <button id="btn-pause">暂停</button>
+          <button id="btn-prev">上一步</button>
+          <button id="btn-next">下一步</button>
+          <button id="btn-reset">重置</button>
+          <p id="status">第 1 / 1 步</p>
+        </div>
       </section>
 
       <aside class="side">
         <div class="card">
-          <h2>参数</h2>
+          <h2 id="card-params-title">参数</h2>
           <div id="params"></div>
           <div class="controls">
             <button id="btn-insert" class="primary">插入演示</button>
             <button id="btn-regen">随机重生成</button>
           </div>
-          <div class="controls">
-            <button id="btn-play">播放</button>
-            <button id="btn-pause">暂停</button>
-            <button id="btn-prev">上一步</button>
-            <button id="btn-next">下一步</button>
-            <button id="btn-reset">重置</button>
-          </div>
-          <p id="status">第 1 / 1 步</p>
         </div>
 
         <div class="card">
-          <h2>允许区间</h2>
+          <h2 id="card-interval-title">允许区间</h2>
           <ul id="panel-interval"></ul>
-          <p class="hint">候选位置：<b id="panel-candidates">—</b> 个</p>
+          <p class="hint"><span id="candidates-label">候选位置</span>：<b id="panel-candidates">—</b> 个</p>
         </div>
 
         <div class="card">
-          <h2>中序序列</h2>
+          <h2 id="card-inorder-title">中序序列</h2>
           <p id="panel-inorder" class="hint">—</p>
+          <p id="inorder-check" class="hint">—</p>
         </div>
 
         <div class="card">
-          <h2>这一步在说什么</h2>
-          <p id="panel-step">—</p>
+          <h2 id="card-step-title">这一步在说什么</h2>
+          <p id="panel-step-title" class="step-title">—</p>
+          <p id="panel-step" aria-live="polite">—</p>
         </div>
       </aside>
     </div>

@@ -71,11 +71,13 @@
     },
     "detachLeaf": {
       "title": "摘掉叶子",
-      "text": "叶子没有孩子：把父节点 {parentText} 指向它的指针（{sideLabel}孩子）置空即可。树里少了一个节点，其余节点的中序顺序完全不变。"
+      "text": "叶子没有孩子：把父节点 {parentText} 指向它的指针（{sideLabel}孩子）置空即可。树里少了一个节点，其余节点的中序顺序完全不变。",
+      "rootText": "它是根节点，没有父节点：直接把根指针置空，整棵树变空。"
     },
     "attachOnlyChild": {
       "title": "孩子顶替上来",
-      "text": "{target} 只有一个孩子 {child}（{childDirLabel}孩子）：让 {child} 直接顶到 {target} 的位置，父节点 {parentText} 改指向 {child}。孩子子树里的所有值仍然满足原来的大小关系。"
+      "text": "{target} 只有一个孩子 {child}（{childDirLabel}孩子）：让 {child} 直接顶到 {target} 的位置，父节点 {parentText} 改指向 {child}。孩子子树里的所有值仍然满足原来的大小关系。",
+      "rootText": "它是根节点，没有父节点：让唯一孩子 {child} 直接成为新的根。"
     },
     "enterRight": {
       "title": "进入右子树",
@@ -103,7 +105,7 @@
     },
     "detach": {
       "title": "摘下{replWord}",
-      "text": "把 {succ} 从原位置摘下来：改它父节点 {succParent} 的指针，接到 {succ} 的{succFreeDirLabel}孩子（{succChildText}）。这一步只动一处指针——摘下来的 {succ} 先悬空，下一步再挂。"
+      "text": "把 {succ} 从原位置摘下来：把父节点 {succParent} 的{succParentSideLabel}指针改接到 {succ} 的{movedDirLabel}孩子（{succChildText}）。这一步只动一处指针——摘下来的 {succ} 先悬空，下一步再挂。"
     },
     "attach": {
       "title": "挂到被删位置",
@@ -182,6 +184,8 @@
     "replSucc": "替换节点（后继）",
     "replPred": "替换节点（前驱）",
     "none": "无",
+    "nodeAria": "节点 {value}，按回车或空格把它设为删除目标",
+    "attachRootText": "目标原来是根节点，所以它直接成为新的根。",
     "stepTitle": "第 {index} 步 · {title}",
     "orderOk": "中序递增 ✔",
     "orderBad": "中序不再递增 ✘",

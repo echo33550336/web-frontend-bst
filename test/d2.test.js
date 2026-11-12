@@ -174,26 +174,37 @@ eq(
   JSON.stringify(D2.planDeletion(INITIAL, 50, "predecessor"))
 );
 
-/* 9. 错误选项 C 的演示：另一侧子树整块断链、节点丢失 */
+/* 9. 错误选项 C 的演示：另一侧子树整块断链、节点丢失
+      注意：被删的目标本身是计划内删除，不算 C 造成的「丢失节点」。 */
 check("后继 C 是断链演示", succ.wrongDemos.C.kind === "broken");
 eq("后继 C 可达中序", succ.wrongDemos.C.reachableInorder, [60, 65, 70, 80]);
-eq("后继 C 丢失节点", succ.wrongDemos.C.lostValues, [20, 30, 40, 50]);
+eq("后继 C 丢失节点", succ.wrongDemos.C.lostValues, [20, 30, 40]);
 check("后继 C 丢失节点非空", succ.wrongDemos.C.lostValues.length > 0);
+check("后继 C 不把目标算作丢失", succ.wrongDemos.C.lostValues.indexOf(50) === -1);
 check("前驱 C 是断链演示", pred.wrongDemos.C.kind === "broken");
 eq("前驱 C 可达中序", pred.wrongDemos.C.reachableInorder, [20, 30, 40]);
-eq("前驱 C 丢失节点", pred.wrongDemos.C.lostValues, [50, 60, 65, 70, 80]);
+eq("前驱 C 丢失节点", pred.wrongDemos.C.lostValues, [60, 65, 70, 80]);
+check("前驱 C 不把目标算作丢失", pred.wrongDemos.C.lostValues.indexOf(50) === -1);
 
 /* C 的断链演示在非根目标上也要准确：只把目标在父指针里换成孩子，
    另一侧子树原样留在画布外侧，可达的中序必须是「剩下的那部分树」。 */
 const c30 = D2.planDeletion(INITIAL, 30, "successor").wrongDemos.C;
 eq("非根后继 C 可达中序", c30.reachableInorder, [40, 50, 60, 65, 70, 80]);
-eq("非根后继 C 丢失节点", c30.lostValues, [20, 30]);
+eq("非根后继 C 丢失节点", c30.lostValues, [20]);
 eq("非根后继 C 的断链子树", c30.orphanRootValue, 20);
 check("非根后继 C 的残树仍有序", D2.isSorted(c30.reachableInorder));
 const c70 = D2.planDeletion(INITIAL, 70, "predecessor").wrongDemos.C;
 eq("非根前驱 C 可达中序", c70.reachableInorder, [20, 30, 40, 50, 60, 65]);
-eq("非根前驱 C 丢失节点", c70.lostValues, [70, 80]);
+eq("非根前驱 C 丢失节点", c70.lostValues, [80]);
 eq("非根前驱 C 的断链子树", c70.orphanRootValue, 80);
+
+/* 第 6 步文案的方向：父指针一侧 × 被搬走孩子一侧 是相反的两个方向 */
+const succDetachStep = succ.steps.filter((s) => s.key === "detach")[0];
+eq("后继 detach 父指针方向", succDetachStep.vars.parentSide, "left");
+eq("后继 detach 搬走孩子的方向", succDetachStep.vars.movedDir, "right");
+const predDetachStep = pred.steps.filter((s) => s.key === "detach")[0];
+eq("前驱 detach 父指针方向", predDetachStep.vars.parentSide, "right");
+eq("前驱 detach 搬走孩子的方向", predDetachStep.vars.movedDir, "left");
 
 /* 10. 选错「另一种也成立」的方案：中序仍然有序，只是不符合当前策略 */
 check("后继策略选 B 是方案不符", succ.wrongDemos.B.kind === "wrong-strategy");
@@ -247,11 +258,13 @@ INITIAL.forEach((target) => {
     if (plan.case === "double") {
       const demo = plan.wrongDemos.C;
       check(label + " C 演示丢了节点", demo.lostValues.length > 0);
-      check(label + " C 演示丢失的节点含目标", demo.lostValues.indexOf(target) !== -1);
+      check(label + " C 演示不把目标算作丢失", demo.lostValues.indexOf(target) === -1);
       eq(
-        label + " C 演示可达 + 丢失 = 原节点",
+        label + " C 演示可达 + 丢失 = 原节点（去掉目标）",
         demo.reachableInorder.concat(demo.lostValues).sort((a, b) => a - b),
-        INITIAL.slice().sort((a, b) => a - b)
+        INITIAL.slice()
+          .sort((a, b) => a - b)
+          .filter((v) => v !== target)
       );
       check(label + " C 演示残树仍有序", D2.isSorted(demo.reachableInorder));
       check(
@@ -314,6 +327,42 @@ INITIAL.forEach(function (target) {
     check("文案 " + target + "/" + strategy + "/错误后果占位符齐全", missCons.length === 0, missCons.join(","));
   });
 });
+
+/* 15. 边界文案：叶子删根没有父节点，不能残留 {sideLabel}，也不能说「父节点 根」 */
+const rootLeafPlan = D2.planDeletion([10], 10, "successor");
+const rootLeafStep = rootLeafPlan.steps.filter((s) => s.key === "detachLeaf")[0];
+check("叶子删根步骤带 isRoot 标记", rootLeafStep.vars.isRoot === true);
+const rootLeafVars = D2.textVars(DATA, rootLeafPlan, rootLeafStep);
+const rootLeafTpl = DATA.steps.detachLeaf.rootText || "";
+check(
+  "叶子删根有 JSON 兜底文案且占位符齐全",
+  rootLeafTpl.length > 0 && missingKeys(rootLeafTpl, rootLeafVars).length === 0,
+  rootLeafTpl
+);
+check(
+  "叶子删根 sideLabel 有兜底值",
+  typeof rootLeafVars.sideLabel === "string" && rootLeafVars.sideLabel.length > 0,
+  String(rootLeafVars.sideLabel)
+);
+
+/* 单孩子删根同理：不能用「父节点 根 的指针」这种句子 */
+const rootSingleStep = rootSingle.steps.filter((s) => s.key === "attachOnlyChild")[0];
+check("单孩子删根步骤带 isRoot 标记", rootSingleStep.vars.isRoot === true);
+const rootSingleVars = D2.textVars(DATA, rootSingle, rootSingleStep);
+const rootSingleTpl = DATA.steps.attachOnlyChild.rootText || "";
+check(
+  "单孩子删根有 JSON 兜底文案且占位符齐全",
+  rootSingleTpl.length > 0 && missingKeys(rootSingleTpl, rootSingleVars).length === 0,
+  rootSingleTpl
+);
+
+/* 16. 第 6 步方向文案：父指针一侧 / 被搬走孩子一侧 由 labels 映射 */
+const succDVars = D2.textVars(DATA, succ, succDetachStep);
+eq("后继 detach 父指针文案", succDVars.succParentSideLabel, "左");
+eq("后继 detach 孩子方向文案", succDVars.movedDirLabel, "右");
+const predDVars = D2.textVars(DATA, pred, predDetachStep);
+eq("前驱 detach 父指针文案", predDVars.succParentSideLabel, "右");
+eq("前驱 detach 孩子方向文案", predDVars.movedDirLabel, "左");
 
 console.log(pass + " 项通过" + (fails.length ? "，" + fails.length + " 项失败：" : "，全部通过"));
 fails.forEach((f) => console.log("  ✗ " + f));

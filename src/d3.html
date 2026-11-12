@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="难点 3：同一批数据、两种插入顺序，双画布同步长高；树高、平均与最坏查找步数随插入推进的折线，直观看到升序插入导致的退化。">
   <title>难点 3 · 插入顺序与树退化</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -87,6 +88,11 @@
       text-align: center;
     }
 
+    /* 重排撞车时的兜底提示：用橙红提醒，但仍属于 hint 文案 */
+    #reshuffle-note {
+      color: var(--path);
+    }
+
     /* 读数折线：左边深蓝、右边橙红，图例与两棵树一致 */
     .chart-block {
       margin-top: 18px;
@@ -115,6 +121,29 @@
       gap: 14px;
       font-size: 12px;
       color: var(--sub);
+    }
+
+    .chart-metric {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .chart-metric select {
+      font: inherit;
+      font-size: 12px;
+      padding: 3px 6px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .chart-metric select:focus {
+      outline: 2px solid var(--accent-soft);
+      border-color: var(--accent);
     }
 
     .legend-item {
@@ -240,7 +269,7 @@
     <header class="page-head">
       <span class="kicker" id="page-kicker">难点 3 · 对照比较型</span>
       <h1 id="page-title">插入顺序与树退化</h1>
-      <p class="subtitle" id="page-subtitle">同一批数据，换个顺序，树高差一倍</p>
+      <p class="subtitle" id="page-subtitle">同一批数据，插入顺序一换，树高和查找代价全变了</p>
       <p class="howto" id="page-howto">拖「规模」和「有序程度」两个滑块，左右两棵树会按同一批数据重新生成；点「播放」看两边同步长高，下面三个读数跟着变。</p>
       <p class="status-note" id="page-status"></p>
     </header>
@@ -250,7 +279,7 @@
         <div class="canvases">
           <div class="canvas-col">
             <svg id="canvas-left" role="img" aria-label="左树：按有序程度控制的插入顺序建成的二叉搜索树"></svg>
-            <p class="caption" id="caption-left">左：有序程度 100% 的插入顺序</p>
+            <p class="caption" id="caption-left">左：有序程度 0% 的插入顺序</p>
           </div>
           <div class="canvas-col">
             <svg id="canvas-right" role="img" aria-label="右树：按升序插入建成的二叉搜索树"></svg>
@@ -264,6 +293,10 @@
         <div class="chart-block">
           <div class="chart-head">
             <h2 class="chart-title" id="chart-title">读数随插入怎么长</h2>
+            <label class="chart-metric">
+              <span id="chart-metric-label">折线读数</span>
+              <select id="chart-metric" aria-label="选择折线图显示的读数"></select>
+            </label>
             <div class="chart-legend">
               <span class="legend-item"><i class="legend-swatch legend-left"></i><span id="chart-legend-left">左</span></span>
               <span class="legend-item"><i class="legend-swatch legend-right"></i><span id="chart-legend-right">右</span></span>
@@ -272,6 +305,15 @@
           <svg id="chart" role="img" aria-label="左右两棵树的读数随插入步数变化的折线图"></svg>
           <p class="chart-note" id="chart-note"></p>
         </div>
+
+        <div class="transport">
+          <button id="btn-play" class="primary">播放</button>
+          <button id="btn-pause">暂停</button>
+          <button id="btn-prev" disabled>上一步</button>
+          <button id="btn-next">下一步</button>
+          <button id="btn-reset">重置</button>
+          <p id="status" aria-live="polite">第 1 / 20 步</p>
+        </div>
       </section>
 
       <aside class="side">
@@ -279,27 +321,20 @@
           <h2 id="label-params">参数与播放</h2>
           <div id="params"></div>
           <div class="controls">
-            <button id="btn-play" class="primary">播放</button>
-            <button id="btn-pause">暂停</button>
-            <button id="btn-prev">上一步</button>
-            <button id="btn-next">下一步</button>
-            <button id="btn-reset">重置</button>
-          </div>
-          <div class="controls">
             <button id="btn-reshuffle">重排</button>
           </div>
           <p class="hint" id="reshuffle-hint"></p>
-          <p id="status">第 1 / 20 步</p>
+          <p class="hint note" id="reshuffle-note" hidden></p>
         </div>
 
         <div class="card">
           <h2 id="label-step">这一步在说什么</h2>
-          <p id="panel-step">—</p>
+          <p id="panel-step" aria-live="polite">—</p>
         </div>
 
         <div class="card" id="conclusion-card" hidden>
           <h2 id="label-conclusion">结论</h2>
-          <p id="panel-conclusion">—</p>
+          <p id="panel-conclusion" aria-live="polite">—</p>
         </div>
       </aside>
     </div>

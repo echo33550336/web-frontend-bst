@@ -59,13 +59,23 @@ const half = D3.makeCase(SEED, 20, 50);
 eq("右树顺序 = 升序序列", full.rightOrder, full.values);
 eq("有序程度 100：左树顺序 = 升序（与右树相同）", full.leftOrder, full.rightOrder);
 eq("有序程度 100：不做交换", full.swaps, 0);
-eq("有序程度 0：交换次数 = 4n", rand.swaps, 80);
+eq("有序程度 0：swaps 字段仍按公式记录 4n（实现改用全排列）", rand.swaps, 80);
 eq("有序程度 50：交换次数 = 2n", half.swaps, 40);
 check("有序程度 0：左树顺序不是升序", !isAscending(rand.leftOrder));
 eq("左树顺序是同一批数的排列", sorted(rand.leftOrder), sorted(rand.values));
 eq("两棵树的数据排序后完全相等", sorted(rand.leftOrder), sorted(rand.rightOrder));
 check("有序程度 0 确实打乱了位置", JSON.stringify(rand.leftOrder) !== JSON.stringify(rand.values));
 eq("中间值：有序程度 50 也改变了顺序", JSON.stringify(half.leftOrder) !== JSON.stringify(half.values), true);
+
+/* 2b. 0% = 带种子的 Fisher–Yates 全排列：同种子可复现，换 salt / 换种子就换顺序
+   4n 次相邻交换对 n=60 只能做到“局部打乱”（树高 26、平均 13），
+   全排列才有随机 BST 的典型分布（高度约 2ln n、平均查找约 2ln n）。 */
+const randAgain = D3.makeCase(SEED, 20, 0);
+const randSalt1 = D3.makeCase(SEED, 20, 0, null, 1);
+eq("0% 时同 seed 同参数结果完全一致", rand.leftOrder, randAgain.leftOrder);
+check("0% 时换 salt 顺序不同", JSON.stringify(randSalt1.leftOrder) !== JSON.stringify(rand.leftOrder));
+check("0% 时换种子顺序不同", JSON.stringify(D3.makeCase(SEED + 1, 20, 0).leftOrder) !== JSON.stringify(rand.leftOrder));
+check("0% 时 n=60 左树也不是升序", !isAscending(D3.makeCase(SEED, 60, 0).leftOrder));
 
 /* 3. 相邻交换的定义：k 次交换后仍然只动位置、不动数值集合；k 单调 */
 eq("交换次数公式", [D3.swapsFor(20, 100), D3.swapsFor(20, 75), D3.swapsFor(20, 0)], [0, 20, 80]);
@@ -133,7 +143,7 @@ const paramMap = {};
 cfg.params.forEach((p) => { paramMap[p.key] = p; });
 eq("参数个数", cfg.params.length, 3);
 eq("规模参数范围", [paramMap.size.min, paramMap.size.max, paramMap.size.default], [5, 60, 20]);
-eq("有序程度参数范围", [paramMap.orderedness.min, paramMap.orderedness.max, paramMap.orderedness.default], [0, 100, 100]);
+eq("有序程度参数范围", [paramMap.orderedness.min, paramMap.orderedness.max, paramMap.orderedness.default], [0, 100, 0]);
 eq("速度参数范围", [paramMap.speed.min, paramMap.speed.max, paramMap.speed.default], [1, 5, 2]);
 check("每个参数都有标签", cfg.params.every((p) => p.label && p.key));
 eq("三张读数卡的 key", cfg.metrics.map((m) => m.key), ["height", "avgSteps", "worstSteps"]);
@@ -145,29 +155,60 @@ check("左图说明是模板（随有序程度变化）", cfg.captions.left.incl
 });
 check("过程文案有插入模板", Boolean(cfg.steps.insert.length > 0));
 check("过程文案有收尾模板", Boolean(cfg.steps.done.length > 0));
+check("同序时另有收尾文案", Boolean(cfg.steps.doneSame && cfg.steps.doneSame.length > 10));
+check("同序结论按「形状相同」措辞（不误称树高不同）",
+  Boolean(cfg.conclusionSame) && cfg.conclusionSame.includes("相同") && !cfg.conclusionSame.includes("差出好几倍"));
+["n", "hRight", "aRight"].forEach((key) => {
+  check("同序结论包含占位符 {" + key + "}", cfg.conclusionSame.includes("{" + key + "}"));
+});
 check("状态栏模板含 {i} 与 {n}", cfg.labels.statusLine.includes("{i}") && cfg.labels.statusLine.includes("{n}"));
 check("左右标签齐全", Boolean(cfg.labels.left && cfg.labels.right));
+check("dataset note 写明 0% 是带种子的全排列",
+  /全排列/.test(cfg.dataset.note) && /Fisher/.test(cfg.dataset.note));
+check("有序程度 note 写明 0% 为完全随机", /随机/.test(paramMap.orderedness.note));
+check("有重排撞车兜底文案", Boolean(cfg.labels.reshuffleSame && cfg.labels.reshuffleSame.length > 10));
+check("副标题不再承诺「差一倍」（默认随机不再与右树同形）", !cfg.subtitle.includes("差一倍"));
 
-/* 9. 用 JSON 里的 seed 与默认参数跑一次完整演示，结论里的数字能算出来 */
+/* 9. 用 JSON 里的 seed 与默认参数（orderedness = 0）跑一次完整演示 */
 const demo = D3.makeCase(cfg.dataset.seed, paramMap.size.default, paramMap.orderedness.default, {
   min: cfg.dataset.valueRange[0],
   max: cfg.dataset.valueRange[1],
 });
+const demoChain = D3.makeCase(cfg.dataset.seed, paramMap.size.default, 100, {
+  min: cfg.dataset.valueRange[0],
+  max: cfg.dataset.valueRange[1],
+});
 eq("默认参数下两棵树是同一批数", sorted(demo.leftOrder), sorted(demo.rightOrder));
-eq("默认参数下左树 = 升序（有序程度 100）", demo.leftOrder, demo.values);
+check("默认参数下左树是随机顺序（不是升序）", !isAscending(demo.leftOrder));
+check("默认参数下左右插入顺序不同（结论可用“树高不同”措辞）",
+  demo.leftOrder.join(",") !== demo.rightOrder.join(","));
+eq("100% 时左右插入顺序完全相同（结论必须改说“形状相同”）", demoChain.leftOrder, demoChain.rightOrder);
+const tinyZero = D3.makeCase(SEED, 5, 98);
+eq("n=5、98% 时 k 被取整成 0，左右顺序也相同", tinyZero.leftOrder, tinyZero.values);
+eq("默认参数下右树 = 升序", demoChain.rightOrder, demoChain.values);
 const demoLast = D3.stepState(demo, demo.n - 1);
 eq("默认参数最后一步右树退化成链", demoLast.rightStats.height, 20);
 check("退化链的最坏查找步数 = 节点数", demoLast.rightStats.worstSteps === 20);
-check("左树（默认升序）与右树读数相同", demoLast.leftStats.avgSteps === demoLast.rightStats.avgSteps);
-const scrambled = D3.makeCase(cfg.dataset.seed, paramMap.size.default, 0, {
+check("默认随机左树的树高明显低于升序链", demoLast.leftStats.height < demoLast.rightStats.height,
+  "左 " + demoLast.leftStats.height + " 右 " + demoLast.rightStats.height);
+check("默认随机左树的平均查找步数明显更低",
+  demoLast.leftStats.avgSteps < demoLast.rightStats.avgSteps,
+  "左 " + D3.fmtNumber(demoLast.leftStats.avgSteps) + " 右 " + D3.fmtNumber(demoLast.rightStats.avgSteps));
+check("默认参数的结论数字在演示里真实成立（hLeft < hRight）",
+  demoLast.leftStats.height < demoLast.rightStats.height &&
+  demoLast.leftStats.avgSteps < demoLast.rightStats.avgSteps);
+eq("默认演示末步左树读数与结论一致", demoLast.leftStats.height, D3.stats(demoLast.leftRoot).height);
+const scrambled = D3.makeCase(cfg.dataset.seed, 60, 0, {
   min: cfg.dataset.valueRange[0],
   max: cfg.dataset.valueRange[1],
 });
 const scrambledLast = D3.stepState(scrambled, scrambled.n - 1);
-check("随机顺序的树高明显低于升序链", scrambledLast.leftStats.height < demoLast.rightStats.height,
-  "左 " + scrambledLast.leftStats.height + " 右 " + demoLast.rightStats.height);
-check("随机顺序的平均查找步数更低", scrambledLast.leftStats.avgSteps < demoLast.rightStats.avgSteps,
-  "左 " + D3.fmtNumber(scrambledLast.leftStats.avgSteps) + " 右 " + D3.fmtNumber(demoLast.rightStats.avgSteps));
+check("n=60 随机顺序的树高接近随机 BST（≈11，远低于 60）",
+  scrambledLast.leftStats.height <= 20,
+  "height=" + scrambledLast.leftStats.height);
+check("n=60 随机顺序的平均查找步数接近 log 级（远低于升序链的 30）",
+  scrambledLast.leftStats.avgSteps < 9,
+  "avg=" + D3.fmtNumber(scrambledLast.leftStats.avgSteps));
 
 /* 10. 重排：数值集合不变，只换左树插入顺序；salt 相同结果相同、不同则不同 */
 const beforeReshuffle = D3.makeCase(SEED, 20, 0);
@@ -229,14 +270,33 @@ eq("折线画的是树高（与指标卡一致）", cfg.chart.metric, "height");
 check("折线有纵轴/横轴标签", Boolean(cfg.chart.yLabel && cfg.chart.xLabel));
 check("折线图例是模板（左）", cfg.chart.legendLeft.includes("{orderedness}"));
 check("折线说明写清横轴与截断", /横轴/.test(cfg.chart.note) && /截断/.test(cfg.chart.note));
+check("JSON 有折线读数下拉框标签", Boolean(cfg.chart.metricLabel));
+eq("折线读数选项与三张读数卡一一对应",
+  (cfg.chart.metricOptions || []).map((o) => o.key), cfg.metrics.map((m) => m.key));
+check("每个折线读数选项都有标题/纵轴/说明",
+  (cfg.chart.metricOptions || []).every((o) => o.title && o.yLabel && o.note && o.label));
+eq("默认折线读数 = chart.metric", (cfg.chart.metricOptions[0] || {}).key, cfg.chart.metric);
 eq("JSON 有重排按钮文案", cfg.labels.reshuffle, "重排");
 check("JSON 有重排说明", Boolean(cfg.labels.reshuffleHint && cfg.labels.reshuffleHint.length > 10));
 check("使用说明提到重排与折线",
   cfg.howToUse.includes("重排") && cfg.howToUse.includes("折线"));
 
-/* 13. 默认参数（有序程度 100）下，图表用不到重排，但页面仍按 salt=0 生成 */
+/* 13. 折线读数可切换：最坏步数曲线与树高重合，平均步数曲线末点 = stats 平均值 */
+const worstSeries = D3.chartSeries(chartCase, 11, "worstSteps");
+eq("最坏步数曲线与树高曲线完全重合", worstSeries.left, chartFull.left);
+eq("最坏步数记在结果里", worstSeries.metric, "worstSteps");
+check("平均步数曲线的纵轴上限覆盖所有点",
+  D3.chartSeries(chartCase, 11, "avgSteps").right.every((p) => p.y <= D3.chartYMax(chartCase, "avgSteps")));
+check("三种读数的纵轴上限都是有限正数",
+  ["height", "avgSteps", "worstSteps"].every((k) => {
+    const v = D3.chartYMax(chartCase, k);
+    return isFinite(v) && v > 0;
+  }));
+
+/* 14. 默认参数（有序程度 0）下，图表末点与升序右树的 n 层对得上 */
 const defaultChart = D3.chartSeries(demo, demo.n - 1, cfg.chart.metric || "height");
 eq("默认演示的两条曲线末尾右树退化到 n 层", defaultChart.right[defaultChart.right.length - 1].y, 20);
+check("默认演示左树末点高度低于右树", defaultChart.left[defaultChart.left.length - 1].y < 20);
 
 console.log(pass + " 项通过" + (fails.length ? "，" + fails.length + " 项失败：" : "，全部通过"));
 fails.forEach((f) => console.log("  ✗ " + f));

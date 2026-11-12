@@ -204,8 +204,9 @@
     else if (info.side === "left") info.parent.left = child;
     else info.parent.right = child;
     var reachable = Tree.inorder(root);
+    // 被删的目标本身是「按计划删除」的，不算 C 造成的丢失；C 丢的是它另一侧的子树
     var lost = expected.filter(function (v) {
-      return reachable.indexOf(v) === -1;
+      return v !== targetValue && reachable.indexOf(v) === -1;
     });
     return {
       kind: "broken",
@@ -329,7 +330,12 @@
       var leafParentId = parentInfo.parent ? parentInfo.parent.id : null;
       push(
         "detachLeaf",
-        { target: targetValue, parent: parentValue, side: parentInfo.side },
+        {
+          target: targetValue,
+          parent: parentValue,
+          side: parentInfo.side,
+          isRoot: !parentInfo.parent,
+        },
         snapshotOf(cloneTree(leafFinal), {
           parent: leafParentId,
           ghost: ghostAt(initialRoot, targetValue, "removed"),
@@ -362,6 +368,7 @@
           childDir: childSide,
           parent: parentValue,
           side: parentInfo.side,
+          isRoot: !parentInfo.parent,
         },
         snapshotOf(cloneTree(singleFinal), {
           child: onlyChild.id,
@@ -508,6 +515,10 @@
         succParent: detachParent.value,
         succFreeDir: freeDir,
         succChild: movedChild ? movedChild.value : null,
+        // 摘节点这一步涉及两个方向：父节点被改的是哪一侧指针，
+        // 以及被搬走的是替换节点哪一侧的孩子。后继：父指针 left、孩子 right。
+        parentSide: freeDir,
+        movedDir: strategy === "successor" ? "right" : "left",
       },
       snapshotOf(detachRoot, {
         targetId: detachTarget.id,
@@ -611,15 +622,19 @@
     vars.inorder = step.snapshot.inorder.join(" · ");
     vars.count = step.snapshot.inorder.length;
     vars.removed = plan.targetValue;
-    if (raw.side) vars.sideLabel = data.labels[raw.side] || raw.side;
+    vars.sideLabel = raw.side ? data.labels[raw.side] || raw.side : data.labels.none;
     if (raw.childDir) vars.childDirLabel = data.labels[raw.childDir] || raw.childDir;
     if (raw.succFreeDir) vars.succFreeDirLabel = data.labels[raw.succFreeDir] || raw.succFreeDir;
+    if (raw.parentSide) vars.succParentSideLabel = data.labels[raw.parentSide] || raw.parentSide;
+    if (raw.movedDir) vars.movedDirLabel = data.labels[raw.movedDir] || raw.movedDir;
+    vars.isRoot = !!raw.isRoot;
     vars.parentText = raw.parent == null ? data.labels.rootNode : raw.parent;
     vars.succParentText = raw.succParent == null ? data.labels.rootNode : raw.succParent;
     vars.succChildText = raw.succChild == null ? data.labels.none : raw.succChild;
     vars.leftText = raw.left == null ? data.labels.none : raw.left;
     vars.rightText = raw.right == null ? data.labels.none : raw.right;
-    vars.rootText = raw.isRoot ? data.labels.root : "";
+    /* attach 步骤末尾的 {rootText}：目标是根时补一句「成为新根」，否则为空 */
+    vars.rootText = raw.isRoot ? data.labels.attachRootText || "" : "";
     vars.replWord = plan.strategy === "predecessor" ? data.labels.replWordPred : data.labels.replWordSucc;
     return vars;
   }
@@ -801,9 +816,12 @@
       state.answerToken += 1;
       hideFeedback();
       if (state.plan) {
-        state.plan = D2.planDeletion(state.data.tree.initial, state.targetValue, state.strategy);
+        var fresh = planDeletion(state.data.tree.initial, state.targetValue, state.strategy);
+        if (fresh) state.plan = fresh;
       }
-      playback.reset();
+      // 重建步骤列表并重新登记同一份步骤：否则 playback.steps 还指着旧数组
+      buildStepList();
+      playback.setSteps(state.plan ? state.plan.steps : []);
     }
 
     /* ---------- 重新生成计划（目标 / 情形 / 策略变化时） ---------- */
@@ -863,8 +881,19 @@
     }
 
     function jumpTo(i) {
-      if (!canAdvance(i)) return;
       playback.pause();
+      if (!canAdvance(i)) {
+        // 步骤列表在 choose 之前通常看不到「等待选择」提示，这里直接写到状态栏，
+        // 避免用户点了第 7/8 步却像什么都没发生。
+        if (statusEl && state.data && state.plan) {
+          statusEl.textContent =
+            App.format(state.data.statusTemplates.step, {
+              i: playback.index + 1,
+              total: state.plan.steps.length,
+            }) + state.data.statusTemplates.waiting;
+        }
+        return;
+      }
       playback.goto(i);
     }
 
@@ -891,7 +920,11 @@
           title: App.format(tpl.title || step.key, vars),
         });
       }
-      if (stepBox) stepBox.textContent = App.format(tpl.text || "", vars);
+      if (stepBox) {
+        // 叶子删根这种边界情况没有父节点，用 JSON 里单独的兜底文案
+        var tplText = step.vars && step.vars.isRoot && tpl.rootText ? tpl.rootText : tpl.text || "";
+        stepBox.textContent = App.format(tplText, vars);
+      }
       renderChoose(step, index, vars);
       renderCanvas(step, vars);
       renderCheck(step);
@@ -919,14 +952,27 @@
       updateStepList(i);
     }
 
-    /* ---------- 播放闸门：第 5 步没选就不能往前走 ---------- */
+    /* ---------- 播放闸门：不能越过还没作答的 choose 步 ---------- */
+    function chooseStepIndex() {
+      if (!state.plan) return -1;
+      for (var i = 0; i < state.plan.steps.length; i += 1) {
+        if (state.plan.steps[i].key === "choose") return i;
+      }
+      return -1;
+    }
+
     function canAdvance(targetIndex) {
-      var cur = playback.current();
-      if (cur && cur.key === "choose" && !state.answered) {
-        if (targetIndex == null || targetIndex > playback.index) {
-          showHint(state.data.labels.stepWait);
-          return false;
-        }
+      var ci = chooseStepIndex();
+      if (ci === -1) return true;
+      var cur = playback.index;
+      // 当前步已经越过了 choose（作答后正常前进），不重复拦截；
+      // 若从后面跳回 choose 之前，则重新作答后才能再越过。
+      if (state.answered || cur > ci) return true;
+      // targetIndex 为空 = 前进一步（播放 / 下一步）；否则是跳步目标
+      var target = targetIndex == null ? cur + 1 : targetIndex;
+      if (target > ci) {
+        showHint(state.data.labels.stepWait);
+        return false;
       }
       return true;
     }
@@ -985,6 +1031,12 @@
       }
     }
 
+    function focusFirstOption() {
+      if (!chooseOptions) return;
+      var first = chooseOptions.querySelector("button");
+      if (first && typeof first.focus === "function") first.focus();
+    }
+
     function answerOption(opt) {
       var step = playback.current();
       if (!step || step.key !== "choose" || !state.plan || state.answered) return;
@@ -1000,6 +1052,7 @@
         var correct = data.choose.correct[plan.strategy] || data.choose.correct.successor;
         showFeedback(correct.title, App.format(correct.text, vars), "ok");
         renderChoose(step, playback.index, vars);
+        focusFirstOption();
         renderCanvas(step, vars);
         renderCheck(step);
         updateStatus(playback.index, state.plan.steps.length, playback.playing());
@@ -1029,6 +1082,7 @@
       var cls = demo && demo.kind === "broken" ? "bad" : "warn";
       showFeedback(cons.title, App.format(cons.text, demoVars), cls);
       renderChoose(step, playback.index, vars);
+      focusFirstOption();
       renderCanvas(step, vars);
       renderCheck(step);
     }
@@ -1114,6 +1168,26 @@
       svgEl.setAttribute("viewBox", "0 0 " + Math.max(240, Math.round(width)) + " " + Math.max(150, Math.round(height)));
     }
 
+    /**
+     * 幽灵节点的坐标来自「动手之前」的布局，摘掉节点后树会重新排版，
+     * 因此可能和新位置上顶替上来的节点完全重合。重合时固定左移一点，
+     * 并且先画幽灵再画树，让树节点压在上面，避免「60 盖住 65」。
+     */
+    function placeGhost(ghost, lay) {
+      if (!ghost) return null;
+      var hit = lay.nodes.some(function (n) {
+        var dx = lay.x(n) - ghost.x;
+        var dy = lay.y(n) - ghost.y;
+        return Math.sqrt(dx * dx + dy * dy) < Tree.GEO.nodeR * 2;
+      });
+      return {
+        value: ghost.value,
+        kind: ghost.kind,
+        x: ghost.x + (hit ? -26 : 0),
+        y: ghost.y,
+      };
+    }
+
     function drawTree(snapshot, vars, opts) {
       opts = opts || {};
       ensureDefs();
@@ -1124,7 +1198,7 @@
       var lay = Tree.layout(snapshot.root);
       var byId = nodeMap(lay);
       var iv = Tree.intervals(snapshot.root);
-      var ghost = snapshot.ghost;
+      var ghost = placeGhost(snapshot.ghost, lay);
       var width = lay.width + 40;
       var height = lay.height + 90;
       if (ghost) {
@@ -1132,6 +1206,9 @@
         height = Math.max(height, ghost.y + 90);
       }
       setViewBox(width, height);
+
+      // 先画幽灵（在树节点后面），再画树，最后画箭头与标签
+      if (ghost) drawGhost(ghost, vars);
 
       Tree.render(svgEl, lay, {
         showIntervals: snapshot.showIntervals,
@@ -1144,8 +1221,7 @@
         },
       });
 
-      if (ghost) drawGhost(ghost, vars);
-      drawArrows(snapshot, lay, byId, vars);
+      drawArrows(snapshot, lay, byId, vars, ghost);
       drawTags(snapshot, lay, byId, opts);
 
       if (!opts.noClick) bindNodeClicks(lay);
@@ -1207,7 +1283,7 @@
       svgEl.appendChild(group);
     }
 
-    function drawArrows(snapshot, lay, byId, vars) {
+    function drawArrows(snapshot, lay, byId, vars, ghost) {
       if (!snapshot.arrows || !snapshot.arrows.length) return;
       var labels = state.data.labels;
 
@@ -1216,7 +1292,7 @@
         return n ? { x: lay.x(n), y: lay.y(n) } : null;
       }
       function ghostCoords() {
-        return snapshot.ghost ? { x: snapshot.ghost.x, y: snapshot.ghost.y } : null;
+        return ghost ? { x: ghost.x, y: ghost.y } : null;
       }
       function shorten(a, b) {
         var dx = b.x - a.x;
@@ -1300,8 +1376,20 @@
         var node = lay.nodes[i];
         if (!node) return;
         if (g.style) g.style.cursor = "pointer";
+        g.setAttribute("role", "button");
+        g.setAttribute("tabindex", "0");
+        g.setAttribute(
+          "aria-label",
+          App.format(state.data.labels.nodeAria || "节点 {value}", { value: node.value })
+        );
         g.addEventListener("click", function () {
           selectTarget(node.value);
+        });
+        g.addEventListener("keydown", function (ev) {
+          if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            ev.preventDefault();
+            selectTarget(node.value);
+          }
         });
       });
     }

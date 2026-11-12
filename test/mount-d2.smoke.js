@@ -99,6 +99,30 @@ setTimeout(function phaseA() {
   check("第 1 步文案非空", stepText().length > 10, stepText());
   check("步骤列表有 8 项", doc().querySelectorAll("#panel-steps li").length === 8);
   check("A/B/C 面板初始隐藏", byId("panel-choose").hidden === true);
+  check(
+    "反馈区是 aria-live 状态区",
+    byId("panel-feedback").getAttribute("role") === "status" &&
+      byId("panel-feedback").getAttribute("aria-live") === "polite"
+  );
+
+  const g50 = nodeByValue("50");
+  check(
+    "可点节点有按钮语义",
+    !!g50 && g50.getAttribute("role") === "button" && g50.getAttribute("tabindex") === "0",
+    g50 ? g50.getAttribute("role") + "/" + g50.getAttribute("tabindex") : "no g50"
+  );
+  check(
+    "可点节点 aria-label 含节点值",
+    !!g50 && /50/.test(g50.getAttribute("aria-label") || ""),
+    g50 ? g50.getAttribute("aria-label") : "no g50"
+  );
+
+  // 跳步闸门：还没作答 choose 时，点步骤列表第 7 项不能绕过 A/B/C 判定
+  const stepItems = doc().querySelectorAll("#panel-steps li");
+  clickEl(stepItems[6]);
+  check("未作答 choose 时不能跳到第 7 步", /第 1 \/ 8 步/.test(statusText()), statusText());
+  check("跳步被拒时状态栏提示等待选择", /等待选择/.test(statusText()), statusText());
+  check("跳步被拒时给出提示", byId("choose-hint").textContent.length > 0, byId("choose-hint").textContent);
 
   const firstStep = stepText();
   click("btn-next");
@@ -141,6 +165,11 @@ setTimeout(function phaseA() {
   check("选错后仍停在第 5 / 8 步", /第 5 \/ 8 步/.test(statusText()), statusText());
   check("选错后画布演示断链", doc().querySelectorAll("#canvas .node-circle.is-broken").length > 0);
   check("选错后仍可重试（选项还在）", chooseButtons().length === 3);
+  check(
+    "选错后焦点落在第一个选项上",
+    doc().activeElement === chooseButtons()[0],
+    doc().activeElement && doc().activeElement.textContent
+  );
   check("校验面板显示丢失节点", /丢失的节点/.test(byId("panel-check").textContent), byId("panel-check").textContent);
 
   // 选对 A：420ms 后自动进入第 6 步
@@ -150,12 +179,32 @@ setTimeout(function phaseA() {
   setTimeout(function afterCorrect() {
     check("选对后前进到第 6 / 8 步", /第 6 \/ 8 步/.test(statusText()), statusText());
     check("第 6 步摘下了替换节点", /摘下/.test(stepText()) || stepText().length > 10, stepText());
+    check("第 6 步画出被摘下的替换节点幽灵", doc().querySelectorAll("#canvas .ghost").length === 1);
+
+    // 走到第 7 步（挂接）：目标 50 是根，文案应补「成为新的根」且无残留占位符
+    click("btn-next");
+    check("第 7 步是挂接替换节点", /顶到/.test(stepText()), stepText());
+    check("根目标的挂接文案说明新的根", /新的根/.test(stepText()), stepText());
+    check("第 7 步文案没有残留占位符", !/\{\w+\}|undefined/.test(stepText()), stepText());
 
     // 重置
     click("btn-reset");
     check("重置回到第 1 / 8 步", /第 1 \/ 8 步/.test(statusText()), statusText());
     check("重置后 A/B/C 面板隐藏", byId("panel-choose").hidden === true);
     check("重置后目标仍是 50", targetValue() === "50");
+    check("重置后步骤列表同步为 8 项", doc().querySelectorAll("#panel-steps li").length === 8);
+    check(
+      "重置后步骤列表第 1 项高亮",
+      doc().querySelectorAll("#panel-steps li.now").length === 1 &&
+        /第 1 步/.test(doc().querySelector("#panel-steps li.now").textContent)
+    );
+    check("重置后画布没有残留幽灵", doc().querySelectorAll("#canvas .ghost").length === 0);
+
+    // 键盘改选目标：节点按 Enter 也能设为删除目标
+    const g30k = nodeByValue("30");
+    if (g30k) g30k.dispatchEvent(new win.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    check("键盘 Enter 可以改选删除目标", targetValue() === "30", "target=" + targetValue());
+    check("键盘改选后回到第 1 / 8 步", /第 1 \/ 8 步/.test(statusText()), statusText());
 
     // 播放 / 暂停
     click("btn-play");
@@ -173,6 +222,27 @@ setTimeout(function phaseA() {
     selectParam("case", "single");
     check("切到单孩子后是第 1 / 3 步", /第 1 \/ 3 步/.test(statusText()), statusText());
     check("单孩子情形目标预设为 60", targetValue() === "60", "target=" + targetValue());
+
+    // 单孩子第 2 步：被摘的 60 幽灵会和顶替上来的 65 重合，必须错开且画在树后面
+    click("btn-next");
+    check("单孩子第 2 / 3 步", /第 2 \/ 3 步/.test(statusText()), statusText());
+    const ghostGroup = doc().querySelector("#canvas .ghost");
+    const ghostCircle = doc().querySelector("#canvas .ghost-circle");
+    check("单孩子第 2 步画出被摘节点幽灵", !!ghostGroup && !!ghostCircle);
+    const gc = ghostCircle
+      ? { x: Number(ghostCircle.getAttribute("cx")), y: Number(ghostCircle.getAttribute("cy")) }
+      : null;
+    const overlaps = Array.prototype.some.call(nodes(), function (g) {
+      const c = g.querySelector("circle");
+      if (!c || !gc) return false;
+      return Number(c.getAttribute("cx")) === gc.x && Number(c.getAttribute("cy")) === gc.y;
+    });
+    check("幽灵节点不与树节点完全重合", !!gc && !overlaps, "ghost=" + (gc ? gc.x + "," + gc.y : "none"));
+    check(
+      "幽灵节点画在树节点之前",
+      !!ghostGroup && nodes().length > 0 &&
+        (ghostGroup.compareDocumentPosition(nodes()[0]) & win.Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+    );
 
     // 切换情形：双孩子
     selectParam("case", "double");

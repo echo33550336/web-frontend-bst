@@ -54,9 +54,14 @@ setTimeout(() => {
   const candidateEl = doc.getElementById("panel-candidates");
   check("载入时按默认值 65 直接预览（候选位置已收窄到 1）", candidateEl.textContent === "1", candidateEl.textContent);
 
-  check("参数控件由 JSON 渲染", doc.querySelectorAll("#params input[type=range]").length === 2);
+  check("参数控件由 JSON 渲染（待插入值 / 树规模 / 演示速度）", doc.querySelectorAll("#params input[type=range]").length === 3);
   check("中序序列已显示", doc.getElementById("panel-inorder").textContent === "20 · 30 · 40 · 50 · 60 · 70 · 80",
     doc.getElementById("panel-inorder").textContent);
+  check("中序校验结果已上屏", /✓/.test(doc.getElementById("inorder-check").textContent),
+    doc.getElementById("inorder-check").textContent);
+  check("面板标题来自 JSON", doc.getElementById("card-interval-title").textContent === "允许区间",
+    doc.getElementById("card-interval-title").textContent);
+  check("操作说明来自 JSON（提到树规模）", doc.getElementById("page-howto").textContent.indexOf("树规模") > -1);
 
   // 拖滑块到 65
   const slider = doc.getElementById("param-value");
@@ -90,6 +95,25 @@ setTimeout(() => {
     check("插入后中序仍递增且含 65", inorder === "20 · 30 · 40 · 50 · 60 · 65 · 70 · 80", inorder);
     check("插入后画布有 8 个节点", doc.querySelectorAll("#canvas circle").length === 8,
       "circles=" + doc.querySelectorAll("#canvas circle").length);
+
+    // 回退到 attach 之前再走一遍：不应该二次插入 65
+    doc.getElementById("btn-prev").click();
+    check("回到上一步（land）后画面回到挂接前", doc.querySelectorAll("#canvas circle").length === 7,
+      "circles=" + doc.querySelectorAll("#canvas circle").length);
+    doc.getElementById("btn-next").click();
+    check("再次 attach 仍只有 8 个节点（不重复插入）", doc.querySelectorAll("#canvas circle").length === 8,
+      "circles=" + doc.querySelectorAll("#canvas circle").length);
+    check("重播后中序仍正确", doc.getElementById("panel-inorder").textContent === "20 · 30 · 40 · 50 · 60 · 65 · 70 · 80",
+      doc.getElementById("panel-inorder").textContent);
+
+    // 树规模滑块：改到 11 后随机重生成，节点数应立刻变成 11
+    const size = doc.getElementById("param-size");
+    size.value = "11";
+    size.dispatchEvent(new win.Event("input"));
+    check("树规模滑块重生成 11 个节点", doc.querySelectorAll("#canvas circle").length === 11,
+      "circles=" + doc.querySelectorAll("#canvas circle").length);
+    check("重生成后中序仍递增", /✓/.test(doc.getElementById("inorder-check").textContent),
+      doc.getElementById("inorder-check").textContent);
 
     console.log(pass + " 项通过" + (fails.length ? "，" + fails.length + " 项失败：" : "，全部通过"));
     fails.forEach((f) => console.log("  ✗ " + f));

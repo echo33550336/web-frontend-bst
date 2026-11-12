@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="二叉搜索树交互式学习站点：用参数探索、步进推演、对照比较三种交互，讲清插入比较路径、删除双孩子与插入顺序导致的树退化。">
   <title>二叉搜索树 · 有序性是怎么被维护的</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,24 +14,25 @@
       <h1>二叉搜索树：有序性是怎么被维护的</h1>
       <p class="subtitle">三个难点，三种交互，串成一条学习路径：路径决定位置 → 删除不动规则 → 顺序决定形状。</p>
       <p class="howto">建议按 1 → 2 → 3 的顺序看。每一页都可以暂停、单步、重置。</p>
+      <p><a class="cta" href="d1.html">开始：难点 1 · 插入比较路径 →</a></p>
       <p id="progress" class="progress-note" hidden></p>
     </header>
 
     <div class="cards">
       <a class="card-link" href="d1.html">
-        <span class="type">参数探索型</span>
+        <span class="type">参数探索型 · 约 2 分钟</span>
         <h3>① 插入时的比较路径</h3>
         <p>拖动插入值，看区间怎么收窄、候选位置怎么从 8 个掉到 1 个——路径唯一，位置就被确定了。</p>
       </a>
 
       <a class="card-link" href="d2.html">
-        <span class="type">步进推演型 + 操作判定</span>
+        <span class="type">步进推演型 + 操作判定 · 约 4 分钟</span>
         <h3>② 删除双孩子：为什么用后继替换</h3>
         <p>一步一步走：进右子树、一路向左、摘下后继、挂到被删位置。中途要你选候选，选错当场演示后果。</p>
       </a>
 
       <a class="card-link" href="d3.html">
-        <span class="type">对照比较型</span>
+        <span class="type">对照比较型 · 约 3 分钟</span>
         <h3>③ 插入顺序与树退化</h3>
         <p>同一批数据，两棵树同步长高。随机顺序和升序插入，树高和查找步数差多少，一眼看出来。</p>
       </a>
@@ -42,6 +44,13 @@
       <p>于是三个难点其实是同一个问题的三个侧面：<b>插入</b>把新值按比较路径放到唯一的位置；<b>删除</b>把节点摘掉，却要让这条规则继续成立；<b>插入顺序</b>不影响规则，但决定了这棵树好不好用。</p>
       <p class="hint">知识内容全部在 <code>data/</code> 下的 JSON 里，页面只负责渲染与交互。</p>
     </section>
+
+    <footer class="site-footer">
+      <a href="../docs/期末报告.md">期末报告</a>
+      <a href="../docs/演示脚本.md">演示脚本</a>
+      <a href="../README.md">README</a>
+      <a href="https://azurehyu.gitee.io/web-frontend-bst/" target="_blank" rel="noopener">在线访问（Gitee Pages）</a>
+    </footer>
   </div>
   <script src="js/common.js"></script>
   <script>
@@ -49,12 +58,14 @@
     (function () {
       if (!window.App || !App.progress) return;
       var pages = ["d1", "d2", "d3"];
+      var names = { d1: "① 插入路径", d2: "② 删除双孩子", d3: "③ 插入顺序" };
       var s = App.progress.summary(pages);
       if (!s.done.length) return;
       var note = document.getElementById("progress");
       note.hidden = false;
       note.textContent = "学习进度：" + s.done.length + " / " + s.total + " 个难点已经探索过（" +
-        s.done.join("、") + "）。换台设备或清空浏览器数据会重置。";
+        s.done.map(function (key) { return names[key] || key; }).join("、") +
+        "）。换台设备或清空浏览器数据会重置。";
       s.done.forEach(function (key) {
         var link = document.querySelector('a[href="' + key + '.html"]');
         if (link) link.classList.add("visited");

@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="难点 2：用八步快照推演删除双孩子节点——进入右子树、一路向左找到中序后继、摘挂替换，并在关键一步做 A/B/C 判定。">
   <title>难点 2 · 删除双孩子节点</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -153,34 +154,34 @@
 
     <div class="layout">
       <section class="stage">
-        <svg id="canvas" role="img" aria-label="二叉搜索树：高亮显示删除路径、替换节点、待摘位置与待挂位置"></svg>
+        <svg id="canvas" role="group" aria-label="二叉搜索树：高亮显示删除路径、替换节点、待摘位置与待挂位置"></svg>
+        <div class="transport">
+          <button id="btn-play" class="primary">播放</button>
+          <button id="btn-pause">暂停</button>
+          <button id="btn-prev">上一步</button>
+          <button id="btn-next">下一步</button>
+          <button id="btn-reset">重置</button>
+          <p id="status">—</p>
+        </div>
       </section>
 
       <aside class="side">
         <div class="card">
-          <h2>参数与播放</h2>
+          <h2>参数</h2>
           <div id="params"></div>
-          <div class="controls">
-            <button id="btn-play" class="primary">播放</button>
-            <button id="btn-pause">暂停</button>
-            <button id="btn-prev">上一步</button>
-            <button id="btn-next">下一步</button>
-            <button id="btn-reset">重置</button>
-          </div>
-          <p id="status">—</p>
         </div>
 
         <div class="card">
           <h2>这一步在做什么</h2>
           <p id="step-title">—</p>
-          <p id="panel-step">—</p>
+          <p id="panel-step" aria-live="polite">—</p>
         </div>
 
         <div class="card" id="panel-choose" hidden>
           <h2 id="choose-heading">A / B / C 判定</h2>
           <p id="choose-prompt"></p>
           <div id="choose-options" class="choose-options"></div>
-          <p id="panel-feedback" hidden></p>
+          <p id="panel-feedback" hidden role="status" aria-live="polite"></p>
           <p id="choose-hint"></p>
         </div>
 

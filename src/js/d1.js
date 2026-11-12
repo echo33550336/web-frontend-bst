@@ -16,7 +16,6 @@
   }
   if (!Tree) throw new Error("tree.js 必须先于 d1.js 加载");
 
-  var GEO = Tree.GEO;
   var makeNode = Tree.makeNode;
   var insertNode = Tree.insertNode;
   var buildTree = Tree.buildTree;
@@ -36,13 +35,25 @@
     var panelInterval = document.getElementById("panel-interval");
     var panelCandidates = document.getElementById("panel-candidates");
     var panelInorder = document.getElementById("panel-inorder");
+    var inorderCheck = document.getElementById("inorder-check");
     var panelStep = document.getElementById("panel-step");
+    var panelStepTitle = document.getElementById("panel-step-title");
     var statusEl = document.getElementById("status");
     var paramsBox = document.getElementById("params");
     var btnInsert = document.getElementById("btn-insert");
     var btnRegen = document.getElementById("btn-regen");
 
-    var state = { root: null, data: null, value: 0, speed: 2, steps: [], hops: [] };
+    // baseRoot 是「这一轮演示开始时」的树：重播时仍从它出发，避免把已插入的值算成重复。
+    var state = {
+      root: null,
+      baseRoot: null,
+      data: null,
+      value: 0,
+      size: 7,
+      speed: 2,
+      steps: [],
+      hops: [],
+    };
     var playback = new App.Playback({
       onRender: function (step) {
         renderStep(step);
@@ -55,15 +66,19 @@
     App.loadJSON("../data/d1.json")
       .then(function (data) {
         state.data = data;
-        ["page-title:title", "page-subtitle:subtitle", "page-howto:howToUse"].forEach(function (pair) {
-          var parts = pair.split(":");
-          var node = document.getElementById(parts[0]);
-          if (node) node.textContent = data[parts[1]];
+        var byKey = {};
+        data.params.forEach(function (p) {
+          byKey[p.key] = p;
         });
+        state.value = byKey.value ? byKey.value.default : 65;
+        state.size = byKey.size ? byKey.size.default : data.tree.initial.length;
+        state.speed = byKey.speed ? byKey.speed.default : 2;
+
         state.root = buildTree(data.tree.initial);
+        state.baseRoot = state.root;
+
+        applyTexts(data);
         buildParams(data, paramsBox, state, onParamChange);
-        state.value = data.params[0].default;
-        state.speed = data.params[1].default;
         bindButtons();
         refreshPreview();
         updateInorder();
@@ -73,9 +88,26 @@
         App.showError(document.getElementById("panel-step"), err);
       });
 
+    function setText(id, text) {
+      var node = document.getElementById(id);
+      if (node && text) node.textContent = text;
+    }
+
+    function applyTexts(data) {
+      setText("page-title", data.title);
+      setText("page-subtitle", data.subtitle);
+      setText("page-howto", data.howToUse);
+      var labels = data.labels || {};
+      setText("card-params-title", labels.params);
+      setText("card-interval-title", labels.interval);
+      setText("card-inorder-title", labels.inorder);
+      setText("card-step-title", labels.step);
+      setText("candidates-label", labels.candidates);
+    }
+
     function buildParams(data, box, st, onChange) {
       App.clear(box);
-      data.params.forEach(function (p, idx) {
+      data.params.forEach(function (p) {
         var row = App.el("div", { class: "param" });
         var label = App.el("label", { text: p.label });
         var input = App.el("input", {
@@ -90,7 +122,7 @@
         label.setAttribute("for", "param-" + p.key);
         input.addEventListener("input", function () {
           readout.textContent = input.value;
-          onChange(idx, Number(input.value));
+          onChange(p.key, Number(input.value));
         });
         row.appendChild(label);
         row.appendChild(input);
@@ -99,13 +131,16 @@
       });
     }
 
-    function onParamChange(idx, v) {
-      if (idx === 0) {
+    function onParamChange(key, v) {
+      if (key === "value") {
         state.value = v;
         refreshPreview();
-      } else {
+      } else if (key === "speed") {
         state.speed = v;
         playback.setSpeed(v);
+      } else if (key === "size") {
+        state.size = v;
+        regenerate();
       }
     }
 
@@ -123,23 +158,45 @@
         playback.next();
       });
       document.getElementById("btn-reset").addEventListener("click", function () {
+        // 重置回到这一轮演示开始时的树（撤销 attach 步的挂接）
+        state.root = state.baseRoot || state.root;
         playback.reset();
+        updateInorder();
       });
       btnInsert.addEventListener("click", function () {
         if (hasValue(state.root, state.value)) {
-          panelStep.textContent = "这个值已经存在，BST 里不重复插入。换一个数试试。";
+          panelStepTitle.textContent = state.data.titles.set;
+          panelStep.textContent = state.data.messages.duplicate;
           return;
         }
-        state.steps = buildSteps(state.root, state.value);
+        state.baseRoot = state.root;
+        state.steps = buildSteps(state.baseRoot, state.value);
         playback.setSteps(state.steps);
         playback.play();
       });
-      btnRegen.addEventListener("click", function () {
-        state.root = randomTree(7);
-        playback.setSteps([]);
-        refreshPreview();
-        updateInorder();
-      });
+      btnRegen.addEventListener("click", regenerate);
+    }
+
+    /** 深拷贝一棵树：插入会原地改节点，重播时必须从「演示开始时的树」复制一份 */
+    function cloneTree(n) {
+      if (!n) return null;
+      var copy = makeNode(n.value);
+      copy.left = cloneTree(n.left);
+      copy.right = cloneTree(n.right);
+      return copy;
+    }
+
+    function regenerate() {
+      playback.pause();
+      state.root = randomTree(state.size);
+      state.baseRoot = state.root;
+      playback.setSteps([]);
+      refreshPreview();
+      updateInorder();
+      if (state.data) {
+        panelStepTitle.textContent = state.data.labels.preview || "";
+        panelStep.textContent = App.format(state.data.messages.regen, { size: state.size });
+      }
     }
 
     function randomTree(n) {
@@ -152,22 +209,37 @@
     }
 
     function updateInorder() {
-      panelInorder.textContent = inorder(state.root).join(" · ");
+      var seq = inorder(state.root);
+      panelInorder.textContent = seq.join(" · ");
+      var ok = true;
+      for (var i = 1; i < seq.length; i += 1) {
+        if (seq[i - 1] >= seq[i]) {
+          ok = false;
+          break;
+        }
+      }
+      if (inorderCheck && state.data) {
+        inorderCheck.textContent = ok ? state.data.messages.inorderOk : state.data.messages.inorderBad;
+      }
     }
 
     /** 拖动滑动条时：不算"步骤"，只是一次完整的路径预览 */
     function refreshPreview() {
-      var p = pathFor(state.root, state.value);
+      state.baseRoot = state.root;
+      var p = pathFor(state.baseRoot, state.value);
       state.hops = p.hops;
-      state.steps = buildSteps(state.root, state.value);
+      state.steps = buildSteps(state.baseRoot, state.value);
       draw(p.hops.length - 1, state.value, false);
       fillIntervalPanel(p.hops, p.hops.length - 1);
       panelCandidates.textContent = String(countSlots(state.root, p.lo, p.hi));
+      panelStepTitle.textContent = state.data ? state.data.labels.preview || "" : "";
       panelStep.textContent = p.duplicate
-        ? "这个值已经存在，BST 里不重复插入。换一个数试试。"
-        : "拖动滑块会实时预览落点；点「插入演示」看它一步步落下去。";
+        ? state.data ? state.data.messages.duplicate : "这个值已经存在。"
+        : state.data ? state.data.messages.dragHint : "";
       playback.setSteps(state.steps, true);
-      statusEl.textContent = "预览中 · 共 " + state.steps.length + " 步";
+      statusEl.textContent = state.data
+        ? App.format(state.data.messages.preview, { count: state.steps.length })
+        : "预览中 · 共 " + state.steps.length + " 步";
     }
 
     /* ---- 步骤序列：设定 → 每跳一步 → 落到空位 → 挂接校验 ---- */
@@ -182,17 +254,26 @@
       return steps;
     }
 
+    function setStepTitle(kind, vars) {
+      if (!state.data || !state.data.titles) return;
+      var tpl = state.data.titles[kind];
+      if (tpl) panelStepTitle.textContent = App.format(tpl, vars || {});
+    }
+
     function renderStep(step) {
       if (!step) return;
+      // 回退到 attach 之前的步骤时，把画面恢复到「还没挂接」的树
+      if (step.kind !== "attach" && state.baseRoot) state.root = state.baseRoot;
       var d = state.data;
-      var root = state.root;
+      var root = state.baseRoot || state.root;
       var p = pathFor(root, state.value);
 
       if (step.kind === "attach") {
-        state.root = insertNode(root, state.value);
+        state.root = insertNode(cloneTree(root), state.value);
         updateInorder();
         draw(-1, null, true);
         panelCandidates.textContent = "0";
+        setStepTitle("attach", { value: state.value });
         panelStep.textContent = App.format(d.steps.attach, {
           value: state.value,
           inorder: inorder(state.root).join(" · "),
@@ -204,6 +285,7 @@
         draw(-1, state.value, false);
         fillIntervalPanel([], -1);
         panelCandidates.textContent = String(countSlots(root, -Infinity, Infinity));
+        setStepTitle("set", { value: state.value });
         panelStep.textContent = App.format(d.steps.set, {
           value: state.value,
           interval: intervalText(-Infinity, Infinity),
@@ -219,6 +301,7 @@
         var before = countSlots(root, h.lo, h.hi);
         var after = countSlots(root, h.nextLo, h.nextHi);
         panelCandidates.textContent = String(after);
+        setStepTitle("hop", { node: h.node.value });
         panelStep.textContent = App.format(d.steps.hop, {
           value: state.value,
           node: h.node.value,
@@ -236,6 +319,7 @@
         draw(p.hops.length, state.value, false);
         fillIntervalPanel(p.hops, p.hops.length - 1);
         panelCandidates.textContent = "1";
+        setStepTitle("land", { value: state.value });
         panelStep.textContent = App.format(d.steps.land, { value: state.value });
       }
     }
