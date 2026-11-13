@@ -642,3 +642,107 @@ body.matrix ::-webkit-scrollbar-thumb:hover { background: #2f5a42; }
 
 
 
+
+/* ============================================================
+   设计检查修复：字号收敛 / 点击区域 / 转场动画
+   ============================================================ */
+
+/* 统一字号层级：12 / 14 / 15 / 16 / 32 */
+body.matrix { font-size: 15px; }
+body.matrix .topbar,
+body.matrix .topbar a,
+body.matrix .crumb { font-size: 14px; }
+body.matrix .subtitle { font-size: 15px; }
+body.matrix .param label { font-size: 14px; }
+body.matrix button { font-size: 14px; }
+body.matrix .step-list li,
+body.matrix .steps li,
+body.matrix #panel-steps li { font-size: 14px; }
+body.matrix .card h2 { font-size: 15px; }
+body.matrix .cards + .card h2 { font-size: 16px; }
+body.matrix .metric-label,
+body.matrix .caption,
+body.matrix #chart-note,
+body.matrix .metric-unit { font-size: 12px; }
+body.matrix .chart-title { font-size: 14px; }
+body.matrix #chart text { font-size: 12px; }
+body.matrix .metric-value,
+body.matrix .mv { font-size: 16px; }
+
+/* 折线说明限制每行字符数（≤45） */
+body.matrix #chart-note {
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+/* 滑块的点击 / 触摸高度不小于 24px */
+body.matrix input[type="range"] {
+  height: 26px;
+  min-height: 26px;
+  cursor: pointer;
+}
+
+/* —— 页面转场 —— */
+@view-transition { navigation: auto; }
+
+@keyframes vt-out {
+  to { opacity: 0; transform: translateY(-6px) scale(0.996); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(10px) scale(1.004); }
+}
+::view-transition-old(root) {
+  animation: vt-out 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+body.matrix .wrap {
+  animation: page-enter 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+body.matrix .cards > *,
+body.matrix .layout > * {
+  animation: card-rise 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+body.matrix .cards > *:nth-child(2),
+body.matrix .layout > *:nth-child(2) { animation-delay: 70ms; }
+body.matrix .cards > *:nth-child(3) { animation-delay: 140ms; }
+
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+body.matrix .is-updating { animation: step-in 300ms ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  body.matrix .wrap,
+  body.matrix .cards > *,
+  body.matrix .layout > *,
+  body.matrix .is-updating { animation: none !important; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
+
+/* 消除剩余 13px / 10.5px / 11px 字号，收敛为 12 / 14 / 15 / 16 / 32 */
+body.matrix .readout,
+body.matrix .check-line,
+body.matrix .candidates-line,
+body.matrix .step-title,
+body.matrix select,
+body.matrix select option { font-size: 14px; }
+body.matrix .node-interval,
+body.matrix .node-tag { font-size: 12px; }
+
+body.matrix .param .readout { font-size: 14px; }
