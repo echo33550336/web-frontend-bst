@@ -28,7 +28,7 @@ node tools/serve.js 8000
 - 三个难点的语义颜色沿用正式版：路径/后继 = 亮绿，新节点 = 青色，错误/断链 = 珊瑚红，
   候选项 A/B/C = 薄荷绿 / 紫 / 珊瑚红；d3 左树与左折线统一青色，右树与右折线亮绿。
 - 尊重 `prefers-reduced-motion`：开启减少动态时，极光、入场与转场动画全部停止。
-- 转场：页面间使用 View Transitions（淡出上移 / 淡入上浮），页面内 `.wrap` 与卡片有依次入场动画，步骤文字变化时由 `transition.js` 触发一次 300ms 的淡入上浮。
+- 转场：页面间使用 View Transitions（淡出上移 / 淡入上浮），页面内 `.wrap` 与卡片有依次入场动画，步骤文字变化时由 `transition.js` 触发一次 300ms 的淡入上浮。\n- 参考 awwwards / 21st.dev / onepagelove / siteinspire 等站点加入：英雄区局部光晕、放大主标题、画布「浮窗」化（顶部三色圆点 + 发丝线）、首页 bento 不对称卡片、细颗粒质感、卡片 hover 上浮、顶部阅读进度，以及画布内的跟随光斑（`effects.js`，仅在桌面且未开启减少动态时启用）。
 
 ## 与正式版的差别（只有视觉层）
 
@@ -45,7 +45,7 @@ node tools/serve.js 8000
 matrix/
   index.html   d1.html   d2.html   d3.html    ← 由 src/ 复制并替换资源路径
   matrix.css                                  ← 主题覆盖层（含背景动效与转场）
-  transition.js                               ← 步骤文字变化的轻量转场（可选）
+  transition.js                               ← 步骤文字变化的轻量转场（可选）\n  effects.js                                  ← 阅读进度与画布跟随光斑（装饰，可删除）
   css/style.css                               ← src/css/style.css 的副本
   js/common.js  tree.js  d1.js  d2.js  d3.js  ← src/js/* 的副本
   data/d1.json  d2.json  d3.json              ← 仓库 data/* 的副本
@@ -62,5 +62,6 @@ matrix/
 - 极光是 4 个 `filter: blur()` 的大色带，桌面端很轻；低端移动设备上模糊会略耗 GPU，
   已在 `prefers-reduced-motion` 下停用动画。
 - 深色主题下截图/打印建议用浅色正式版；正式提交与演示默认仍用 `src/`。
+
 
 
