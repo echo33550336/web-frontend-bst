@@ -76,12 +76,12 @@ Lighthouse 四页明细（Edge 157 headless，移动模拟，`docs/img/lh-*.repo
   4. P3：密集树按当前步节点数自动隐藏节点数字（`layoutGeoFor` 半径 < 8），属于刻意取舍，JSON 中有提示文案。
   5. P3：d3 中途两树各插入前 i 个（右树最小的 i 个），到第 n 步才是同一批数的完整对照；文案已在页内说明。
 - 原因：真实浏览器/网络环境限制已通过本轮 headless Edge + Lighthouse 解决；节点数字与中途集合差异是教学演示的取舍。
-- 第 15—16 周怎么收尾：①在本地 Chrome 跑 Lighthouse（Performance / Accessibility / Best Practices），把分数与 FCP 截图补到本报告；②在三种宽度下截图检查排版；③给折线加「树高 / 平均步数 / 最坏步数」切换（复用 `chartSeries` 的 metricKey）；④部署 Gitee Pages 后用线上地址复测。
+- 第 15—16 周怎么收尾：①在本地 Chrome 跑 Lighthouse（Performance / Accessibility / Best Practices），把分数与 FCP 截图补到本报告；②在三种宽度下截图检查排版；③给折线加「树高 / 平均步数 / 最坏步数」切换（复用 `chartSeries` 的 metricKey）；④部署 GitHub Pages 后用线上地址复测。
 
 ## 6. 下一迭代计划（第 15—16 周）
 
 - 三页串成一条学习路径，首页可导航：首页已有三张入口卡 + 学习进度徽标；补「按 1→2→3 顺序」的引导文案与上一页/下一页导航（三页 topbar 已有）。
-- 部署到 Gitee Pages：仓库根目录已可作为静态站点；开启 Pages 后验证 `src/index.html`、`data/*.json` 的 fetch 路径。
+- 部署到 GitHub Pages：Gitee Pages 已不可用，代码推到 GitHub 后由 Pages 发布根目录；已上线 `https://echo33550336.github.io/web-frontend-bst/`，并验证 `src/index.html`、`data/*.json` 的 fetch 路径（HTTP 200）。
 - 演示视频脚本：①d1 拖到 65，讲区间收窄与候选从 8→1；②d2 双孩子删除，故意选 C 展示断链，再选 A 走完摘下—挂接；③d3 把有序程度拉到 0 与 100 对比，重排一次，读树高与折线差。
 
 ## 7. 第 15—16 周收尾记录（最终）
@@ -96,7 +96,7 @@ Lighthouse 四页明细（Edge 157 headless，移动模拟，`docs/img/lh-*.repo
 - **折线读数切换落地**：`data/d3.json` 的 `chart.metricOptions` 定义三档（树高 / 平均查找步数 / 最坏查找步数），页面新增 `#chart-metric` 下拉框；切换只重画折线（复用 `chartSeries` + `state.lastSt`），不动当前步、树和读数卡。P2 遗留项关闭。
 - **三页导航确认**：首页三张入口卡按 ①→②→③ 排列并有「建议按 1 → 2 → 3 顺序看」与「开始：难点 1」主按钮；`d1/d2/d3` 的 topbar 均有首页与另外两个难点的直达链接，`d1` 顶部另有「难点 1 / 3」计数。
 - **首页进度文案**：把 `d1/d2/d3` 的键名换成「① 插入路径 / ② 删除双孩子 / ③ 插入顺序」，读起来更像学习路径。
-- **可复现的本地服务**：新增 `tools/serve.js`（零依赖 Node 静态服务器），`npm run serve` 即可；保留 `npm run serve:py` 给 Python 环境；根目录新增 `index.html` 跳转页，Gitee Pages 的裸域名也能进首页。
+- **可复现的本地服务**：新增 `tools/serve.js`（零依赖 Node 静态服务器），`npm run serve` 即可；保留 `npm run serve:py` 给 Python 环境；根目录新增 `index.html` 跳转页，GitHub Pages 的裸域名也能进首页。
 - **期末材料**：新增 `docs/期末报告.md`（项目概述、三个难点、架构、测试与性能、AI 使用、部署、不足）与 `docs/演示脚本.md`（4—5 分钟分镜、口播要点、备用方案），覆盖第 16 周「仓库 + 期末报告 + 演示视频 + 部署链接」中的报告与脚本部分，视频待按脚本录制。
 
 ### 7.2 测试
@@ -107,15 +107,22 @@ Lighthouse 四页明细（Edge 157 headless，移动模拟，`docs/img/lh-*.repo
 ### 7.3 仍未完成（受环境/人工操作限制）
 
 - **演示视频**：需录屏环境，按 `docs/演示脚本.md` 的分镜录制；本会话无录屏能力，脚本已修正到与当前界面一致。
-- **Gitee Pages 部署**：需在仓库网页端手动开通/更新；实测 `https://azurehyu.gitee.io/web-frontend-bst/` 目前 404，README 与期末报告均已按「待部署」表述，不把它写成已上线。
+- **Gitee Pages → GitHub Pages**：Gitee Pages 服务已不可用；代码镜像到 `echo33550336/web-frontend-bst`，由 GitHub Pages 发布 `master` 根目录，线上地址 `https://echo33550336.github.io/web-frontend-bst/`。已实测根跳转页、`src/*.html`、`js/css` 与 `data/*.json` 均返回 200；以后 `git push` 后约 1 分钟自动发布。
 - **屏幕阅读器实测**：只做了语义与 `aria-live`/焦点管理，未在真实读屏软件中走查。
 
 ### 7.4 第 4 轮核对与验收（最终）
 
 - **真实浏览器验收**：headless Edge 157 + CDP 截图，1440/1024/680 三种宽度；截图在 `docs/img/`，1024/680 下 `.layout` 正确塌成单列、控制条在画布下、无横向溢出。
-- **Lighthouse 四页实测**（移动模拟）：首页 100/100/100/100（CLS 0，FCP 1.0s），d1 99/100/100/100（CLS 0.063），d2 97/100/100/100（CLS 0.107），d3 99/100/100/100（CLS 0.05）；报告在 `docs/img/lh-*.report.json`。审计驱动修复：favicon data URI（消除 404）、`<main>` 与标题层级、标题区按最终文案预留高度、SVG 初始 `viewBox` 与 `.stage` 最小高度降 CLS。
+- **Lighthouse 四页实测**（移动模拟）：首页 100/100/100/100（CLS 0，FCP/LCP 0.9s），d1 99/100/100/100（CLS 0.063），d2 97/100/100/100（CLS 0.107），d3 99/100/100/100（CLS 0.05）；报告在 `docs/img/lh-*.report.json`。审计驱动修复：favicon data URI（消除 404）、`<main>` 与标题层级、标题区按最终文案预留高度、SVG 初始 `viewBox` 与 `.stage` 最小高度降 CLS。
 - **d3 视觉修复**：新增 `layoutGeoFor(count)` 按当前步节点数分配间距/半径、`fontFor` 自适应字号；紧凑模式改为 `radius < 8`（n=20 第 1 步仍显示数字，密集时自动隐去并给出 JSON 提示）；折线纵轴刻度与轴标题分离，x 轴刻度 1/10/20 不再与「已插入个数」重叠。
 - **d2 修复**：A/B/C 中 C 与 A 或 B 同节点时只保留两个选项（判定保持唯一）；后继/前驱恰为直接孩子时改用 `detachDirect`/`attachDirect` 文案（父指针与保留/接上孩子方向正确）；choose 未作答时画布节点不可点；选目标后焦点回到同值节点；步骤列表支持 Tab + Enter/Space 并标 `aria-current`。
 - **d1 修复**：重复值不再生成播放步骤并禁用播放/上一步/下一步（面板显示「已存在」提示）；路径边高亮只点亮连续走过的边；从 attach 步回退时中序面板恢复为当前树；拖动预览/区间/候选/中序加 `aria-live`。
 - **工具与文档**：新增 `tools/bench.js` 与 `npm run bench`；README 更新体积（约 172.1 KiB）、Lighthouse 分数、测试计数与 bench 命令；`docs/演示脚本.md` 修正三处与界面不符的描述；新增截图与 Lighthouse 证据引用。
 - **最终测试**：纯函数 14 / 28 / 549 / 154，冒烟 28 / 80 / 131，共 7 个测试文件，`npm run test:all` 退出码 0。
+
+### 7.5 部署切换（Gitee Pages → GitHub Pages）
+
+- Gitee Pages 已不可用（仓库网页端不再提供入口），因此把代码镜像到 `https://github.com/echo33550336/web-frontend-bst`，用 GitHub Pages 发布 `master` 根目录。
+- 线上地址：`https://echo33550336.github.io/web-frontend-bst/`（根 `index.html` 自动跳 `src/index.html`）。
+- 已验证：首页、`src/d1.html`、`src/d2.html`、`src/js/*.js`、`src/css/style.css`、`data/d1.json`、`data/d2.json` 均 HTTP 200；站点无构建、无外部依赖，Pages 直接可用。
+- 更新流程：`git push` 到 GitHub `master` 后约 1 分钟自动发布；Gitee 仓库继续作为镜像保留。

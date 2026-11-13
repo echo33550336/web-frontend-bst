@@ -1,7 +1,8 @@
 # 二叉搜索树：有序性是怎么被维护的
 
 > Web 前端开发课程项目 · 个人项目 · 第 9—16 周
-> 仓库：https://gitee.com/AzureHyu/web-frontend-bst ｜ 在线访问（Gitee Pages）：https://azurehyu.gitee.io/web-frontend-bst/ —— 需先在仓库网页端开通 Pages，当前尚未开通，直接访问会 404；本地入口见「怎么跑起来」。
+> 仓库：https://gitee.com/AzureHyu/web-frontend-bst （镜像：https://github.com/echo33550336/web-frontend-bst）
+> 在线访问：https://echo33550336.github.io/web-frontend-bst/ ｜ 本地入口见「怎么跑起来」
 
 三个难点，三种交互，串成一条学习路径：
 
@@ -24,24 +25,27 @@ python -m http.server 8000    # 等价于 npm run serve:py
 
 `tools/serve.js` 只做三件事：按路径读文件、给正确的 MIME、把 `/` 指到 `src/index.html`；不依赖任何 npm 包，也不需要构建。
 
-## 部署到 Gitee Pages
+## 部署（GitHub Pages，已上线）
 
-站点是纯静态文件（HTML/CSS/JS/JSON），没有构建步骤，Pages 根目录直接指向仓库根即可：
+Gitee Pages 已不可用，站点改为 GitHub Pages 托管，线上地址：
 
-1. 把 `master` 分支推到 Gitee（仓库地址见文首）。
-2. 打开仓库网页 →「服务」→「Gitee Pages」。
-3. 部署分支选 `master`，部署目录留空（根目录）；如页面要求实名认证，先完成认证。
-4. 部署成功后入口是 `https://azurehyu.gitee.io/web-frontend-bst/`：根目录 `index.html` 会自动跳转到 `src/index.html`；也可以直接访问 `.../src/index.html`。
-5. 之后每次更新代码，需要在 Pages 页面点一次「更新」才会重新发布。
+**https://echo33550336.github.io/web-frontend-bst/**
 
-> 注意：Gitee Pages 需要在网页端手动开通/更新，`git push` 本身不会触发部署；Gitee Pages 不涉及 Jekyll 构建，纯静态文件直接发布。
+站点是纯静态文件（HTML/CSS/JS/JSON），没有构建步骤，Pages 直接发布仓库根目录：
+
+1. 推送到 GitHub 仓库 `echo33550336/web-frontend-bst` 的 `master` 分支。
+2. 仓库 Settings → Pages → Source 选 `Deploy from a branch`，Branch 选 `master`、目录选 `/ (root)`（当前已配置好）。
+3. 根目录 `index.html` 会自动跳转到 `src/index.html`；也可以直接访问 `.../web-frontend-bst/src/index.html`。
+4. 之后每次 `git push`，GitHub Pages 会在约 1 分钟内自动重新发布，不需要手动点「更新」。
+
+> Gitee 仓库继续作为代码镜像保留；本地开发用 `npm run serve` 预览，与线上行为一致。
 
 ## 目录结构
 
 ```
 web-frontend-bst/
 ├─ README.md
-├─ index.html              根目录跳转页：GitHub/Gitee Pages 入口，自动进 src/index.html
+├─ index.html              根目录跳转页：GitHub Pages 入口，自动进 src/index.html
 ├─ docs/
 │  ├─ 开题说明.md          三个难点 + 三种交互 + 迭代计划
 │  ├─ 选题自检.md          七问自查表
@@ -92,7 +96,7 @@ web-frontend-bst/
 - [x] 三页串成一条学习路径的期末演示脚本（`docs/演示脚本.md`，含分镜与备用方案）与期末报告（`docs/期末报告.md`）
 - [x] 折线读数切换（树高 / 平均查找步数 / 最坏查找步数，仍由 JSON 配置）
 - [x] Lighthouse 体检（移动模拟）：首页 100/100/100/100（CLS 0，FCP/LCP 0.9s），d1 99/100/100/100（CLS 0.063），d2 97/100/100/100（CLS 0.107），d3 99/100/100/100（CLS 0.05）；报告在 `docs/img/lh-*.report.json`，截图在 `docs/img/`
-- [ ] 部署到 Gitee Pages（操作步骤已写入上节，需在仓库网页端手动开通/更新；当前尚未开通，线上地址暂为 404）
+- [x] 部署到 GitHub Pages：https://echo33550336.github.io/web-frontend-bst/ （Gitee Pages 已不可用，已切换托管；GitHub 推送后约 1 分钟自动发布）
 
 站点体积约 172 KiB（`src/` 156.4 KB + `data/` 19.9 KB），无构建、无运行时依赖。`npm run bench` 可复现关键路径的 Node 基准（最慢项为 2000 次树查找合计约 0.98 ms，远低于一帧 16.7 ms）。
 
@@ -114,7 +118,7 @@ npm run bench   # 可选：Node 基准，输出关键路径耗时
 - 演示脚本（4—5 分钟）：`docs/演示脚本.md`
 - 迭代报告：`docs/iteration-1.md`、`docs/iteration-2.md`
 - 截图与 Lighthouse 报告：`docs/img/`
-- 部署入口：`https://azurehyu.gitee.io/web-frontend-bst/`（Gitee Pages 开通后生效，当前尚未开通）
+- 部署入口：`https://echo33550336.github.io/web-frontend-bst/`（GitHub Pages，已上线）
 - 演示视频：待录制（按 `docs/演示脚本.md` 的分镜；沙箱内无录屏能力，需在有图形界面的环境完成）
 
 也可以单独跑，例如：
