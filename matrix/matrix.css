@@ -3,15 +3,15 @@
    背景特效为纯 CSS：缓慢漂移的极光色团 + 细网格 + 颗粒，无需 JS。 */
 
 :root {
-  --ink: #eef5f0;
-  --sub: #a7b8ad;
+  --ink: #f4faf7;
+  --sub: #b7c9be;
   --line: rgba(255, 255, 255, 0.08);
-  --bg: #050a08;
-  --card: rgba(9, 17, 13, 0.82);
-  --accent: #3ecf8e;
-  --accent-strong: #2fb277;
-  --accent-soft: rgba(62, 207, 142, 0.12);
-  --path: #4ade80;
+  --bg: #070f0b;
+  --card: rgba(12, 22, 17, 0.84);
+  --accent: #49dc9b;
+  --accent-strong: #38c289;
+  --accent-soft: rgba(73, 220, 155, 0.16);
+  --path: #58e88f;
   --new: #5eead4;
   --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px rgba(0, 0, 0, 0.4);
@@ -20,11 +20,11 @@
   --radius-lg: 18px;
 }
 
-html { background: #030705; }
+html { background: #050b08; }
 
 body.matrix {
   position: relative;
-  background: #040807;
+  background: #070f0b;
   color: var(--ink);
   color-scheme: dark;
   font-family: "Inter", "SF Pro Text", -apple-system, "Segoe UI",
@@ -42,6 +42,7 @@ body.matrix {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  animation: aurora-hue 36s ease-in-out infinite alternate;
 }
 .aurora span {
   position: absolute;
@@ -49,7 +50,7 @@ body.matrix {
   border-radius: 999px;
   filter: blur(56px) saturate(125%);
   mix-blend-mode: screen;
-  opacity: 0.7;
+  opacity: 0.8;
   will-change: transform;
   animation: aurora-float 32s ease-in-out infinite alternate;
 }
@@ -60,8 +61,8 @@ body.matrix {
   height: 15vw;
   min-height: 150px;
   transform: rotate(-18deg);
-  background: linear-gradient(90deg, rgba(16, 185, 129, 0.55), rgba(45, 212, 191, 0.24) 55%, transparent 82%);
-  animation-duration: 26s;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.64), rgba(45, 212, 191, 0.3) 55%, transparent 82%);
+  animation-duration: 20s;
 }
 .aurora .a2 {
   top: -12%;
@@ -70,9 +71,9 @@ body.matrix {
   height: 13vw;
   min-height: 130px;
   transform: rotate(14deg);
-  background: linear-gradient(90deg, rgba(45, 212, 191, 0.34), rgba(74, 222, 128, 0.18) 58%, transparent 84%);
-  opacity: 0.5;
-  animation-duration: 30s;
+  background: linear-gradient(90deg, rgba(45, 212, 191, 0.42), rgba(74, 222, 128, 0.24) 58%, transparent 84%);
+  opacity: 0.58;
+  animation-duration: 24s;
   animation-delay: -6s;
 }
 .aurora .a3 {
@@ -82,9 +83,9 @@ body.matrix {
   height: 18vw;
   min-height: 160px;
   transform: rotate(-26deg);
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.22), rgba(56, 189, 248, 0.16) 48%, rgba(94, 234, 212, 0.12) 66%, transparent 86%);
-  opacity: 0.5;
-  animation-duration: 34s;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.28), rgba(56, 189, 248, 0.22) 48%, rgba(94, 234, 212, 0.16) 66%, transparent 86%);
+  opacity: 0.58;
+  animation-duration: 27s;
   animation-delay: -14s;
 }
 .aurora .a4 {
@@ -94,16 +95,23 @@ body.matrix {
   height: 13vw;
   min-height: 130px;
   transform: rotate(13deg);
-  background: linear-gradient(90deg, rgba(245, 194, 107, 0.12), rgba(16, 185, 129, 0.16) 45%, rgba(45, 212, 191, 0.1) 70%, transparent 88%);
-  opacity: 0.42;
-  animation-duration: 38s;
+  background: linear-gradient(90deg, rgba(245, 194, 107, 0.16), rgba(16, 185, 129, 0.22) 45%, rgba(45, 212, 191, 0.14) 70%, transparent 88%);
+  opacity: 0.52;
+  animation-duration: 31s;
   animation-delay: -20s;
 }
 
 @keyframes aurora-float {
-  0%   { translate: -4% -2%; rotate: -2deg; scale: 1.02; }
-  50%  { translate: 3% 3%; rotate: 2deg; scale: 1.12; }
-  100% { translate: 6% -3%; rotate: -1deg; scale: 1.05; }
+  0%   { translate: -8% -4%; rotate: -3deg; scale: 1.03; }
+  50%  { translate: 6% 6%; rotate: 3deg; scale: 1.16; }
+  100% { translate: 12% -5%; rotate: -2deg; scale: 1.06; }
+}
+@keyframes aurora-hue {
+  from { filter: hue-rotate(-12deg); }
+  to   { filter: hue-rotate(20deg); }
+}
+@keyframes grid-drift {
+  to { background-position: 56px 56px, 56px 56px, center; }
 }
 
 /* 细网格 + 顶部暗角（覆盖在极光上、内容下） */
@@ -113,13 +121,14 @@ body.matrix::after {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  animation: grid-drift 56s linear infinite;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    radial-gradient(120% 85% at 50% 0%, rgba(3, 7, 5, 0.02) 0%, rgba(3, 7, 5, 0.32) 55%, rgba(3, 7, 5, 0.85) 100%);
+    radial-gradient(120% 85% at 50% 0%, rgba(3, 7, 5, 0.0) 0%, rgba(3, 7, 5, 0.22) 55%, rgba(3, 7, 5, 0.78) 100%);
   background-size: 56px 56px, 56px 56px, 100% 100%;
   background-position: center top, center top, center;
-  opacity: 0.38;
+  opacity: 0.34;
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
 }
@@ -145,7 +154,11 @@ body.matrix .topbar a {
   color: #b9cabd;
   border: 0;
   border-radius: 0;
-  padding: 2px 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 4px;
+  margin: -2px -4px;
   background: none;
   transition: color 0.2s ease;
 }
@@ -206,11 +219,11 @@ body.matrix .page-head .status-note {
 /* —— 画布 / 卡片：磨砂玻璃 —— */
 body.matrix .stage {
   background:
-    linear-gradient(180deg, rgba(16, 28, 22, 0.86), rgba(8, 15, 11, 0.94));
+    linear-gradient(180deg, rgba(24, 42, 32, 0.86), rgba(13, 23, 17, 0.94));
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(16, 28, 22, 0.86), rgba(8, 15, 11, 0.94));
+    linear-gradient(180deg, rgba(24, 42, 32, 0.86), rgba(13, 23, 17, 0.94));
   background-size: 32px 32px, 32px 32px, 100% 100%;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--radius-lg);
@@ -221,7 +234,7 @@ body.matrix .stage {
 
 body.matrix .card {
   background:
-    linear-gradient(180deg, rgba(20, 34, 26, 0.84), rgba(8, 14, 11, 0.92));
+    linear-gradient(180deg, rgba(28, 48, 36, 0.84), rgba(14, 24, 18, 0.92));
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -398,6 +411,10 @@ body.matrix .card-link.visited {
 body.matrix .card-link.visited .type { color: var(--new); border-color: rgba(94, 234, 212, 0.3); }
 
 body.matrix .cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 18px;
   background: linear-gradient(180deg, rgba(62, 207, 142, 0.16), rgba(62, 207, 142, 0.08));
   border: 1px solid rgba(62, 207, 142, 0.35);
   border-radius: 999px;
@@ -416,13 +433,24 @@ body.matrix .progress-note {
   border-radius: 10px;
 }
 body.matrix .site-footer { border-top: 1px solid var(--line); color: #8fa89a; }
-body.matrix .site-footer a { color: #b9d9c6; }
+body.matrix .site-footer a {
+  color: #c3e2cf;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
 body.matrix .site-footer a:hover { color: var(--accent); }
 body.matrix .site-footer .who { color: #7f9a8a; }
 
 /* —— 页底学习路径 —— */
 body.matrix .page-nav { border-top: 1px solid var(--line); }
 body.matrix .page-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 16px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 10px;
@@ -599,7 +627,9 @@ body.matrix ::-webkit-scrollbar-thumb:hover { background: #2f5a42; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.matrix::before { animation: none; }
+  .aurora,
+  .aurora span,
+  body.matrix::after { animation: none !important; }
   body.matrix .card-link,
   body.matrix button { transition: none; }
 }
