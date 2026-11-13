@@ -126,3 +126,11 @@ Lighthouse 四页明细（Edge 157 headless，移动模拟，`docs/img/lh-*.repo
 - 线上地址：`https://echo33550336.github.io/web-frontend-bst/`（根 `index.html` 自动跳 `src/index.html`）。
 - 已验证：首页、`src/d1.html`、`src/d2.html`、`src/js/*.js`、`src/css/style.css`、`data/d1.json`、`data/d2.json` 均 HTTP 200；站点无构建、无外部依赖，Pages 直接可用。
 - 更新流程：`git push` 到 GitHub `master` 后约 1 分钟自动发布；Gitee 仓库继续作为镜像保留。
+
+### 7.6 演示前的界面打磨
+
+- **视觉系统**：统一了页面背景渐变、卡片圆角/轻阴影、标题字号与行高、参数与读数排版；主色与路径色保持不变，只强化层级，不改变知识表达。
+- **导航与路径**：当前难点在顶栏用 `aria-current="page"` 标出；每页底部新增「返回上一难点 / 下一个难点」导航，把三页串成可顺序浏览的学习路径。
+- **首页**：三张难点卡片补齐「进入难点」入口、悬停位移与轻阴影，页脚加课程项目署名；CTA 与进度提示保持一致。
+- **交互控件**：按钮补齐 hover / active / disabled / focus-visible 四种状态；播放条与画布间距收紧，画布不再保留大片空白。
+- **性能与审计**：打磨后重跑 Lighthouse（移动模拟）：首页 100/100/100/100（CLS 0），d1 99/100/100/100（CLS 0.055），d2 100/100/100/100（CLS 0.012），d3 99/100/100/100（CLS 0.048）；截图已同步刷新。
