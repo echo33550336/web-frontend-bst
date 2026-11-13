@@ -1,4 +1,4 @@
-﻿/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
+/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
    先加载 ../src/css/style.css，再加载本文件。
    背景特效为纯 CSS：缓慢漂移的极光色团 + 细网格 + 颗粒，无需 JS。 */
 
@@ -143,28 +143,29 @@ body.matrix .topbar {
 }
 body.matrix .topbar a {
   color: #b9cabd;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 4px 9px;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  border: 0;
+  border-radius: 0;
+  padding: 2px 0;
+  background: none;
+  transition: color 0.2s ease;
 }
 body.matrix .topbar a:hover {
-  color: #eafff2;
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--line);
+  color: #f2fff7;
+  background: none;
+  border-color: transparent;
 }
 body.matrix .topbar .crumb {
   color: #cfe7d8;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 4px 11px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 2px 0;
   letter-spacing: 0.02em;
 }
 body.matrix .topbar .crumb[aria-current="page"] {
-  color: #f2f8f4;
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.18);
+  color: #f4faf6;
+  background: none;
+  border: 0;
 }
 
 /* —— 标题区 —— */
@@ -184,10 +185,12 @@ body.matrix .kicker::before,
 body.matrix .kicker::after { content: none; }
 
 body.matrix .page-head h1 {
-  color: #f0f7f2;
-  letter-spacing: -0.025em;
-  font-weight: 700;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  color: #f4faf6;
+  font-size: clamp(26px, 2.4vw, 32px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-shadow: none;
 }
 body.matrix .page-head .subtitle { color: #c2d4c9; }
 body.matrix .page-head .howto { color: var(--sub); }
@@ -226,24 +229,14 @@ body.matrix .card {
   backdrop-filter: blur(18px) saturate(125%);
 }
 body.matrix .card h2 {
-  color: #9fb2a6;
-  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: #d7e9dd;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }
-body.matrix .card h2::before {
-  content: "";
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  margin-right: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(62, 207, 142, 0.6);
-  vertical-align: 2px;
-}
+body.matrix .card h2::before { content: none; }
 
 body.matrix .transport {
   background: rgba(255, 255, 255, 0.04);
@@ -339,6 +332,13 @@ body.matrix #panel-interval li.now {
 }
 body.matrix #panel-interval li.now::before { background: var(--accent); }
 
+body.matrix .candidates-line {
+  color: var(--sub);
+  font-size: 13px;
+  margin-top: 8px;
+}
+body.matrix .candidates-line b { color: #e9f7ee; font-weight: 600; }
+
 /* —— SVG 树 —— */
 body.matrix .edge { stroke: rgba(150, 190, 165, 0.28); }
 body.matrix .edge.on-path { stroke: var(--path); }
@@ -370,8 +370,16 @@ body.matrix .card-link:hover {
   border-color: rgba(62, 207, 142, 0.35);
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
 }
-body.matrix .card-link h2 { color: #f0f7f2; }
+body.matrix .card-link h2 {
+  color: #f4faf6;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
 body.matrix .card-link h2::before { content: none; }
+
+body.matrix .cards + .card h2 { font-size: 16px; }
 body.matrix .card-link p { color: var(--sub); }
 body.matrix .card-link .type {
   background: rgba(62, 207, 142, 0.08);
