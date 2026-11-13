@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="难点 2：用八步快照推演删除双孩子节点——进入右子树、一路向左找到中序后继、摘挂替换，并在关键一步做 A/B/C 判定。">
+  <title>难点 2 · 删除双孩子节点</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Cpath d='M16 7v8M16 15l-6 5M16 15l6 5' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='21' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='21' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../src/css/style.css">
+  <style>
+    /* d2 页面专属样式：只增不改，共用观感仍由 style.css 负责 */
+    .param select {
+      width: 100%;
+      font: inherit;
+      font-size: 14px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+    }
+    .param select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+
+    #step-title {
+      margin: 0 0 6px;
+      font-size: 15px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    #panel-step { margin: 0; font-size: 14px; line-height: 1.7; }
+
+    /* A / B / C 判定区 */
+    #panel-choose { border-color: #d9b25a; background: #fffdf6; }
+    #choose-heading { color: #8a5a00; }
+    #choose-prompt { margin: 0 0 10px; font-size: 14px; }
+    .choose-options { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .choose-btn {
+      text-align: left;
+      line-height: 1.5;
+      padding: 9px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 13.5px;
+    }
+    .choose-btn:hover { border-color: var(--accent); }
+    .choose-btn.is-correct { border-color: var(--new); background: #eaf6ee; color: #1f5a37; }
+    .choose-btn.is-wrong { border-color: #b3261e; background: #fdecea; color: #8c1d18; }
+    #panel-feedback { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+    #panel-feedback.ok { background: #eaf6ee; color: #1f5a37; border-left: 3px solid var(--new); }
+    #panel-feedback.warn { background: #fff6e0; color: #7a5200; border-left: 3px solid #e0a800; }
+    #panel-feedback.bad { background: #fdecea; color: #8c1d18; border-left: 3px solid #b3261e; }
+    #choose-hint { margin: 8px 0 0; font-size: 12px; color: var(--sub); line-height: 1.5; }
+
+    /* 校验区 */
+    .check-line { margin: 4px 0; font-size: 13px; line-height: 1.6; word-break: break-word; }
+    .check-line.ok { color: #1f5a37; }
+    .check-line.bad { color: #8c1d18; font-weight: 600; }
+    .check-line.warn { color: #7a5200; }
+
+    /* 步骤列表 */
+    #panel-steps { margin: 0; padding-left: 20px; font-size: 13px; }
+    .step-item { cursor: pointer; padding: 2px 0; color: var(--sub); }
+    .step-item:hover { color: var(--accent); }
+    .step-item.done { color: #96a1ae; }
+    .step-item.now { color: var(--accent); font-weight: 600; }
+
+    /* SVG 节点状态 */
+    .node-circle.is-target { stroke: #b3261e; stroke-width: 3.5; stroke-dasharray: 5 3; fill: #fdecea; }
+    .node-circle.is-succ { stroke: var(--path); stroke-width: 3.5; fill: #fff3ec; }
+    .node-circle.is-new { stroke: var(--new); stroke-width: 3; fill: #eaf6ee; }
+    .node-circle.is-verified { stroke: var(--new); stroke-width: 2.5; fill: #f4fbf6; }
+    .node-circle.is-candidate-a { stroke: #1f3a5f; stroke-width: 3.5; fill: #eef3fa; }
+    .node-circle.is-candidate-b { stroke: #6a4fa3; stroke-width: 3.5; fill: #f2eefb; }
+    .node-circle.is-candidate-c { stroke: #b3261e; stroke-width: 3.5; fill: #fdecea; }
+    .node-circle.is-wrong-candidate { stroke: #7a5200; stroke-dasharray: 4 3; }
+    .node-circle.is-broken { stroke: #b3261e; stroke-width: 2.5; stroke-dasharray: 4 3; fill: #fdecea; }
+    .edge.is-new-link { stroke: var(--new); stroke-width: 3; }
+    .edge.is-broken { stroke: #b3261e; stroke-width: 2; stroke-dasharray: 6 5; }
+
+    /* 节点旁的标签（被删 / 替换 / 候选） */
+    .node-tag {
+      text-anchor: middle;
+      font-size: 11px;
+      font-weight: 600;
+      paint-order: stroke;
+      stroke: #fff;
+      stroke-width: 3px;
+    }
+    .target-tag { fill: #b3261e; }
+    .succ-tag { fill: var(--path); }
+    .candidate-tag.key-a { fill: #1f3a5f; }
+    .candidate-tag.key-b { fill: #6a4fa3; }
+    .candidate-tag.key-c { fill: #b3261e; }
+    .wrong-tag { fill: #7a5200; }
+
+    /* 幽灵节点：被摘下的 / 被删掉的 */
+    .ghost-circle { fill: #fff; stroke: #b3261e; stroke-width: 2; stroke-dasharray: 5 4; }
+    .ghost-value {
+      text-anchor: middle;
+      dominant-baseline: central;
+      font-size: 15px;
+      font-weight: 600;
+      fill: #b3261e;
+    }
+    .ghost-label { text-anchor: middle; font-size: 11px; fill: #b3261e; }
+
+    /* 指针箭头 */
+    .pointer-line { fill: none; stroke-width: 2.2; }
+    .pointer-line.walk { stroke: #1f3a5f; stroke-dasharray: 6 5; }
+    .pointer-line.detach, .pointer-line.cut { stroke: #b3261e; stroke-dasharray: 5 4; }
+    .pointer-line.attach, .pointer-line.new { stroke: #2f7d4f; }
+    .pointer-line.candidate { stroke: #6a4fa3; stroke-dasharray: 4 4; }
+    .pointer-label {
+      text-anchor: middle;
+      dominant-baseline: central;
+      font-size: 11px;
+      fill: #43505f;
+      paint-order: stroke;
+      stroke: #fff;
+      stroke-width: 3px;
+    }
+    .pointer-label.detach, .pointer-label.cut { fill: #b3261e; }
+    .pointer-label.attach, .pointer-label.new { fill: #2f7d4f; }
+    .orphan-label { text-anchor: middle; font-size: 12px; font-weight: 600; fill: #b3261e; }
+
+    .d2-marker-accent { fill: #1f3a5f; }
+    .d2-marker-danger { fill: #b3261e; }
+    .d2-marker-green { fill: #2f7d4f; }
+    .d2-marker-purple { fill: #6a4fa3; }
+
+    @media (max-width: 680px) {
+      .choose-btn { font-size: 13px; }
+    }
+  </style>
+  <link rel="stylesheet" href="matrix.css">
+</head>
+<body class="matrix">
+  <main class="wrap">
+    <nav class="topbar">
+      <a href="index.html">← 首页</a>
+      <span class="crumb" aria-current="page">难点 2 / 3</span>
+      <span class="spacer"></span>
+      <a href="d1.html">难点 1 · 插入路径</a>
+      <a href="d3.html">难点 3 · 插入顺序 →</a>
+    </nav>
+
+    <header class="page-head">
+      <span class="kicker">难点 2 · 步进推演型</span>
+      <h1 id="page-title">删除双孩子节点：为什么用中序后继替换</h1>
+      <p class="subtitle" id="page-subtitle">把后继从原位置摘下来，挂到被删节点的位置</p>
+      <p class="howto" id="page-howto">按「下一步」一步一步看指针怎么改；到第 5 步要在 A / B / C 里选一个。</p>
+      <p class="status-note" id="page-status">页面加载中……</p>
+    </header>
+
+    <div class="layout">
+      <section class="stage">
+        <svg id="canvas" viewBox="0 0 610 326" role="group" aria-label="二叉搜索树：高亮显示删除路径、替换节点、待摘位置与待挂位置"></svg>
+        <div class="transport">
+          <button id="btn-play" class="primary">播放</button>
+          <button id="btn-pause">暂停</button>
+          <button id="btn-prev">上一步</button>
+          <button id="btn-next">下一步</button>
+          <button id="btn-reset">重置</button>
+          <p id="status">—</p>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h2>参数</h2>
+          <div id="params"></div>
+        </div>
+
+        <div class="card">
+          <h2>这一步在做什么</h2>
+          <p id="step-title">—</p>
+          <p id="panel-step" aria-live="polite">—</p>
+        </div>
+
+        <div class="card" id="panel-choose" hidden>
+          <h2 id="choose-heading">A / B / C 判定</h2>
+          <p id="choose-prompt"></p>
+          <div id="choose-options" class="choose-options"></div>
+          <p id="panel-feedback" hidden role="status" aria-live="polite"></p>
+          <p id="choose-hint"></p>
+        </div>
+
+        <div class="card">
+          <h2>中序与区间校验</h2>
+          <div id="panel-check"></div>
+        </div>
+
+        <div class="card">
+          <h2>步骤</h2>
+          <ol id="panel-steps"></ol>
+        </div>
+      </aside>
+    </div>
+    <nav class="page-nav" aria-label="学习路径">
+      <a href="d1.html">← 难点 1：插入比较路径</a>
+      <a class="next" href="d3.html">下一个难点：插入顺序 →</a>
+    </nav>
+  </main>
+
+  <script src="../src/js/common.js"></script>
+  <script src="../src/js/tree.js"></script>
+  <script src="../src/js/d2.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      window.D2.mount();
+    });
+  </script>
+  <canvas id="matrix-rain" aria-hidden="true"></canvas>
+  <script src="rain.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="难点 1：拖动插入值，看二叉搜索树的比较路径如何一步步收窄区间，从 8 个候选位置收敛到唯一位置。">
+  <title>难点 1 · 插入时的比较路径</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Cpath d='M16 7v8M16 15l-6 5M16 15l6 5' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='21' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='21' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../src/css/style.css">
+  <link rel="stylesheet" href="matrix.css">
+</head>
+<body class="matrix">
+  <main class="wrap">
+    <nav class="topbar">
+      <a href="index.html">← 首页</a>
+      <span class="crumb" aria-current="page">难点 1 / 3</span>
+      <span class="spacer"></span>
+      <a href="d2.html">难点 2 · 删除双孩子 →</a>
+      <a href="d3.html">难点 3 · 插入顺序 →</a>
+    </nav>
+
+    <header class="page-head">
+      <span class="kicker">难点 1 · 参数探索型</span>
+      <h1 id="page-title">插入时的比较路径</h1>
+      <p class="subtitle" id="page-subtitle">每比较一次，可能的位置就少一半</p>
+      <p class="howto" id="page-howto">拖动下面的滑块改动「待插入值」，树上的比较路径、区间标注、候选位置计数会实时重算。</p>
+    </header>
+
+    <div class="layout">
+      <section class="stage">
+        <svg id="canvas" viewBox="0 0 536 244" role="img" aria-label="二叉搜索树：高亮节点是当前比较路径，节点下方标注允许的取值范围"></svg>
+        <div class="transport">
+          <button id="btn-play" class="primary">播放</button>
+          <button id="btn-pause">暂停</button>
+          <button id="btn-prev">上一步</button>
+          <button id="btn-next">下一步</button>
+          <button id="btn-reset">重置</button>
+          <p id="status" aria-live="polite">第 1 / 1 步</p>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h2 id="card-params-title">参数</h2>
+          <div id="params"></div>
+          <div class="controls">
+            <button id="btn-insert" class="primary">插入演示</button>
+            <button id="btn-regen">随机重生成</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 id="card-interval-title">允许区间</h2>
+          <ul id="panel-interval" aria-live="polite"></ul>
+          <p class="hint"><span id="candidates-label">候选位置</span>：<b id="panel-candidates" aria-live="polite">—</b> 个</p>
+        </div>
+
+        <div class="card">
+          <h2 id="card-inorder-title">中序序列</h2>
+          <p id="panel-inorder" class="hint" aria-live="polite">—</p>
+          <p id="inorder-check" class="hint" aria-live="polite">—</p>
+        </div>
+
+        <div class="card">
+          <h2 id="card-step-title">这一步在说什么</h2>
+          <p id="panel-step-title" class="step-title">—</p>
+          <p id="panel-step" aria-live="polite">—</p>
+        </div>
+      </aside>
+    </div>
+    <nav class="page-nav" aria-label="学习路径">
+      <a href="index.html">← 返回首页</a>
+      <a class="next" href="d2.html">下一个难点：删除双孩子 →</a>
+    </nav>
+  </main>
+
+  <script src="../src/js/common.js"></script>
+  <script src="../src/js/tree.js"></script>
+  <script src="../src/js/d1.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      D1.mount();
+    });
+  </script>
+  <canvas id="matrix-rain" aria-hidden="true"></canvas>
+  <script src="rain.js"></script>
+</body>
+</html>
+

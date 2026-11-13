@@ -75,8 +75,15 @@ web-frontend-bst/
 │  ├─ d1.test.js / d2.test.js / d3.test.js
 │  ├─ tree.test.js
 │  └─ mount*.smoke.js
+├─ matrix/                 黑客帝国风格对照皮肤（仅视觉层，复用 src/js 与 data）
+│  ├─ index.html / d1.html / d2.html / d3.html
+│  ├─ matrix.css           主题覆盖层
+│  ├─ rain.js              背景代码雨（可忽略 prefers-reduced-motion）
+│  └─ img/                 皮肤预览截图
 └─ assets/
 ```
+
+`matrix/` 是一套独立的视觉对照版本：页面结构复制自 `src/`，但脚本、数据仍直接复用 `src/js/*` 与 `data/*`，只通过 `matrix.css` 覆盖配色、字体与背景。预览入口 `/matrix/index.html`，细节见 `matrix/README.md`；不引用它时删除整个目录即可，不影响正式版。
 
 ## 三条设计约束
 
