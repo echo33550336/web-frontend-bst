@@ -1,4 +1,4 @@
-/* rain.js —— matrix/ 皮肤的背景代码雨。
+﻿/* rain.js —— matrix/ 皮肤的背景代码雨。
    纯装饰：fixed 定位、pointer-events:none，不参与页面交互与布局。
    遵循 prefers-reduced-motion：开启减少动态时只画一帧静止的字符，不循环。 */
 (function () {
@@ -49,7 +49,7 @@
     canvas.style.width = width + "px";
     canvas.style.height = height + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = "#030604";
+    ctx.fillStyle = "#020503";
     ctx.fillRect(0, 0, width, height);
     makeColumns();
   }
@@ -67,12 +67,12 @@
     ctx.textBaseline = "top";
 
     // 头部字符偏亮，向下逐渐变暗
-    ctx.fillStyle = column.bright ? "rgba(160, 255, 120, 0.75)" : "rgba(78, 220, 90, 0.5)";
+    ctx.fillStyle = column.bright ? "rgba(105, 180, 120, 0.44)" : "rgba(55, 155, 70, 0.3)";
     ctx.fillText(randomGlyph(), x, y);
 
     for (var k = 1; k <= 6; k++) {
-      var alpha = (column.bright ? 0.16 : 0.11) / k;
-      ctx.fillStyle = "rgba(57, 255, 20, " + alpha + ")";
+      var alpha = (column.bright ? 0.08 : 0.055) / k;
+      ctx.fillStyle = "rgba(47, 191, 74, " + alpha + ")";
       ctx.fillText(randomGlyph(), x, y - k * FONT_SIZE);
     }
   }
@@ -89,7 +89,7 @@
     lastFrame = now;
 
     // 半透明覆盖形成拖尾
-    ctx.fillStyle = "rgba(3, 6, 4, 0.12)";
+    ctx.fillStyle = "rgba(1, 3, 2, 0.1)";
     ctx.fillRect(0, 0, width, height);
 
     for (var i = 0; i < columns.length; i++) {
@@ -117,7 +117,7 @@
 
   function renderStill() {
     // 减少动态：只画一帧低透明度字符，不启动循环
-    ctx.fillStyle = "#030604";
+    ctx.fillStyle = "#020503";
     ctx.fillRect(0, 0, width, height);
     ctx.font = FONT_SIZE + "px 'Cascadia Mono', Consolas, 'Courier New', monospace";
     ctx.textBaseline = "top";
@@ -125,7 +125,7 @@
       var x = i * FONT_SIZE;
       var y = columns[i].y;
       for (var k = 0; k < 10; k++) {
-        ctx.fillStyle = "rgba(57, 255, 20, " + (0.05 + 0.05 / (k + 1)) + ")";
+        ctx.fillStyle = "rgba(47, 191, 74, " + (0.03 + 0.03 / (k + 1)) + ")";
         ctx.fillText(randomGlyph(), x, y + k * FONT_SIZE);
       }
     }
@@ -171,3 +171,6 @@
     }
   }
 })();
+
+
+

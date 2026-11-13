@@ -1,25 +1,25 @@
-/* matrix.css —— 黑客帝国风格皮肤：只覆盖观感，不改结构和交互。
+﻿/* matrix.css —— 黑客帝国风格皮肤：只覆盖观感，不改结构和交互。
    页面上先加载 ../src/css/style.css，再加载本文件；本文件只做主题覆盖。 */
 
 :root {
-  --ink: #d9ffe0;
-  --sub: #7fb98a;
-  --line: #1c4a2c;
-  --bg: #040806;
-  --card: #08110b;
-  --accent: #39ff14;
-  --accent-strong: #2ee00f;
-  --accent-soft: #0e2415;
-  --path: #b6ff3d;
-  --new: #38e1ff;
-  --shadow-sm: 0 0 0 1px rgba(57, 255, 20, 0.05), 0 0 18px rgba(57, 255, 20, 0.05);
-  --shadow-md: 0 0 0 1px rgba(57, 255, 20, 0.12), 0 0 30px rgba(57, 255, 20, 0.08);
+  --ink: #c3d6c8;
+  --sub: #6f9a7a;
+  --line: #0f2717;
+  --bg: #010302;
+  --card: #040806;
+  --accent: #27a63c;
+  --accent-strong: #27a63c;
+  --accent-soft: #0a1a10;
+  --path: #86bb3f;
+  --new: #279fb8;
+  --shadow-sm: 0 0 0 1px rgba(47, 191, 74, 0.05), 0 0 18px rgba(47, 191, 74, 0.05);
+  --shadow-md: 0 0 0 1px rgba(47, 191, 74, 0.12), 0 0 30px rgba(47, 191, 74, 0.08);
   --radius-sm: 2px;
   --radius-md: 2px;
   --radius-lg: 2px;
 }
 
-html { background: #030604; }
+html { background: #010302; }
 
 body.matrix {
   background: transparent;
@@ -35,20 +35,20 @@ body.matrix select {
   -webkit-appearance: none;
   appearance: none;
   background-color: #061009;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2339ff14' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232fbf4a' stroke-width='1.6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 9px center;
   background-size: 12px 8px;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 2px;
-  color: #c9ffcf;
+  color: #98c7a3;
   padding: 6px 28px 6px 10px;
   font: inherit;
   font-size: 13px;
 }
 body.matrix select:hover { border-color: var(--accent); }
 body.matrix select:focus { outline: 1px solid var(--accent); outline-offset: 1px; }
-body.matrix select option { background: #061009; color: #c9ffcf; }
+body.matrix select option { background: #061009; color: #98c7a3; }
 
 /* 细扫描线，叠在内容之上但不拦鼠标 */
 body.matrix::before {
@@ -58,7 +58,7 @@ body.matrix::before {
   z-index: 9;
   pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
-  opacity: 0.35;
+  opacity: 0.16;
 }
 
 #matrix-rain {
@@ -67,13 +67,13 @@ body.matrix::before {
   width: 100%;
   height: 100%;
   z-index: 0;
-  opacity: 0.55;
+  opacity: 0.28;
   pointer-events: none;
 }
 
 body.matrix .wrap { position: relative; z-index: 2; }
 
-::selection { background: rgba(57, 255, 20, 0.35); color: #eaffea; }
+::selection { background: rgba(39, 166, 60, 0.16); color: #c3d6c8; }
 
 body.matrix :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 
@@ -84,15 +84,15 @@ body.matrix .topbar {
   letter-spacing: 0.04em;
 }
 body.matrix .topbar a {
-  color: #8dff7a;
+  color: #77c96a;
   border: 1px solid transparent;
   border-radius: 0;
 }
-body.matrix .topbar a:hover { background: #0e2415; border-color: #1c4a2c; color: var(--accent); }
+body.matrix .topbar a:hover { background: #0a1a10; border-color: #0f2717; color: var(--accent); }
 body.matrix .topbar .crumb {
-  color: #9ecfaa;
+  color: #86ab90;
   background: #0b1f12;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 0;
   letter-spacing: 0.08em;
 }
@@ -106,20 +106,20 @@ body.matrix .kicker {
   color: var(--accent);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  box-shadow: 0 0 12px rgba(57, 255, 20, 0.18);
+  box-shadow: 0 0 8px rgba(39, 166, 60, 0.07);
 }
 body.matrix .kicker::before { content: "[ "; }
 body.matrix .kicker::after { content: " ]"; }
 
 body.matrix .page-head h1 {
-  color: #e8ffe9;
-  text-shadow: 0 0 22px rgba(57, 255, 20, 0.28);
+  color: #c3d6c8;
+  text-shadow: 0 0 12px rgba(39, 166, 60, 0.10);
   letter-spacing: 0.01em;
 }
-body.matrix .page-head .subtitle { color: #a6d8b0; }
-body.matrix .page-head .howto { color: #7fb98a; }
+body.matrix .page-head .subtitle { color: #8fb59a; }
+body.matrix .page-head .howto { color: #6f9a7a; }
 body.matrix .page-head .status-note {
-  background: #0c1a0c;
+  background: #08140a;
   border-left: 3px solid var(--path);
   border-radius: 0;
   color: #dcffb6;
@@ -129,22 +129,22 @@ body.matrix .page-head .status-note {
 body.matrix .stage {
   background-color: #06100a;
   background-image:
-    linear-gradient(rgba(57, 255, 20, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(57, 255, 20, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(39, 166, 60, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39, 166, 60, 0.022) 1px, transparent 1px);
   background-size: 28px 28px;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 2px;
-  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6), 0 0 26px rgba(57, 255, 20, 0.05);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6), 0 0 20px rgba(47, 191, 74, 0.03);
 }
 
 body.matrix .card {
   background: #07110b;
-  border: 1px solid #163d25;
+  border: 1px solid #0f2717;
   border-radius: 2px;
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
 body.matrix .card h2 {
-  color: #9dffa0;
+  color: #7ab882;
   letter-spacing: 0.14em;
   font-size: 11px;
   text-transform: uppercase;
@@ -153,7 +153,7 @@ body.matrix .card h2::before { content: "> "; color: var(--accent); }
 
 body.matrix .transport {
   background: #08140d;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 2px;
   box-shadow: none;
 }
@@ -162,69 +162,69 @@ body.matrix #status { color: #8fd39a; }
 /* 控件 */
 body.matrix button {
   background: #061009;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 2px;
-  color: #c9ffcf;
+  color: #98c7a3;
   letter-spacing: 0.04em;
 }
-body.matrix button:hover { background: #0e2415; border-color: var(--accent); color: var(--accent); }
+body.matrix button:hover { background: #0a1a10; border-color: var(--accent); color: var(--accent); }
 body.matrix button.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: #021006;
   font-weight: 700;
-  box-shadow: 0 0 16px rgba(57, 255, 20, 0.35);
+  box-shadow: 0 0 10px rgba(39, 166, 60, 0.13);
 }
-body.matrix button.primary:hover { background: #67ff4a; border-color: #67ff4a; color: #021006; }
-body.matrix button:disabled { opacity: 0.35; }
+body.matrix button.primary:hover { background: #4fd06a; border-color: #4fd06a; color: #021006; }
+body.matrix button:disabled { opacity: 0.16; }
 
-body.matrix .param label { color: #9ecfaa; }
+body.matrix .param label { color: #86ab90; }
 body.matrix .param input[type="range"] { accent-color: var(--accent); }
 body.matrix .param .readout { color: var(--accent); }
-body.matrix .hint { color: #6fa77c; }
+body.matrix .hint { color: #5f8f6c; }
 
 body.matrix .metrics .metric {
   background: #0a1c11;
-  border: 1px solid #163d25;
+  border: 1px solid #0f2717;
   border-radius: 2px;
 }
-body.matrix .metric-label { color: #7fb98a; }
-body.matrix .metric-value { color: #e6ffe9; }
-body.matrix .metric-unit { color: #6fa77c; }
+body.matrix .metric-label { color: #6f9a7a; }
+body.matrix .metric-value { color: #c3d6c8; }
+body.matrix .metric-unit { color: #5f8f6c; }
 
-body.matrix #panel-interval li { color: #7fb98a; }
-body.matrix #panel-interval li::before { background: #1c4a2c; }
+body.matrix #panel-interval li { color: #6f9a7a; }
+body.matrix #panel-interval li::before { background: #0f2717; }
 body.matrix #panel-interval li.now { color: #021006; background: var(--accent); font-weight: 700; }
 body.matrix #panel-interval li.now::before { background: #021006; }
 
 /* SVG 树 */
 body.matrix .edge { stroke: #1e4a2e; }
-body.matrix .edge.on-path { stroke: #7dff5a; }
-body.matrix .node-circle { fill: #04100a; stroke: #2fd05a; }
-body.matrix .node-circle.on-path { fill: #0b2413; stroke: #7dff5a; }
-body.matrix .node-circle.is-new { stroke: var(--new); fill: #06222b; }
-body.matrix .node-value { fill: #dcffdf; }
+body.matrix .edge.on-path { stroke: #6fc45a; }
+body.matrix .node-circle { fill: #020a05; stroke: #279a47; }
+body.matrix .node-circle.on-path { fill: #081a0e; stroke: #6fc45a; }
+body.matrix .node-circle.is-new { stroke: var(--new); fill: #041a22; }
+body.matrix .node-value { fill: #c3d6c8; }
 body.matrix .node-interval { fill: #6fae7d; }
 
 /* 首页 */
 body.matrix .card-link {
   background: #07110b;
-  border: 1px solid #163d25;
+  border: 1px solid #0f2717;
   border-radius: 2px;
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45);
 }
 body.matrix .card-link:hover {
   border-color: var(--accent);
-  box-shadow: 0 0 26px rgba(57, 255, 20, 0.16), inset 0 0 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 14px rgba(39, 166, 60, 0.06), inset 0 0 30px rgba(0, 0, 0, 0.45);
 }
-body.matrix .card-link h2 { color: #e6ffe9; }
+body.matrix .card-link h2 { color: #c3d6c8; }
 body.matrix .card-link h2::before { content: none; }
-body.matrix .card-link p { color: #9ecfaa; }
+body.matrix .card-link p { color: #86ab90; }
 body.matrix .card-link .type {
   background: transparent;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 0;
-  color: #8dff7a;
+  color: #77c96a;
   letter-spacing: 0.06em;
 }
 body.matrix .card-link .go { color: var(--accent); }
@@ -237,12 +237,12 @@ body.matrix .cta {
   border-radius: 0;
   color: var(--accent);
   letter-spacing: 0.06em;
-  box-shadow: 0 0 18px rgba(57, 255, 20, 0.2);
+  box-shadow: 0 0 10px rgba(39, 166, 60, 0.07);
 }
 body.matrix .cta:hover { background: var(--accent); color: #021006; }
-body.matrix .progress-note { background: #0e2415; color: #b9ffb0; border: 1px solid #1c4a2c; border-radius: 0; }
-body.matrix .site-footer { border-top: 1px solid var(--line); color: #6fa77c; }
-body.matrix .site-footer a { color: #8dff7a; }
+body.matrix .progress-note { background: #0a1a10; color: #9fcaa6; border: 1px solid #0f2717; border-radius: 0; }
+body.matrix .site-footer { border-top: 1px solid var(--line); color: #5f8f6c; }
+body.matrix .site-footer a { color: #77c96a; }
 body.matrix .site-footer a:hover { color: var(--accent); }
 body.matrix .site-footer .who { color: #5d8f68; }
 
@@ -250,110 +250,110 @@ body.matrix .site-footer .who { color: #5d8f68; }
 body.matrix .page-nav { border-top: 1px solid var(--line); }
 body.matrix .page-nav a {
   background: #061009;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 0;
-  color: #8dff7a;
+  color: #77c96a;
 }
-body.matrix .page-nav a:hover { background: #0e2415; border-color: var(--accent); color: var(--accent); }
+body.matrix .page-nav a:hover { background: #0a1a10; border-color: var(--accent); color: var(--accent); }
 
 /* —— 难点 2 页面专属覆盖：指针、候选、判定 —— */
 body.matrix #panel-choose { background: #0d1a0c; border-color: var(--path); }
-body.matrix #choose-heading { color: #d8ff9a; }
+body.matrix #choose-heading { color: #b3d67c; }
 body.matrix .choose-btn {
   background: #061009;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 2px;
-  color: #c9ffcf;
+  color: #98c7a3;
 }
 body.matrix .choose-btn:hover { border-color: var(--accent); color: var(--accent); }
-body.matrix .choose-btn.is-correct { background: #0b2a12; border-color: var(--accent); color: #b9ffb0; }
-body.matrix .choose-btn.is-wrong { background: #2a0b0b; border-color: #ff6b6b; color: #ffc9c9; }
-body.matrix #panel-feedback.ok { background: #0b2a12; color: #b9ffb0; border-left-color: var(--accent); }
-body.matrix #panel-feedback.warn { background: #241f06; color: #ffe89a; border-left-color: #ffd166; }
-body.matrix #panel-feedback.bad { background: #2a0b0b; color: #ffc9c9; border-left-color: #ff6b6b; }
-body.matrix .check-line.ok { color: #8dff7a; }
-body.matrix .check-line.bad { color: #ff8a8a; }
-body.matrix .check-line.warn { color: #ffe89a; }
+body.matrix .choose-btn.is-correct { background: #081f0e; border-color: var(--accent); color: #9fcaa6; }
+body.matrix .choose-btn.is-wrong { background: #1f0909; border-color: #c95656; color: #e0a8a8; }
+body.matrix #panel-feedback.ok { background: #081f0e; color: #9fcaa6; border-left-color: var(--accent); }
+body.matrix #panel-feedback.warn { background: #1a1606; color: #e0c47a; border-left-color: #c4a052; }
+body.matrix #panel-feedback.bad { background: #1f0909; color: #e0a8a8; border-left-color: #c95656; }
+body.matrix .check-line.ok { color: #77c96a; }
+body.matrix .check-line.bad { color: #d98a8a; }
+body.matrix .check-line.warn { color: #e0c47a; }
 
-body.matrix .step-item { color: #6fa77c; }
+body.matrix .step-item { color: #5f8f6c; }
 body.matrix .step-item:hover { color: var(--accent); }
 body.matrix .step-item.done { color: #3f6b4a; }
 body.matrix .step-item.now { color: var(--accent); }
 
-body.matrix .node-circle.is-target { stroke: #ff6b6b; fill: #2a0b0b; }
-body.matrix .node-circle.is-succ { stroke: var(--path); fill: #1b2a06; }
-body.matrix .node-circle.is-new { stroke: var(--new); fill: #06222b; }
-body.matrix .node-circle.is-verified { stroke: var(--accent); fill: #0b2a12; }
-body.matrix .node-circle.is-candidate-a { stroke: var(--accent); fill: #0b2a12; }
-body.matrix .node-circle.is-candidate-b { stroke: #c792ff; fill: #1a1026; }
-body.matrix .node-circle.is-candidate-c { stroke: #ff6b6b; fill: #2a0b0b; }
-body.matrix .node-circle.is-wrong-candidate { stroke: #ffd166; }
-body.matrix .node-circle.is-broken { stroke: #ff6b6b; fill: #2a0b0b; }
+body.matrix .node-circle.is-target { stroke: #c95656; fill: #1f0909; }
+body.matrix .node-circle.is-succ { stroke: var(--path); fill: #16220a; }
+body.matrix .node-circle.is-new { stroke: var(--new); fill: #041a22; }
+body.matrix .node-circle.is-verified { stroke: var(--accent); fill: #081f0e; }
+body.matrix .node-circle.is-candidate-a { stroke: var(--accent); fill: #081f0e; }
+body.matrix .node-circle.is-candidate-b { stroke: #966fc4; fill: #1a1026; }
+body.matrix .node-circle.is-candidate-c { stroke: #c95656; fill: #1f0909; }
+body.matrix .node-circle.is-wrong-candidate { stroke: #c4a052; }
+body.matrix .node-circle.is-broken { stroke: #c95656; fill: #1f0909; }
 body.matrix .edge.is-new-link { stroke: var(--accent); }
-body.matrix .edge.is-broken { stroke: #ff6b6b; }
+body.matrix .edge.is-broken { stroke: #c95656; }
 
-body.matrix .node-tag { stroke: #04100a; }
-body.matrix .target-tag { fill: #ff8a8a; }
+body.matrix .node-tag { stroke: #020a05; }
+body.matrix .target-tag { fill: #d98a8a; }
 body.matrix .succ-tag { fill: var(--path); }
 body.matrix .candidate-tag.key-a { fill: var(--accent); }
-body.matrix .candidate-tag.key-b { fill: #c792ff; }
-body.matrix .candidate-tag.key-c { fill: #ff8a8a; }
-body.matrix .wrong-tag { fill: #ffd166; }
-body.matrix .ghost-circle { fill: #04100a; stroke: #ff6b6b; }
-body.matrix .ghost-value { fill: #ff8a8a; }
-body.matrix .ghost-label { fill: #ff8a8a; }
-body.matrix .pointer-line.walk { stroke: #38e1ff; }
-body.matrix .pointer-line.detach, body.matrix .pointer-line.cut { stroke: #ff6b6b; }
+body.matrix .candidate-tag.key-b { fill: #966fc4; }
+body.matrix .candidate-tag.key-c { fill: #d98a8a; }
+body.matrix .wrong-tag { fill: #c4a052; }
+body.matrix .ghost-circle { fill: #020a05; stroke: #c95656; }
+body.matrix .ghost-value { fill: #d98a8a; }
+body.matrix .ghost-label { fill: #d98a8a; }
+body.matrix .pointer-line.walk { stroke: #279fb8; }
+body.matrix .pointer-line.detach, body.matrix .pointer-line.cut { stroke: #c95656; }
 body.matrix .pointer-line.attach, body.matrix .pointer-line.new { stroke: var(--accent); }
-body.matrix .pointer-line.candidate { stroke: #c792ff; }
-body.matrix .pointer-label { fill: #b7d8bf; stroke: #04100a; }
-body.matrix .pointer-label.detach, body.matrix .pointer-label.cut { fill: #ff8a8a; }
-body.matrix .pointer-label.attach, body.matrix .pointer-label.new { fill: #8dff7a; }
-body.matrix .orphan-label { fill: #ff8a8a; }
-body.matrix marker path[fill="#1f3a5f"] { fill: #39ff14; }
-body.matrix marker path[fill="#2f7d4f"] { fill: #39ff14; }
-body.matrix marker path[fill="#b3261e"] { fill: #ff6b6b; }
-body.matrix marker path[fill="#6a4fa3"] { fill: #c792ff; }
+body.matrix .pointer-line.candidate { stroke: #966fc4; }
+body.matrix .pointer-label { fill: #b7d8bf; stroke: #020a05; }
+body.matrix .pointer-label.detach, body.matrix .pointer-label.cut { fill: #d98a8a; }
+body.matrix .pointer-label.attach, body.matrix .pointer-label.new { fill: #77c96a; }
+body.matrix .orphan-label { fill: #d98a8a; }
+body.matrix marker path[fill="#1f3a5f"] { fill: #27a63c; }
+body.matrix marker path[fill="#2f7d4f"] { fill: #27a63c; }
+body.matrix marker path[fill="#b3261e"] { fill: #c95656; }
+body.matrix marker path[fill="#6a4fa3"] { fill: #966fc4; }
 
 /* —— 难点 3 页面专属覆盖：双画布、读数、折线 —— */
-body.matrix .canvas-col svg { background: #04100a; border-color: #163d25; border-radius: 2px; }
-body.matrix .canvas-col .caption { color: #7fb98a; }
-body.matrix .stage .mv-left { color: #38e1ff; }
+body.matrix .canvas-col svg { background: #020a05; border-color: #0f2717; border-radius: 2px; }
+body.matrix .canvas-col .caption { color: #6f9a7a; }
+body.matrix .stage .mv-left { color: #279fb8; }
 body.matrix .stage .mv-right { color: var(--path); }
-body.matrix .stage .metric-sep { color: #1c4a2c; }
+body.matrix .stage .metric-sep { color: #0f2717; }
 body.matrix #reshuffle-note { color: var(--path); }
-body.matrix .chart-block { border-top-color: #163d25; }
-body.matrix .chart-title { color: #d9ffe0; }
-body.matrix .chart-legend { color: #7fb98a; }
-body.matrix .legend-left { background: #38e1ff; }
+body.matrix .chart-block { border-top-color: #0f2717; }
+body.matrix .chart-title { color: #c3d6c8; }
+body.matrix .chart-legend { color: #6f9a7a; }
+body.matrix .legend-left { background: #279fb8; }
 body.matrix .legend-right { background: var(--path); }
-body.matrix .chart-metric { color: #7fb98a; }
+body.matrix .chart-metric { color: #6f9a7a; }
 body.matrix .chart-metric select {
   background: #061009;
-  border: 1px solid #1c4a2c;
+  border: 1px solid #0f2717;
   border-radius: 2px;
-  color: #c9ffcf;
+  color: #98c7a3;
 }
 body.matrix .chart-metric select:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
-body.matrix #chart .chart-grid { stroke: #12301c; }
-body.matrix #chart .chart-axis { stroke: #1c4a2c; }
-body.matrix #chart .chart-line-left { stroke: #38e1ff; }
+body.matrix #chart .chart-grid { stroke: #0f2717; }
+body.matrix #chart .chart-axis { stroke: #0f2717; }
+body.matrix #chart .chart-line-left { stroke: #279fb8; }
 body.matrix #chart .chart-line-right { stroke: var(--path); }
-body.matrix #chart .chart-dot-left { fill: #38e1ff; }
+body.matrix #chart .chart-dot-left { fill: #279fb8; }
 body.matrix #chart .chart-dot-right { fill: var(--path); }
-body.matrix #chart .chart-cursor { stroke: #1c4a2c; }
-body.matrix #chart .chart-tick { fill: #7fb98a; }
-body.matrix #chart .chart-axis-label { fill: #7fb98a; }
-body.matrix .chart-note { color: #6fa77c; }
+body.matrix #chart .chart-cursor { stroke: #0f2717; }
+body.matrix #chart .chart-tick { fill: #6f9a7a; }
+body.matrix #chart .chart-axis-label { fill: #6f9a7a; }
+body.matrix .chart-note { color: #5f8f6c; }
 body.matrix #conclusion-card { border-left-color: var(--accent); }
 body.matrix #conclusion-card h2 { color: var(--accent); }
 
 /* 左树统一成青色，和折线图的左线、图例保持一致 */
-body.matrix #canvas-left .node-circle { stroke: #38e1ff; }
-body.matrix #canvas-left .node-circle.on-path { stroke: #8ef2ff; fill: #06222b; }
-body.matrix #canvas-left .node-value { fill: #d8fbff; }
-body.matrix #canvas-left .edge { stroke: #173e4a; }
-body.matrix #canvas-left .edge.on-path { stroke: #38e1ff; }
+body.matrix #canvas-left .node-circle { stroke: #279fb8; }
+body.matrix #canvas-left .node-circle.on-path { stroke: #63c3d0; fill: #041a22; }
+body.matrix #canvas-left .node-value { fill: #b3dbe4; }
+body.matrix #canvas-left .edge { stroke: #12303a; }
+body.matrix #canvas-left .edge.on-path { stroke: #279fb8; }
 
 /* 键盘焦点落在 SVG 节点 / 步骤上时也给提示 */
 body.matrix [role="button"]:focus-visible,
@@ -361,8 +361,8 @@ body.matrix g:focus-visible { outline: 1px solid var(--accent); outline-offset: 
 
 /* 细滚动条 */
 body.matrix ::-webkit-scrollbar { width: 10px; height: 10px; }
-body.matrix ::-webkit-scrollbar-track { background: #04100a; }
-body.matrix ::-webkit-scrollbar-thumb { background: #1c4a2c; border: 2px solid #04100a; }
+body.matrix ::-webkit-scrollbar-track { background: #020a05; }
+body.matrix ::-webkit-scrollbar-thumb { background: #0f2717; border: 2px solid #020a05; }
 body.matrix ::-webkit-scrollbar-thumb:hover { background: #2fa04a; }
 
 @media (max-width: 720px) {
@@ -378,3 +378,10 @@ body.matrix ::-webkit-scrollbar-thumb:hover { background: #2fa04a; }
   body.matrix::before { display: none; }
   #matrix-rain { display: none; }
 }
+
+
+
+
+
+
+
