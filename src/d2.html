@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="难点 2：用八步快照推演删除双孩子节点——进入右子树、一路向左找到中序后继、摘挂替换，并在关键一步做 A/B/C 判定。">
   <title>难点 2 · 删除双孩子节点</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Cpath d='M16 7v8M16 15l-6 5M16 15l6 5' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='21' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='21' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
   <style>
     /* d2 页面专属样式：只增不改，共用观感仍由 style.css 负责 */
@@ -135,7 +136,7 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <main class="wrap">
     <nav class="topbar">
       <a href="index.html">← 首页</a>
       <span class="crumb">难点 2 / 3</span>
@@ -146,7 +147,7 @@
 
     <header class="page-head">
       <span class="kicker">难点 2 · 步进推演型</span>
-      <h1 id="page-title">删除双孩子节点</h1>
+      <h1 id="page-title">删除双孩子节点：为什么用中序后继替换</h1>
       <p class="subtitle" id="page-subtitle">把后继从原位置摘下来，挂到被删节点的位置</p>
       <p class="howto" id="page-howto">按「下一步」一步一步看指针怎么改；到第 5 步要在 A / B / C 里选一个。</p>
       <p class="status-note" id="page-status">页面加载中……</p>
@@ -154,7 +155,7 @@
 
     <div class="layout">
       <section class="stage">
-        <svg id="canvas" role="group" aria-label="二叉搜索树：高亮显示删除路径、替换节点、待摘位置与待挂位置"></svg>
+        <svg id="canvas" viewBox="0 0 610 326" role="group" aria-label="二叉搜索树：高亮显示删除路径、替换节点、待摘位置与待挂位置"></svg>
         <div class="transport">
           <button id="btn-play" class="primary">播放</button>
           <button id="btn-pause">暂停</button>
@@ -196,7 +197,7 @@
         </div>
       </aside>
     </div>
-  </div>
+  </main>
 
   <script src="js/common.js"></script>
   <script src="js/tree.js"></script>

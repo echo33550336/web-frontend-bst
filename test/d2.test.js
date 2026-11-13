@@ -186,17 +186,31 @@ eq("前驱 C 可达中序", pred.wrongDemos.C.reachableInorder, [20, 30, 40]);
 eq("前驱 C 丢失节点", pred.wrongDemos.C.lostValues, [60, 65, 70, 80]);
 check("前驱 C 不把目标算作丢失", pred.wrongDemos.C.lostValues.indexOf(50) === -1);
 
-/* C 的断链演示在非根目标上也要准确：只把目标在父指针里换成孩子，
-   另一侧子树原样留在画布外侧，可达的中序必须是「剩下的那部分树」。 */
-const c30 = D2.planDeletion(INITIAL, 30, "successor").wrongDemos.C;
-eq("非根后继 C 可达中序", c30.reachableInorder, [40, 50, 60, 65, 70, 80]);
-eq("非根后继 C 丢失节点", c30.lostValues, [20]);
-eq("非根后继 C 的断链子树", c30.orphanRootValue, 20);
-check("非根后继 C 的残树仍有序", D2.isSorted(c30.reachableInorder));
-const c70 = D2.planDeletion(INITIAL, 70, "predecessor").wrongDemos.C;
-eq("非根前驱 C 可达中序", c70.reachableInorder, [20, 30, 40, 50, 60, 65]);
-eq("非根前驱 C 丢失节点", c70.lostValues, [80]);
-eq("非根前驱 C 的断链子树", c70.orphanRootValue, 80);
+/* 直接孩子场景：C（直接拿孩子顶替）会与 A 或 B 是同一个节点，
+   判定就失去唯一性；此时只保留 A、B 两个候选，也不再生成 C 的断链演示。 */
+const p30 = D2.planDeletion(INITIAL, 30, "successor");
+eq("直接孩子后继候选数", p30.choose.options.length, 2);
+eq("直接孩子后继候选键", p30.choose.options.map((o) => o.key), ["A", "B"]);
+eq("直接孩子后继 A 值", p30.choose.options[0].value, 40);
+eq("直接孩子后继 B 值", p30.choose.options[1].value, 20);
+check("直接孩子后继没有 C 演示", !p30.wrongDemos.C);
+eq("直接孩子后继步骤键", keysOf(p30), [
+  "pick",
+  "enterRight",
+  "walkLeft",
+  "found",
+  "choose",
+  "detachDirect",
+  "attachDirect",
+  "verify",
+]);
+const p30detach = p30.steps.filter((s) => s.key === "detachDirect")[0];
+eq("直接孩子后继 detach 父指针方向", p30detach.vars.parentSide, "right");
+const p30pred = D2.planDeletion(INITIAL, 30, "predecessor");
+eq("直接孩子前驱候选数", p30pred.choose.options.length, 2);
+const p30predDetach = p30pred.steps.filter((s) => s.key === "detachDirect")[0];
+eq("直接孩子前驱 detach 父指针方向", p30predDetach.vars.parentSide, "left");
+check("目标 50 的 A/B/C 值互不相同", new Set(succ.choose.options.map((o) => o.value)).size === 3);
 
 /* 第 6 步文案的方向：父指针一侧 × 被搬走孩子一侧 是相反的两个方向 */
 const succDetachStep = succ.steps.filter((s) => s.key === "detach")[0];
@@ -255,7 +269,7 @@ INITIAL.forEach((target) => {
         JSON.stringify(Tree.removeNode(Tree.buildTree(INITIAL), target).root)
       );
     }
-    if (plan.case === "double") {
+    if (plan.case === "double" && plan.wrongDemos.C) {
       const demo = plan.wrongDemos.C;
       check(label + " C 演示丢了节点", demo.lostValues.length > 0);
       check(label + " C 演示不把目标算作丢失", demo.lostValues.indexOf(target) === -1);
@@ -363,6 +377,27 @@ eq("后继 detach 孩子方向文案", succDVars.movedDirLabel, "右");
 const predDVars = D2.textVars(DATA, pred, predDetachStep);
 eq("前驱 detach 父指针文案", predDVars.succParentSideLabel, "右");
 eq("前驱 detach 孩子方向文案", predDVars.movedDirLabel, "左");
+
+/* 17. 直接孩子文案的语义检查：父指针方向、保留/接上的孩子值必须与代码一致 */
+function fillTemplate(template, vars) {
+  return String(template || "").replace(/\{(\w+)\}/g, function (m, key) {
+    return typeof vars[key] === "undefined" ? m : String(vars[key]);
+  });
+}
+const d30Vars = D2.textVars(DATA, p30, p30detach);
+eq("直接孩子 detach 孩子方向文案", d30Vars.movedDirLabel, "右");
+check(
+  "直接孩子 detach 文案说的是目标 30 的右指针",
+  fillTemplate(DATA.steps.detachDirect.text, d30Vars).indexOf("30 的右") > -1,
+  fillTemplate(DATA.steps.detachDirect.text, d30Vars)
+);
+const a30Step = p30.steps.filter((s) => s.key === "attachDirect")[0];
+const a30Vars = D2.textVars(DATA, p30, a30Step);
+check(
+  "直接孩子 attach 文案接上 30 原来的左孩子 20",
+  fillTemplate(DATA.steps.attachDirect.text, a30Vars).indexOf("20") > -1,
+  fillTemplate(DATA.steps.attachDirect.text, a30Vars)
+);
 
 console.log(pass + " 项通过" + (fails.length ? "，" + fails.length + " 项失败：" : "，全部通过"));
 fails.forEach((f) => console.log("  ✗ " + f));

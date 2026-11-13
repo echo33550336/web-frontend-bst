@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="二叉搜索树交互式学习站点：用参数探索、步进推演、对照比较三种交互，讲清插入比较路径、删除双孩子与插入顺序导致的树退化。">
   <title>二叉搜索树 · 有序性是怎么被维护的</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Cpath d='M16 7v8M16 15l-6 5M16 15l6 5' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='21' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='21' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="wrap">
+  <main class="wrap">
     <header class="page-head">
       <span class="kicker">Web 前端开发 · 课程项目</span>
       <h1>二叉搜索树：有序性是怎么被维护的</h1>
@@ -21,19 +22,19 @@
     <div class="cards">
       <a class="card-link" href="d1.html">
         <span class="type">参数探索型 · 约 2 分钟</span>
-        <h3>① 插入时的比较路径</h3>
+        <h2>① 插入时的比较路径</h2>
         <p>拖动插入值，看区间怎么收窄、候选位置怎么从 8 个掉到 1 个——路径唯一，位置就被确定了。</p>
       </a>
 
       <a class="card-link" href="d2.html">
         <span class="type">步进推演型 + 操作判定 · 约 4 分钟</span>
-        <h3>② 删除双孩子：为什么用后继替换</h3>
+        <h2>② 删除双孩子：为什么用后继替换</h2>
         <p>一步一步走：进右子树、一路向左、摘下后继、挂到被删位置。中途要你选候选，选错当场演示后果。</p>
       </a>
 
       <a class="card-link" href="d3.html">
         <span class="type">对照比较型 · 约 3 分钟</span>
-        <h3>③ 插入顺序与树退化</h3>
+        <h2>③ 插入顺序与树退化</h2>
         <p>同一批数据，两棵树同步长高。随机顺序和升序插入，树高和查找步数差多少，一眼看出来。</p>
       </a>
     </div>
@@ -49,9 +50,9 @@
       <a href="../docs/期末报告.md">期末报告</a>
       <a href="../docs/演示脚本.md">演示脚本</a>
       <a href="../README.md">README</a>
-      <a href="https://azurehyu.gitee.io/web-frontend-bst/" target="_blank" rel="noopener">在线访问（Gitee Pages）</a>
+      <a href="https://gitee.com/AzureHyu/web-frontend-bst#部署到-gitee-pages" target="_blank" rel="noopener">部署说明（Gitee Pages 待开通）</a>
     </footer>
-  </div>
+  </main>
   <script src="js/common.js"></script>
   <script>
     // 学习进度：只做本地记忆（localStorage），不上传任何数据

@@ -4,11 +4,11 @@
   "title": "删除双孩子节点：为什么用中序后继替换",
   "subtitle": "把后继从原位置摘下来，挂到被删节点的位置",
   "interactionType": "步进推演型（第 5 步内嵌一次操作判定）",
-  "howToUse": "先点树上的任意节点当目标（也可以直接用参数里的三种预设）；按「下一步」一步一步看指针怎么改；到第 5 步要在 A / B / C 里选一个，选错会当场演示后果，选对才继续。",
+  "howToUse": "先点树上的任意节点当目标（也可以直接用参数里的三种预设）；按「下一步」一步一步看指针怎么改；到第 5 步要在候选里选一个，选错会当场演示后果，选对才继续。",
   "status": "第 14 周版本：三种删除情形、后继/前驱两种策略、A/B/C 判定与「摘下—挂接」分步指针演示均已可用。",
   "tree": {
     "initial": [50, 30, 70, 20, 40, 60, 80, 65],
-    "note": "初始树故意让 65 成为 70 的后继候选之一，方便演示「后继没有左孩子」。点击任意节点可以换目标。"
+    "note": "初始树故意让 65 成为 60 的后继（也就是 70 的前驱），方便演示「后继没有左孩子」。点击任意节点可以换目标。"
   },
   "params": [
     {
@@ -101,15 +101,23 @@
     },
     "choose": {
       "title": "选一个替换节点",
-      "text": "{target} 有两个孩子，必须找一个节点顶替它。三个候选都已标在画布上，选出本演示策略要求的那个——选错会当场看到后果。"
+      "text": "{target} 有两个孩子，必须找一个节点顶替它。候选节点都已标在画布上，选出本演示策略要求的那个——选错会当场看到后果。"
     },
     "detach": {
       "title": "摘下{replWord}",
       "text": "把 {succ} 从原位置摘下来：把父节点 {succParent} 的{succParentSideLabel}指针改接到 {succ} 的{movedDirLabel}孩子（{succChildText}）。这一步只动一处指针——摘下来的 {succ} 先悬空，下一步再挂。"
     },
+    "detachDirect": {
+      "title": "摘下{replWord}（直接孩子）",
+      "text": "摘 {succ} 时它正好是 {target} 的{movedDirLabel}孩子——改的是 {target} 自己的{movedDirLabel}指针，把它改接到 {succ} 的{movedDirLabel}孩子（{succChildText}）。这一步只动一处指针，摘下来的 {succ} 先悬空，下一步再挂。"
+    },
     "attach": {
       "title": "挂到被删位置",
       "text": "{succ} 现在顶到 {target} 的位置：让它接上 {target} 原来的左孩子（{leftText}）和右孩子（{rightText}）。{rootText}"
+    },
+    "attachDirect": {
+      "title": "挂回被删位置",
+      "text": "{succ} 顶回 {target} 的位置：{keepDirLabel}孩子保留它自己原来的{keepText}，{takeDirLabel}孩子接上 {target} 原来的{takeText}。{rootText}"
     },
     "verify": {
       "title": "校验中序与区间",
@@ -118,7 +126,7 @@
   },
   "choose": {
     "heading": "A / B / C 判定",
-    "prompt": "选一个节点顶替 {target}：A / B / C 里只有一个符合当前策略。「中序后继」对应 A，「中序前驱」对应 B；C 是直接拿孩子顶替，永远错误。",
+    "prompt": "选一个节点顶替 {target}：候选里只有一个符合当前策略。「中序后继」对应 A，「中序前驱」对应 B；C 是直接拿孩子顶替，会丢掉那棵子树。",
     "options": [
       { "key": "A", "role": "successor", "text": "A · {succ}（右子树最小值 = 中序后继）" },
       { "key": "B", "role": "predecessor", "text": "B · {pred}（左子树最大值 = 中序前驱）" },

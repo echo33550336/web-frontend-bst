@@ -1,7 +1,7 @@
 # 二叉搜索树：有序性是怎么被维护的
 
 > Web 前端开发课程项目 · 个人项目 · 第 9—16 周
-> 仓库：https://gitee.com/AzureHyu/web-frontend-bst ｜ 在线访问：https://azurehyu.gitee.io/web-frontend-bst/ （需先在 Gitee 仓库网页端开通 Pages，见「部署」）
+> 仓库：https://gitee.com/AzureHyu/web-frontend-bst ｜ 在线访问（Gitee Pages）：https://azurehyu.gitee.io/web-frontend-bst/ —— 需先在仓库网页端开通 Pages，当前尚未开通，直接访问会 404；本地入口见「怎么跑起来」。
 
 三个难点，三种交互，串成一条学习路径：
 
@@ -34,7 +34,7 @@ python -m http.server 8000    # 等价于 npm run serve:py
 4. 部署成功后入口是 `https://azurehyu.gitee.io/web-frontend-bst/`：根目录 `index.html` 会自动跳转到 `src/index.html`；也可以直接访问 `.../src/index.html`。
 5. 之后每次更新代码，需要在 Pages 页面点一次「更新」才会重新发布。
 
-> 注意：Gitee Pages 需要在网页端手动开通/更新，`git push` 本身不会触发部署；本仓库没有 `.nojekyll` 也能正常访问，因为不依赖 Jekyll 处理。
+> 注意：Gitee Pages 需要在网页端手动开通/更新，`git push` 本身不会触发部署；Gitee Pages 不涉及 Jekyll 构建，纯静态文件直接发布。
 
 ## 目录结构
 
@@ -48,9 +48,11 @@ web-frontend-bst/
 │  ├─ iteration-1.md       迭代进展报告 ①（第 12 周）
 │  ├─ iteration-2.md       迭代进展报告 ②（第 14 周收尾 + 第 15—16 周记录）
 │  ├─ 期末报告.md          项目概述、实现、测试、AI 使用与不足
-│  └─ 演示脚本.md          4—5 分钟演示分镜与备用方案
+│  ├─ 演示脚本.md          4—5 分钟演示分镜与备用方案
+│  └─ img/                  截图与 Lighthouse 报告（home/d1/d2/d3、移动端与折线）
 ├─ tools/
-│  └─ serve.js             零依赖静态服务器（npm run serve）
+│  ├─ serve.js             零依赖静态服务器（npm run serve）
+│  └─ bench.js              Node 基准脚本（npm run bench）
 ├─ src/
 │  ├─ index.html           首页：三个难点的入口 + 学习进度
 │  ├─ d1.html / d2.html / d3.html
@@ -89,8 +91,10 @@ web-frontend-bst/
 - [x] 学习进度持久化（localStorage，首页显示已探索的难点）
 - [x] 三页串成一条学习路径的期末演示脚本（`docs/演示脚本.md`，含分镜与备用方案）与期末报告（`docs/期末报告.md`）
 - [x] 折线读数切换（树高 / 平均查找步数 / 最坏查找步数，仍由 JSON 配置）
-- [ ] Lighthouse 体检与性能对比截图（第 14 周报告；本机沙箱无法启动 headless 浏览器，数字待有图形界面的环境补测）
-- [ ] 部署到 Gitee Pages（操作步骤已写入上节，需在仓库网页端手动开通/更新）
+- [x] Lighthouse 体检（移动模拟）：首页 100/100/100/100（CLS 0，FCP/LCP 0.9s），d1 99/100/100/100（CLS 0.063），d2 97/100/100/100（CLS 0.107），d3 99/100/100/100（CLS 0.05）；报告在 `docs/img/lh-*.report.json`，截图在 `docs/img/`
+- [ ] 部署到 Gitee Pages（操作步骤已写入上节，需在仓库网页端手动开通/更新；当前尚未开通，线上地址暂为 404）
+
+站点体积约 172 KiB（`src/` 156.4 KB + `data/` 19.9 KB），无构建、无运行时依赖。`npm run bench` 可复现关键路径的 Node 基准（最慢项为 2000 次树查找合计约 0.98 ms，远低于一帧 16.7 ms）。
 
 ## 测试
 
@@ -98,18 +102,20 @@ web-frontend-bst/
 
 ```bash
 npm install     # 或 pnpm install（pnpm-lock.yaml 已提交；本机没装 pnpm 时用 npm）
-npm test        # d1 / tree / d2 / d3 的纯函数测试
-npm run smoke   # 三个页面的 jsdom 冒烟测试
+npm test        # d1 / tree / d2 / d3 的纯函数测试：14 + 28 + 549 + 154 项
+npm run smoke   # 三个页面的 jsdom 冒烟测试：28 + 80 + 131 项
 npm run test:all
+npm run bench   # 可选：Node 基准，输出关键路径耗时
 ```
 
 ## 期末材料
 
-- 期末报告：`docs/期末报告.md`
+- 期末报告：`docs/期末报告.md`（含测试计数、Lighthouse 结果与截图索引）
 - 演示脚本（4—5 分钟）：`docs/演示脚本.md`
 - 迭代报告：`docs/iteration-1.md`、`docs/iteration-2.md`
-- 部署入口：`https://azurehyu.gitee.io/web-frontend-bst/`（Gitee Pages 开通后生效）
-- 演示视频：待录制（按 `docs/演示脚本.md` 的分镜）
+- 截图与 Lighthouse 报告：`docs/img/`
+- 部署入口：`https://azurehyu.gitee.io/web-frontend-bst/`（Gitee Pages 开通后生效，当前尚未开通）
+- 演示视频：待录制（按 `docs/演示脚本.md` 的分镜；沙箱内无录屏能力，需在有图形界面的环境完成）
 
 也可以单独跑，例如：
 

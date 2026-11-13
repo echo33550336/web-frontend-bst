@@ -224,8 +224,8 @@
   /* ================= 折线图数据（纯函数，可单测） ================= */
 
   var CHART_W = 400;
-  var CHART_H = 200;
-  var CHART_PAD = { left: 46, right: 12, top: 20, bottom: 30 };
+  var CHART_H = 206;
+  var CHART_PAD = { left: 46, right: 12, top: 20, bottom: 34 };
 
   /** 从 stats 里取折线要画的读数：height / avgSteps / worstSteps */
   function statValue(s, metricKey) {
@@ -292,10 +292,33 @@
       dy: dy,
       radius: radius,
       stroke: stroke,
-      font: Math.min(15, Math.max(4, radius * 1.5)),
-      /* 半径小于 6 时三位数已经写不进节点，只留轮廓 */
-      compact: radius < 6,
+      font: fontFor(radius, dx, dy),
+      /* 半径小于 8 时三位数已经挤不下，只留轮廓，避免数字叠在一起 */
+      compact: radius < 8,
     };
+  }
+
+  /**
+   * 当前这一步只插入了 count 个数：按 count 重新分配间距。
+   * 这样第 1 步的根节点不会缩成一个小点，树长大后再逐步收紧到整盒。
+   */
+  function layoutGeoFor(count) {
+    var cols = Math.max(1, count - 1);
+    var dx = Math.min(Tree.GEO.dx, (COORD_W - EDGE_PAD_X * 2) / cols);
+    var dy = Math.min(Tree.GEO.dy, (COORD_H - EDGE_PAD_Y * 2) / cols);
+    var radius = Math.min(Tree.GEO.nodeR, dx * 0.42, dy * 0.42);
+    return {
+      dx: dx,
+      dy: dy,
+      radius: radius,
+      stroke: Math.min(2, Math.max(0.6, radius * 0.55)),
+      font: fontFor(radius, dx, dy),
+    };
+  }
+
+  /** 字号同时受节点半径、列距、行距限制：三位数不会压在相邻节点上。 */
+  function fontFor(radius, dx, dy) {
+    return Math.max(4, Math.min(15, radius * 1.5, dx * 0.52, dy * 0.8));
   }
 
   function round1(value) {
@@ -600,8 +623,8 @@
       state.geo = geoFor(caseData.n);
       state.steps = stepsFor(caseData);
       state.yMax = chartYMax(caseData, state.chartMetric);
-      hintBox.hidden = !state.geo.compact;
-      if (state.geo.compact) hintBox.textContent = state.data.labels.compactHint;
+      /* compact 要按「当前这一步已插入几个」判断，第 1 步半径 19 时不该隐藏数字 */
+      hintBox.hidden = true;
       updateCaptions();
       playback.setSteps(state.steps);
     }
@@ -624,38 +647,43 @@
       if (!step || !state.data || !state.caseData) return;
       var st = stepState(state.caseData, step.index);
       state.lastSt = st;
-      drawTree(leftSvg, st.leftRoot, state.geo, st.newLeft);
-      drawTree(rightSvg, st.rightRoot, state.geo, st.newRight);
+      var geo = layoutGeoFor(Tree.size(st.leftRoot));
+      var compact = geo.radius < 8;
+      hintBox.hidden = !compact;
+      if (compact) hintBox.textContent = state.data.labels.compactHint;
+      drawTree(leftSvg, st.leftRoot, compact, st.newLeft);
+      drawTree(rightSvg, st.rightRoot, compact, st.newRight);
       updateMetrics(st);
       drawChart(st);
       updateStepText(st);
     }
 
-    function drawTree(svgEl, root, geo, newValue) {
+    function drawTree(svgEl, root, compact, newValue) {
       App.clear(svgEl);
       var count = Tree.size(root);
-      var depth = Tree.height(root) - 1;
-      var padX = Math.max(EDGE_PAD_X, (COORD_W - (count - 1) * geo.dx) / 2);
+      /* 按「当前已插入个数」重新分配间距，前几步的节点才不会被压成小点 */
+      var g = layoutGeoFor(count);
+      var padX = Math.max(EDGE_PAD_X, (COORD_W - (count - 1) * g.dx) / 2);
       var lay = Tree.layout(root, {
-        nodeR: geo.radius,
-        dx: geo.dx,
-        dy: geo.dy,
+        nodeR: g.radius,
+        dx: g.dx,
+        dy: g.dy,
         padX: padX,
         padY: EDGE_PAD_Y,
       });
       var boxW = Math.max(COORD_W, lay.width);
       var boxH = Math.max(COORD_H, lay.height);
       svgEl.setAttribute("viewBox", "0 0 " + Math.round(boxW) + " " + Math.round(boxH));
-      svgEl.classList.toggle("compact", geo.compact);
+      svgEl.classList.toggle("compact", compact);
       try {
-        svgEl.style.setProperty("--d3-font", geo.font.toFixed(2) + "px");
-        svgEl.style.setProperty("--d3-stroke", geo.stroke.toFixed(2));
+        svgEl.style.setProperty("--d3-font", g.font.toFixed(2) + "px");
+        svgEl.style.setProperty("--d3-stroke", g.stroke.toFixed(2));
       } catch (e) {
         /* 老浏览器不支持自定义属性也不影响主流程 */
       }
 
       Tree.render(svgEl, lay, {
-        radius: geo.radius,
+        radius: g.radius,
         nodeClass: function (node) {
           return "node-circle" + (node.value === newValue ? " is-new" : "");
         },
@@ -742,7 +770,7 @@
       chartSvg.appendChild(yLabel);
 
       var xLabel = App.svg("text", {
-        class: "chart-axis-label", x: left + plotW / 2, y: CHART_H - 8, "text-anchor": "middle",
+        class: "chart-axis-label", x: left + plotW / 2, y: CHART_H - 4, "text-anchor": "middle",
       });
       xLabel.textContent = chart.xLabel;
       chartSvg.appendChild(xLabel);
@@ -754,7 +782,7 @@
         if (v < 1 || v > n || seen[v]) return;
         seen[v] = true;
         var lbl = App.svg("text", {
-          class: "chart-tick", x: xOf(v), y: top + plotH + 15, "text-anchor": "middle",
+          class: "chart-tick", x: xOf(v), y: top + plotH + 13, "text-anchor": "middle",
         });
         lbl.textContent = String(v);
         chartSvg.appendChild(lbl);
@@ -806,6 +834,9 @@
         state.caseData.leftOrder.join(",") === state.caseData.rightOrder.join(",");
       var doneTemplate = sameOrder && data.steps.doneSame ? data.steps.doneSame : data.steps.done;
       stepBox.textContent = App.format(isLast ? doneTemplate : data.steps.insert, vars);
+      if (sameOrder && !isLast && data.labels.sameOrderHint) {
+        stepBox.textContent += " " + data.labels.sameOrderHint;
+      }
       if (isLast) {
         var conclusionTemplate = sameOrder && data.conclusionSame ? data.conclusionSame : data.conclusion;
         conclusionBox.textContent = App.format(conclusionTemplate, vars);
@@ -832,6 +863,8 @@
     chartSeries: chartSeries,
     chartYMax: chartYMax,
     geoFor: geoFor,
+    layoutGeoFor: layoutGeoFor,
+    fontFor: fontFor,
     fmtNumber: fmtNumber,
     /* 方便测试直接建树/查树，不用再 require 一次 */
     buildTree: Tree.buildTree,

@@ -272,7 +272,13 @@ setTimeout(function phaseA() {
     click("btn-next");
     click("btn-next");
     check("前驱推进到第 5 / 8 步", /第 5 \/ 8 步/.test(statusText()), statusText());
-    check("前驱第 5 步有 A/B/C 选项", chooseButtons().length === 3);
+    // 前驱策略下目标 30 的左孩子 20 就是前驱本身：C 与 B 重合，只保留两个选项
+    check("前驱第 5 步有两个选项（C 与 B 重合时不显示）", chooseButtons().length === 2,
+      "buttons=" + chooseButtons().length);
+    var predTexts = [].map.call(chooseButtons(), function (b) { return b.textContent; });
+    check("前驱 A 仍是后继 40", /^A/.test(predTexts[0]) && /40/.test(predTexts[0]), predTexts[0]);
+    check("前驱 B 是前驱 20", /^B/.test(predTexts[1]) && /20/.test(predTexts[1]), predTexts[1]);
+    check("前驱候选只有两个节点标记", doc().querySelectorAll("#canvas .node-circle.is-candidate").length === 2);
     // 前驱策略下 B 才是正确选项
     clickEl(chooseButtons()[1]);
     check("前驱选 B 后出现正确反馈", feedbackVisible() && /(^| )ok( |$)/.test(byId("panel-feedback").className));

@@ -7,6 +7,7 @@
     "test": "node test/d1.test.js && node test/tree.test.js && node test/d2.test.js && node test/d3.test.js",
     "smoke": "node test/mount.smoke.js && node test/mount-d2.smoke.js && node test/mount-d3.smoke.js",
     "test:all": "npm test && npm run smoke",
+    "bench": "node tools/bench.js",
     "serve": "node tools/serve.js",
     "serve:py": "python -m http.server 8000"
   },

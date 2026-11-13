@@ -457,14 +457,22 @@
     var predNode = Tree.findNode(initialRoot, predValue);
     var answerKey = strategy === "successor" ? "A" : "B";
     var wrongKey = strategy === "successor" ? "B" : "A";
+    // 直接孩子场景下，「拿直接孩子顶替」（C）可能就是后继/前驱本身（A/B）。
+    // 这时选项不再唯一，C 会与正确选项重合：只保留 A、B 两个候选。
+    var cDuplicates = childForC.id === succNode.id || childForC.id === predNode.id;
+    var chooseCandidates = { A: succNode.id, B: predNode.id };
+    var chooseOptions = [
+      { key: "A", role: "successor", value: succValue },
+      { key: "B", role: "predecessor", value: predValue },
+    ];
+    if (!cDuplicates) {
+      chooseCandidates.C = childForC.id;
+      chooseOptions.push({ key: "C", role: "child", value: childForC.value });
+    }
     plan.choose = {
       answer: answerKey,
       wrongKey: wrongKey,
-      options: [
-        { key: "A", role: "successor", value: succValue },
-        { key: "B", role: "predecessor", value: predValue },
-        { key: "C", role: "child", value: childForC.value },
-      ],
+      options: chooseOptions,
     };
     push(
       "choose",
@@ -477,13 +485,13 @@
       },
       snapshotOf(cloneTree(initialRoot), {
         targetId: target.id,
-        candidates: { A: succNode.id, B: predNode.id, C: childForC.id },
+        candidates: chooseCandidates,
       })
     );
 
     /* 错误选项的演示数据（纯数据，渲染在 mount 里做） */
     plan.wrongDemos[wrongKey] = alternativeDemoFor(initialRoot, targetValue, strategy);
-    plan.wrongDemos.C = brokenDemoFor(initialRoot, targetValue, strategy);
+    if (!cDuplicates) plan.wrongDemos.C = brokenDemoFor(initialRoot, targetValue, strategy);
 
     /* 第 6 步：把替换节点从原位置摘下来 */
     var detachRoot = cloneTree(initialRoot);
@@ -491,16 +499,20 @@
     var detachRepl = Tree.findNode(detachRoot, repl.value);
     var detachParentInfo = findParent(detachRoot, repl.value);
     var detachParent = detachParentInfo.parent;
+    // 替换节点是不是被删节点的直接孩子：这时被改的是目标自己的指针，
+    // 指针方向与「一路向左后父节点的左指针」不同，文案要单独处理。
+    var directChild = detachParent === detachTarget;
     var movedChild = null;
     if (strategy === "successor") {
       movedChild = detachRepl.right;
-      if (detachParent === detachTarget) detachTarget.right = detachRepl.right;
+      if (directChild) detachTarget.right = detachRepl.right;
       else detachParent.left = detachRepl.right;
     } else {
       movedChild = detachRepl.left;
-      if (detachParent === detachTarget) detachTarget.left = detachRepl.left;
+      if (directChild) detachTarget.left = detachRepl.left;
       else detachParent.right = detachRepl.left;
     }
+    var directSide = strategy === "successor" ? "right" : "left";
     var detachArrows = [];
     if (movedChild) {
       detachArrows.push({ kind: "detach", fromId: detachParent.id, toId: movedChild.id, labelKey: "arrowDetach" });
@@ -509,15 +521,16 @@
     }
     detachArrows.push({ kind: "attach", fromGhost: true, toId: detachTarget.id, labelKey: "arrowAttach" });
     push(
-      "detach",
+      directChild ? "detachDirect" : "detach",
       {
+        target: targetValue,
         succ: repl.value,
         succParent: detachParent.value,
         succFreeDir: freeDir,
         succChild: movedChild ? movedChild.value : null,
         // 摘节点这一步涉及两个方向：父节点被改的是哪一侧指针，
         // 以及被搬走的是替换节点哪一侧的孩子。后继：父指针 left、孩子 right。
-        parentSide: freeDir,
+        parentSide: directChild ? directSide : freeDir,
         movedDir: strategy === "successor" ? "right" : "left",
       },
       snapshotOf(detachRoot, {
@@ -526,7 +539,7 @@
         newLinks: movedChild ? [{ fromId: detachParent.id, toId: movedChild.id }] : [],
         attach: {
           parentId: detachParent.id,
-          side: strategy === "successor" ? "left" : "right",
+          side: directChild ? directSide : freeDir,
           childId: movedChild ? movedChild.id : null,
         },
         ghost: ghostAt(initialRoot, repl.value, "detached"),
@@ -572,8 +585,14 @@
     if (attachToParentId) {
       attachArrows.push({ kind: "new", fromId: attachToParentId, toId: attachRepl.id, labelKey: "arrowNew" });
     }
+    // 直接孩子场景：替换节点本来就是目标的孩子，它保留自己那一侧的孩子，
+    // 只需接上目标另一侧的子树；通用模板会把「目标原来的孩子」说成替换节点，故单独措辞。
+    var keepDir = strategy === "successor" ? "right" : "left";
+    var takeDir = strategy === "successor" ? "left" : "right";
+    var keepNode = keepDir === "right" ? attachRepl.right : attachRepl.left;
+    var takeNode = takeDir === "right" ? attachRepl.right : attachRepl.left;
     push(
-      "attach",
+      directChild ? "attachDirect" : "attach",
       {
         target: targetValue,
         succ: repl.value,
@@ -581,6 +600,10 @@
         right: attachRepl.right ? attachRepl.right.value : null,
         parent: attachToInfo.parent ? attachToInfo.parent.value : null,
         isRoot: !attachToParentId,
+        keepDir: keepDir,
+        keepText: keepNode ? keepNode.value : null,
+        takeDir: takeDir,
+        takeText: takeNode ? takeNode.value : null,
       },
       snapshotOf(attachRoot, {
         succ: attachRepl.id,
@@ -627,6 +650,10 @@
     if (raw.succFreeDir) vars.succFreeDirLabel = data.labels[raw.succFreeDir] || raw.succFreeDir;
     if (raw.parentSide) vars.succParentSideLabel = data.labels[raw.parentSide] || raw.parentSide;
     if (raw.movedDir) vars.movedDirLabel = data.labels[raw.movedDir] || raw.movedDir;
+    if (raw.keepDir) vars.keepDirLabel = data.labels[raw.keepDir] || raw.keepDir;
+    if (raw.takeDir) vars.takeDirLabel = data.labels[raw.takeDir] || raw.takeDir;
+    vars.keepText = raw.keepText == null ? data.labels.none : raw.keepText;
+    vars.takeText = raw.takeText == null ? data.labels.none : raw.takeText;
     vars.isRoot = !!raw.isRoot;
     vars.parentText = raw.parent == null ? data.labels.rootNode : raw.parent;
     vars.succParentText = raw.succParent == null ? data.labels.rootNode : raw.succParent;
@@ -864,9 +891,15 @@
         var tpl = state.data.steps[step.key] || { title: step.key };
         var title = App.format(tpl.title || step.key, varsFor(step));
         var text = App.format(state.data.labels.stepTitle, { index: i + 1, title: title });
-        var li = App.el("li", { text: text, class: "step-item" });
+        var li = App.el("li", { text: text, class: "step-item", tabindex: "0" });
         li.addEventListener("click", function () {
           jumpTo(i);
+        });
+        li.addEventListener("keydown", function (ev) {
+          if (ev.key === "Enter" || ev.key === " " || ev.key === "Spacebar") {
+            ev.preventDefault();
+            jumpTo(i);
+          }
         });
         stepsBox.appendChild(li);
       });
@@ -877,6 +910,8 @@
       var items = stepsBox.querySelectorAll("li");
       Array.prototype.forEach.call(items, function (li, i) {
         li.className = "step-item" + (i === index ? " now" : i < index ? " done" : "");
+        if (i === index) li.setAttribute("aria-current", "step");
+        else li.removeAttribute("aria-current");
       });
     }
 
@@ -1129,7 +1164,8 @@
         drawTree(step.snapshot, vars, { mismatchOption: state.wrong.option, noClick: true });
         return;
       }
-      drawTree(step.snapshot, vars, {});
+      // 判定步里点画布节点很容易被误解为「选 A/B/C」，此时不绑定换目标
+      drawTree(step.snapshot, vars, { noClick: step.key === "choose" && !state.answered });
     }
 
     function ensureDefs() {
@@ -1378,6 +1414,7 @@
         if (g.style) g.style.cursor = "pointer";
         g.setAttribute("role", "button");
         g.setAttribute("tabindex", "0");
+        g.setAttribute("data-value", String(node.value));
         g.setAttribute(
           "aria-label",
           App.format(state.data.labels.nodeAria || "节点 {value}", { value: node.value })
@@ -1394,10 +1431,20 @@
       });
     }
 
+    function focusNodeValue(value) {
+      if (!svgEl || typeof svgEl.querySelector !== "function") return;
+      var target = svgEl.querySelector('g.node[data-value="' + String(value) + '"]');
+      if (target && typeof target.focus === "function") target.focus();
+    }
+
     function selectTarget(value) {
       if (!state.data) return;
       playback.pause();
       rebuild(value);
+      // 重绘会清空 SVG，焦点元素随之消失；把焦点还给同值节点，键盘用户才不会迷路
+      setTimeout(function () {
+        focusNodeValue(value);
+      }, 0);
     }
 
     /* ---------- 错误选项 C：断链演示 ---------- */

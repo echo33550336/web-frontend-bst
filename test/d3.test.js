@@ -125,11 +125,17 @@ eq("步骤序号从 0 开始", D3.stepsFor(caseData).map((s) => s.index), [0, 1,
 
 /* 7. 几何：n=5..60 都装得进坐标盒，规模大时只留轮廓 */
 check("小规模节点够大（可显示数字）", D3.geoFor(5).compact === false);
-check("默认规模 20 仍显示数字", D3.geoFor(20).compact === false);
+check("默认规模 20 数字挤不下，自动切紧凑模式", D3.geoFor(20).compact === true);
+check("中规模 12 仍显示数字", D3.geoFor(12).compact === false);
 check("规模 60 切到紧凑模式", D3.geoFor(60).compact === true);
 check("规模 60 的横向总宽不超出坐标盒", 59 * D3.geoFor(60).dx <= 400 - 44 + 0.001);
 check("规模 60 的纵向总高不超出坐标盒", 59 * D3.geoFor(60).dy <= 360 - 48 + 0.001);
 check("间距随规模单调变小", D3.geoFor(30).dx < D3.geoFor(5).dx);
+/* 第 1 步只插入 1 个数时按当前个数分配空间，根节点不会缩成小点 */
+check("第 1 步根节点用满半径", D3.layoutGeoFor(1).radius === 19);
+check("根节点字号可读", D3.layoutGeoFor(1).font >= 12);
+check("树长大时间距单调收紧", D3.layoutGeoFor(20).radius < D3.layoutGeoFor(5).radius);
+check("字号不会超过列距能容纳的宽度", D3.fontFor(19, 18.7, 16.4) * 0.6 * 3 <= 18.7 + 0.001);
 
 /* 8. data/d3.json 的约定与 JS 对得上（文案/参数/占位符都来自 JSON） */
 const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "d3.json"), "utf8"));

@@ -229,13 +229,21 @@ async function main() {
   size.value = "60";
   size.dispatchEvent(new win.Event("input"));
   check("规模改成 60 后状态栏第 1 / 60 步", /^第 1 \/ 60 步$/.test(textOf(doc, "status")), textOf(doc, "status"));
-  check("规模 60 时两画布切到紧凑模式（节点数字隐去）",
-    leftSvg.classList.contains("compact") && rightSvg.classList.contains("compact"));
+  check("规模 60 第 1 步节点半径仍够大，显示数字",
+    !leftSvg.classList.contains("compact") && !rightSvg.classList.contains("compact") &&
+      Boolean(leftSvg.querySelector(".node-value")) && leftSvg.querySelector(".node-value").textContent.length > 0,
+    "compact=" + leftSvg.classList.contains("compact"));
   const hint = doc.getElementById("metrics-hint");
-  check("紧凑模式下出现提示文字", hint.hidden === false && hint.textContent === cfg.labels.compactHint,
-    hint.textContent);
+  check("规模 60 第 1 步不显示紧凑提示", hint.hidden === true);
   check("规模 60 时两画布仍各有 1 个节点",
     leftSvg.querySelectorAll("circle").length === 1 && rightSvg.querySelectorAll("circle").length === 1);
+  for (let i = 0; i < 30; i += 1) {
+    doc.getElementById("btn-next").dispatchEvent(new win.Event("click"));
+  }
+  check("插入到 31 个节点后切到紧凑模式（节点数字隐去）",
+    leftSvg.classList.contains("compact") && rightSvg.classList.contains("compact"));
+  check("紧凑模式下出现提示文字", hint.hidden === false && hint.textContent === cfg.labels.compactHint,
+    hint.textContent);
 
   /* ---------- 6. 播放 / 暂停 / 速度 ---------- */
   const speed = doc.getElementById("param-speed");

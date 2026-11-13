@@ -70,6 +70,8 @@ setTimeout(() => {
 
   const pathCircles = doc.querySelectorAll("#canvas circle.on-path");
   check("拖动后路径被高亮（50 → 70 → 60 共 3 个）", pathCircles.length === 3, "on-path=" + pathCircles.length);
+  const pathEdges = doc.querySelectorAll("#canvas .edge.on-path");
+  check("只高亮走过的 2 条边（不会点亮没走的分支）", pathEdges.length === 2, "edges=" + pathEdges.length);
   check("候选位置收窄到 1", candidateEl.textContent === "1", candidateEl.textContent);
 
   const chain = doc.querySelectorAll("#panel-interval li");
@@ -100,10 +102,24 @@ setTimeout(() => {
     doc.getElementById("btn-prev").click();
     check("回到上一步（land）后画面回到挂接前", doc.querySelectorAll("#canvas circle").length === 7,
       "circles=" + doc.querySelectorAll("#canvas circle").length);
+    check("回退后中序面板也回到 7 个节点", doc.getElementById("panel-inorder").textContent === "20 · 30 · 40 · 50 · 60 · 70 · 80",
+      doc.getElementById("panel-inorder").textContent);
     doc.getElementById("btn-next").click();
     check("再次 attach 仍只有 8 个节点（不重复插入）", doc.querySelectorAll("#canvas circle").length === 8,
       "circles=" + doc.querySelectorAll("#canvas circle").length);
     check("重播后中序仍正确", doc.getElementById("panel-inorder").textContent === "20 · 30 · 40 · 50 · 60 · 65 · 70 · 80",
+      doc.getElementById("panel-inorder").textContent);
+
+    // 重复值：不能播放，更不能出现「挂接完成」的假成功
+    const value65 = doc.getElementById("param-value");
+    value65.value = "65";
+    value65.dispatchEvent(new win.Event("input"));
+    check("重复值会禁用播放按钮", doc.getElementById("btn-play").disabled === true,
+      String(doc.getElementById("btn-play").disabled));
+    check("重复值状态栏说明不会插入", doc.getElementById("status").textContent.indexOf("已经存在") > -1,
+      doc.getElementById("status").textContent);
+    doc.getElementById("btn-play").dispatchEvent(new win.Event("click"));
+    check("重复值点播放后中序仍是 8 个节点", doc.getElementById("panel-inorder").textContent === "20 · 30 · 40 · 50 · 60 · 65 · 70 · 80",
       doc.getElementById("panel-inorder").textContent);
 
     // 树规模滑块：改到 11 后随机重生成，节点数应立刻变成 11

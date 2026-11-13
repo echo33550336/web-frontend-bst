@@ -165,6 +165,9 @@
       });
       btnInsert.addEventListener("click", function () {
         if (hasValue(state.root, state.value)) {
+          state.steps = [];
+          playback.setSteps([]);
+          setTransportDisabled(true);
           panelStepTitle.textContent = state.data.titles.set;
           panelStep.textContent = state.data.messages.duplicate;
           return;
@@ -172,6 +175,7 @@
         state.baseRoot = state.root;
         state.steps = buildSteps(state.baseRoot, state.value);
         playback.setSteps(state.steps);
+        setTransportDisabled(false);
         playback.play();
       });
       btnRegen.addEventListener("click", regenerate);
@@ -223,20 +227,40 @@
       }
     }
 
+    /** 重复值 / 空步骤时禁用播放与单步，避免「没插入却播完成功」 */
+    function setTransportDisabled(disabled) {
+      ["btn-play", "btn-prev", "btn-next"].forEach(function (id) {
+        var btn = document.getElementById(id);
+        if (btn) btn.disabled = !!disabled;
+      });
+    }
+
     /** 拖动滑动条时：不算"步骤"，只是一次完整的路径预览 */
     function refreshPreview() {
       state.baseRoot = state.root;
       var p = pathFor(state.baseRoot, state.value);
       state.hops = p.hops;
+      if (p.duplicate) {
+        // 重复值不会插入：清空步骤并禁用播放，只保留路径预览
+        state.steps = [];
+        playback.setSteps([], true);
+        setTransportDisabled(true);
+        draw(p.hops.length - 1, state.value, false);
+        fillIntervalPanel(p.hops, p.hops.length - 1);
+        panelCandidates.textContent = String(countSlots(state.root, p.lo, p.hi));
+        panelStepTitle.textContent = state.data ? state.data.labels.preview || "" : "";
+        panelStep.textContent = state.data ? state.data.messages.duplicate : "这个值已经存在。";
+        statusEl.textContent = state.data ? state.data.messages.duplicate : "重复值不会插入";
+        return;
+      }
       state.steps = buildSteps(state.baseRoot, state.value);
       draw(p.hops.length - 1, state.value, false);
       fillIntervalPanel(p.hops, p.hops.length - 1);
       panelCandidates.textContent = String(countSlots(state.root, p.lo, p.hi));
       panelStepTitle.textContent = state.data ? state.data.labels.preview || "" : "";
-      panelStep.textContent = p.duplicate
-        ? state.data ? state.data.messages.duplicate : "这个值已经存在。"
-        : state.data ? state.data.messages.dragHint : "";
+      panelStep.textContent = state.data ? state.data.messages.dragHint : "";
       playback.setSteps(state.steps, true);
+      setTransportDisabled(false);
       statusEl.textContent = state.data
         ? App.format(state.data.messages.preview, { count: state.steps.length })
         : "预览中 · 共 " + state.steps.length + " 步";
@@ -262,13 +286,23 @@
 
     function renderStep(step) {
       if (!step) return;
-      // 回退到 attach 之前的步骤时，把画面恢复到「还没挂接」的树
-      if (step.kind !== "attach" && state.baseRoot) state.root = state.baseRoot;
+      // 回退到 attach 之前的步骤时，把画面恢复到「还没挂接」的树，
+      // 中序面板也要跟着回来，否则会出现「画布 7 个节点、中序却有 65」的矛盾。
+      if (step.kind !== "attach" && state.baseRoot) {
+        state.root = state.baseRoot;
+        updateInorder();
+      }
       var d = state.data;
       var root = state.baseRoot || state.root;
       var p = pathFor(root, state.value);
 
       if (step.kind === "attach") {
+        if (hasValue(root, state.value)) {
+          // 防御：重复值即使绕过按钮进入步骤序列，也不能假装挂接成功
+          panelStepTitle.textContent = d.titles.set;
+          panelStep.textContent = d.messages.duplicate;
+          return;
+        }
         state.root = insertNode(cloneTree(root), state.value);
         updateInorder();
         draw(-1, null, true);
@@ -341,11 +375,19 @@
         return false;
       }
 
+      // 只有「真正走过」的连续 hop 边才算路径；只按端点是否在路径上判断
+      // 会把路径节点的左右两条孩子边都点亮，正好和「只沿一个方向走」相反。
+      var pathEdges = {};
+      for (var pi = 0; pi < activeHop && pi + 1 < p.hops.length; pi += 1) {
+        pathEdges[p.hops[pi].node.id + "|" + p.hops[pi + 1].node.id] = true;
+      }
+
       Tree.render(svgEl, lay, {
         showIntervals: true,
         intervalsMap: iv,
         edgeClass: function (e) {
-          return onPath(e.from) ? "edge on-path" : "edge";
+          var key = e.from.id + "|" + e.to.id;
+          return pathEdges[key] ? "edge on-path" : "edge";
         },
         nodeClass: function (n) {
           return "node-circle" + (onPath(n) ? " on-path" : "") +

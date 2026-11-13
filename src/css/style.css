@@ -69,8 +69,20 @@ header.page-head { margin-bottom: 18px; }
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px;
+  /* 先给画布区预留高度，避免脚本填充内容时把下方内容顶下去（CLS） */
+  min-height: 620px;
 }
 .stage svg { width: 100%; height: auto; display: block; }
+@media (max-width: 900px) { .stage { min-height: 0; } }
+
+/* 标题区的文案由 JS 从 JSON 填入；先按最终行数预留高度，避免文字变长把下方内容顶走（CLS） */
+.subtitle { min-height: 1.5em; }
+.howto { min-height: 24px; }
+.status-note { min-height: 24px; }
+@media (max-width: 680px) {
+  .howto { min-height: 72px; }
+  .status-note { min-height: 56px; }
+}
 
 .side { display: flex; flex-direction: column; gap: 14px; }
 .card {
