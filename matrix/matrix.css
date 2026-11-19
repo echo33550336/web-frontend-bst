@@ -1426,3 +1426,50 @@ body.matrix::before {
 @media (prefers-reduced-motion: reduce) {
   body.matrix::before { animation: none; }
 }
+
+/* 星系画布：在星尘与引导线之下、内容之上 */
+#galaxy {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+body.matrix::before { z-index: 1; }
+body.matrix { background: #04060b; }
+#galaxy { opacity: 0.9; }
+body.matrix .card { background: rgba(6, 10, 17, 0.72); }
+body.matrix .stage { background: rgba(6, 10, 17, 0.68); }
+body.matrix .card { background: rgba(6, 10, 17, 0.64); }
+body.matrix .stage { background: rgba(6, 10, 17, 0.66); }
+#galaxy { opacity: 0.85; }
+body.matrix .card { background: rgba(6, 10, 17, 0.72); }
+body.matrix .card-link { background: rgba(6, 10, 17, 0.78); }
+@media (max-width: 900px) {
+  #galaxy { opacity: 0.6; }
+}
+@media (max-width: 900px) {
+  body.matrix .cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  body.matrix .page-head h1 .keep { white-space: normal; }
+}
+@media (max-width: 640px) {
+  body.matrix .page-head h1 .keep { display: block; white-space: nowrap; }
+}
+body.matrix::before {
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(168, 198, 232, 0.24) 0 1px,
+      transparent 1px 12.5%),
+    radial-gradient(circle at 0 1px, rgba(230, 178, 86, 0.95) 0 2px, transparent 2.6px);
+  background-size: auto, 12.5% 96px;
+  background-position: 0 0, 0 calc(var(--scroll-y, 0px) * -0.3);
+}
+/* 入场动画只保留页面级转场；卡片直接可见，避免截图/低性能设备停在半透明状态 */
+body.matrix .wrap,
+body.matrix .cards > *,
+body.matrix .layout > * {
+  animation: none !important;
+}

@@ -17,7 +17,7 @@ node tools/serve.js 8000
 
 - **深空底色**：`#04060b` 为底，正文 `#eaf1f8`，次级文字 `#93a6ba`；
   强调色只有两种：琥珀 `#d8a24a`（路径、操作）和冰蓝 `#9cc7e8`（对照序列）。
-- **星尘**：固定在视口上的多层细星点，不滚动、不闪烁，只提供空间感。
+- **星尘与星系**：`galaxy.js` 在固定画布上画星点、尘埃和两个缓慢自转的旋涡星系：右上是吸积环，左下是正面旋涡；星点会闪烁，鼠标移动有轻微视差，滚动时整体缓慢上移。镜头以外只留暗星，不抢内容。
 - **滚动引导线**：`body.matrix::before` 画 8 条竖向细线，线上每 140px 一个琥珀刻度；
   刻度随页面滚动上下移动（由 `effects.js` 写入 `--scroll-y`，CSS 计算 `background-position`）。
   它只是背景层，不接收鼠标事件，也不遮挡内容。
@@ -34,7 +34,7 @@ matrix/
   home.css                                    ← 首页版式与入场动效
   matrix.css                                  ← 星际穿越主题与演示页覆盖
   transition.js                               ← 步骤文字的轻量转场
-  effects.js                                  ← 滚动变量（--scroll / --scroll-y）与指针光斑
+  effects.js                                  ← 滚动变量（--scroll / --scroll-y）与指针光斑\n  galaxy.js                                   ← 星尘、旋涡星系与视差动画
   css/style.css                               ← src/css/style.css 的副本
   js/common.js  tree.js  d1.js  d2.js  d3.js  ← src/js/* 的副本
   data/d1.json  d2.json  d3.json              ← 仓库 data/* 的副本
@@ -51,3 +51,5 @@ matrix/
 `img/home-390.png`、`img/d1-390.png`。
 
 课程提交与演示默认仍用 `src/`；这套皮肤用于对比和展示另一种设计方向。
+
+
