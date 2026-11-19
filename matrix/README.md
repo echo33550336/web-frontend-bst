@@ -22,6 +22,7 @@ node tools/serve.js 8000
 - **滚动引导线**：`body.matrix::before` 画 8 条竖向细线，线上每 140px 一个琥珀刻度；
   刻度随页面滚动上下移动（由 `effects.js` 写入 `--scroll-y`，CSS 计算 `background-position`）。
   它只是背景层，不接收鼠标事件，也不遮挡内容。
+- **金色描边**：视口一圈双层金线，四角藤蔓式角花，上下中央各一枚菱形饰件；卡片、画布、按钮带内嵌金线与金色细边，标题与页脚有金色饰线。角花与饰件是 `img/corner-gold.svg`、`img/divider-gold.svg`，由 `effects.js` 注入，纯装饰不挡点击。
 - **HUD 面板**：画布与侧栏是半透明深色面板 + 1px 细线 + 内嵌细框，没有圆角、阴影和渐变；
   树节点白描边，比较路径琥珀，新节点冰蓝；d3 左树/左折线冰蓝、右树/右折线琥珀。
 - **字体**：标题细体、字距略宽；正文 17px，最小 16px；数字、区间、读数用等宽字体。
@@ -41,7 +42,7 @@ matrix/
   css/style.css                               ← src/css/style.css 的副本
   js/common.js  tree.js  d1.js  d2.js  d3.js  ← src/js/* 的副本
   data/d1.json  d2.json  d3.json              ← 仓库 data/* 的副本
-  img/*.png                                   ← 本皮肤的预览截图
+  img/*.png  img/corner-gold.svg  img/divider-gold.svg   ← 预览截图与金色饰件
   README.md
 ```
 
@@ -54,6 +55,7 @@ matrix/
 `img/home-390.png`、`img/d1-390.png`、`img/intro.png`（幕布）。
 
 课程提交与演示默认仍用 `src/`；这套皮肤用于对比和展示另一种设计方向。
+
 
 
 

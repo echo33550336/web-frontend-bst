@@ -107,7 +107,7 @@
     var cy = h * galaxy.y + pointer.y * 12 - scrollShift;
 
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = "#04060b";
+    ctx.fillStyle = "#05060f";
     ctx.fillRect(0, 0, w, h);
 
     // 星云
@@ -119,7 +119,7 @@
       var dy = cy + Math.sin(da) * galaxy.r * d.t * 0.62;
       var dr = galaxy.r * d.s;
       var g = ctx.createRadialGradient(dx, dy, 0, dx, dy, dr);
-      g.addColorStop(0, d.warm ? "rgba(216,162,74,0.10)" : "rgba(120,170,220,0.10)");
+      g.addColorStop(0, d.warm ? "rgba(184,156,255,0.12)" : "rgba(143,227,255,0.12)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = g;
       ctx.fillRect(dx - dr, dy - dr, dr * 2, dr * 2);
@@ -142,9 +142,9 @@
 
     // 星系核心
     var core = ctx.createRadialGradient(cx, cy, 0, cx, cy, galaxy.r * 0.42);
-    core.addColorStop(0, "rgba(255,226,178,0.5)");
-    core.addColorStop(0.22, "rgba(255,206,140,0.22)");
-    core.addColorStop(0.6, "rgba(216,162,74,0.08)");
+    core.addColorStop(0, "rgba(214,190,255,0.5)");
+    core.addColorStop(0.22, "rgba(184,156,255,0.22)");
+    core.addColorStop(0.6, "rgba(184,156,255,0.08)");
     core.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = core;
     ctx.beginPath();
@@ -159,7 +159,7 @@
       var px = cx + Math.cos(ang) * q.r;
       var py = cy + Math.sin(ang) * q.r * 0.72;
       ctx.globalAlpha = q.a;
-      ctx.fillStyle = q.warm ? "#f0c883" : "#bcd8f2";
+      ctx.fillStyle = q.warm ? "#d8b4ff" : "#9fe8ff";
       ctx.beginPath();
       ctx.arc(px, py, q.size, 0, Math.PI * 2);
       ctx.fill();
@@ -171,13 +171,13 @@
     var coreR = galaxy.r * 0.055;
     ctx.beginPath();
     ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
-    ctx.fillStyle = "#04060b";
+    ctx.fillStyle = "#05060f";
     ctx.fill();
     ctx.lineWidth = 1.2;
-    ctx.strokeStyle = "rgba(255, 224, 170, 0.85)";
+    ctx.strokeStyle = "rgba(206, 180, 255, 0.85)";
     ctx.stroke();
     var ring = ctx.createRadialGradient(cx, cy, coreR, cx, cy, coreR * 3.2);
-    ring.addColorStop(0, "rgba(255, 226, 178, 0.35)");
+    ring.addColorStop(0, "rgba(214, 190, 255, 0.35)");
     ring.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = ring;
     ctx.beginPath();
@@ -190,7 +190,7 @@
     var c2y = h * galaxy2.y - scrollShift * 0.5;
     ctx.globalCompositeOperation = "lighter";
     var halo2 = ctx.createRadialGradient(c2x, c2y, 0, c2x, c2y, galaxy2.r * 1.3);
-    halo2.addColorStop(0, "rgba(150, 205, 245, 0.3)");
+    halo2.addColorStop(0, "rgba(143, 227, 255, 0.3)");
     halo2.addColorStop(1, "rgba(0, 0, 0, 0)");
     ctx.fillStyle = halo2;
     ctx.beginPath();
@@ -202,7 +202,7 @@
       var px2 = c2x + Math.cos(ang2) * q2.r;
       var py2 = c2y + Math.sin(ang2) * q2.r * 0.55;
       ctx.globalAlpha = q2.a;
-      ctx.fillStyle = q2.warm ? "#f0c883" : "#cfe6f8";
+      ctx.fillStyle = q2.warm ? "#d8b4ff" : "#bff3ff";
       ctx.beginPath();
       ctx.arc(px2, py2, q2.size, 0, Math.PI * 2);
       ctx.fill();
@@ -212,10 +212,10 @@
     var core2 = galaxy2.r * 0.05;
     ctx.beginPath();
     ctx.arc(c2x, c2y, core2, 0, Math.PI * 2);
-    ctx.fillStyle = "#04060b";
+    ctx.fillStyle = "#05060f";
     ctx.fill();
     ctx.lineWidth = 1;
-    ctx.strokeStyle = "rgba(178, 216, 244, 0.85)";
+    ctx.strokeStyle = "rgba(143, 227, 255, 0.85)";
     ctx.stroke();
     ctx.globalAlpha = 1;
   }
@@ -261,6 +261,7 @@
   build();
   start();
 })();
+
 
 
 

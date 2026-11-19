@@ -66,3 +66,19 @@
   });
 })();
 
+
+/* 页面金色描边与外框角饰 */
+(function () {
+  if (document.querySelector(".gold-frame")) return;
+  var frame = document.createElement("div");
+  frame.className = "gold-frame";
+  frame.setAttribute("aria-hidden", "true");
+  frame.innerHTML =
+    '<i class="gold-corner tl"></i>' +
+    '<i class="gold-corner tr"></i>' +
+    '<i class="gold-corner bl"></i>' +
+    '<i class="gold-corner br"></i>' +
+    '<i class="gold-center top"></i>' +
+    '<i class="gold-center bottom"></i>';
+  document.body.appendChild(frame);
+})();

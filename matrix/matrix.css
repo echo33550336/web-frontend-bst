@@ -1597,3 +1597,744 @@ body.matrix .stage-intro::after {
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 40%, transparent 44%, transparent 58%, #000 62%, #000 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 40%, transparent 44%, transparent 58%, #000 62%, #000 100%);
 }
+
+/* ===== 金色描边与镶嵌 ===== */
+
+/* 页面外框：双线 + 四角花纹 + 上下中央饰件 */
+.gold-frame {
+  position: fixed;
+  inset: 16px;
+  z-index: 100;
+  pointer-events: none;
+  border: 1px solid rgba(216, 162, 74, 0.42);
+  box-shadow:
+    inset 0 0 0 3px rgba(4, 6, 11, 0.55),
+    inset 0 0 0 4px rgba(216, 162, 74, 0.16),
+    0 0 36px rgba(0, 0, 0, 0.45);
+}
+.gold-frame .gold-corner {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  background: url("img/corner-gold.svg") center / contain no-repeat;
+  opacity: 0.92;
+}
+.gold-frame .tl { top: -3px; left: -3px; }
+.gold-frame .tr { top: -3px; right: -3px; transform: scaleX(-1); }
+.gold-frame .bl { bottom: -3px; left: -3px; transform: scaleY(-1); }
+.gold-frame .br { bottom: -3px; right: -3px; transform: scale(-1); }
+.gold-frame .gold-center {
+  position: absolute;
+  left: 50%;
+  width: 132px;
+  height: 14px;
+  transform: translateX(-50%);
+  background: url("img/divider-gold.svg") center / contain no-repeat;
+  opacity: 0.9;
+}
+.gold-frame .top { top: -7px; }
+.gold-frame .bottom { bottom: -7px; }
+
+/* 卡片、画布：金色细边 + 内嵌双线 */
+body.matrix .card-link,
+body.matrix .card,
+body.matrix .stage {
+  position: relative;
+  border: 1px solid rgba(216, 162, 74, 0.34);
+  box-shadow:
+    inset 0 0 0 1px rgba(216, 162, 74, 0.1),
+    inset 0 0 0 7px rgba(216, 162, 74, 0.028),
+    0 0 28px rgba(0, 0, 0, 0.25);
+}
+body.matrix .card-link::after,
+body.matrix .card::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(216, 162, 74, 0.14);
+  background: none;
+  pointer-events: none;
+}
+
+/* 标题下方金色饰线 */
+body.matrix .page-head h1::after {
+  content: "";
+  display: block;
+  width: 132px;
+  height: 14px;
+  margin-top: 16px;
+  background: url("img/divider-gold.svg") left center / contain no-repeat;
+}
+body.matrix .page-head h1 { margin-bottom: 8px; }
+
+/* 顶栏与页脚：金线 + 内嵌微光 */
+body.matrix .topbar {
+  border-bottom: 1px solid rgba(216, 162, 74, 0.3);
+  background: linear-gradient(180deg, rgba(216, 162, 74, 0.04), transparent);
+}
+body.matrix .site-footer {
+  position: relative;
+  border-top: 1px solid rgba(216, 162, 74, 0.3);
+  background: linear-gradient(180deg, rgba(216, 162, 74, 0.035), transparent);
+}
+body.matrix .site-footer::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 132px;
+  height: 14px;
+  transform: translateX(-50%);
+  background: url("img/divider-gold.svg") center / contain no-repeat;
+  opacity: 0.8;
+}
+
+/* 按钮：金边 + 内嵌线 */
+body.matrix .cta,
+body.matrix .controls button,
+body.matrix .transport button,
+body.matrix .demo-controls button {
+  border-color: rgba(216, 162, 74, 0.45);
+  box-shadow: inset 0 0 0 2px rgba(4, 6, 11, 0.35), inset 0 0 0 3px rgba(216, 162, 74, 0.16);
+}
+
+/* 背景：极淡的金色斜纹镶嵌 */
+body.matrix {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(216, 162, 74, 0.028) 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(-45deg, rgba(216, 162, 74, 0.028) 0 1px, transparent 1px 30px),
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.38) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 65%, rgba(156, 199, 232, 0.3) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 40% 85%, rgba(255, 255, 255, 0.22) 0 1px, transparent 1.5px),
+    radial-gradient(1100px 720px at 82% -12%, rgba(44, 70, 102, 0.4), transparent 66%),
+    radial-gradient(900px 620px at 4% 10%, rgba(24, 40, 62, 0.45), transparent 70%);
+  background-size: 30px 30px, 30px 30px, 340px 280px, 460px 380px, 620px 520px, auto, auto;
+  background-attachment: fixed;
+}
+
+@media (max-width: 900px) {
+  .gold-frame { inset: 9px; }
+  .gold-frame .gold-corner { width: 52px; height: 52px; }
+  .gold-frame .gold-center { width: 96px; }
+  body.matrix .card-link::after,
+  body.matrix .card::after { inset: 5px; }
+}
+@media (max-width: 900px) {
+  .gold-frame .gold-corner { display: none; }
+  .gold-frame .gold-center { width: 84px; }
+}
+/* 幕布也带金色角花 */
+body.matrix .stage-intro { border: 1px solid rgba(216, 162, 74, 0.32); }
+body.matrix .stage-panel { overflow: hidden; }
+body.matrix .stage-panel::before,
+body.matrix .stage-panel::after {
+  content: "";
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  background: url("img/corner-gold.svg") center / contain no-repeat;
+  opacity: 0.9;
+  pointer-events: none;
+}
+body.matrix .stage-panel-left::before { top: 0; left: 0; }
+body.matrix .stage-panel-left::after { bottom: 0; left: 0; transform: rotate(180deg); }
+body.matrix .stage-panel-right::before { top: 0; right: 0; transform: scaleX(-1); }
+body.matrix .stage-panel-right::after { bottom: 0; right: 0; transform: scale(-1); }
+@media (max-width: 900px) {
+  body.matrix .stage-panel::before,
+  body.matrix .stage-panel::after { width: 52px; height: 52px; }
+}
+
+/* ============================================================
+   塔罗 / 星空终版主题
+   深靛底 + 羊皮纸文字 + 古金 + 灰蓝，标题衬线
+   ============================================================ */
+body.matrix {
+  --bg: #080a13;
+  --card: #0c101d;
+  --ink: #ece3cd;
+  --sub: #a89f8a;
+  --line: rgba(201, 164, 92, 0.28);
+  --accent: #c9a45c;
+  --accent-soft: rgba(201, 164, 92, 0.12);
+  --path: #e0b96b;
+  --new: #8fa6c9;
+  background-color: #080a13;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(236, 227, 207, 0.65) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 60%, rgba(201, 164, 92, 0.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 45% 85%, rgba(143, 166, 201, 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(1100px 720px at 72% -8%, rgba(201, 164, 92, 0.1), transparent 62%);
+  background-size: 340px 280px, 460px 380px, 620px 520px, auto;
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Inter", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body.matrix .page-head h1,
+body.matrix .card h2,
+body.matrix .stage-intro h2,
+body.matrix .site-footer h2,
+body.matrix .home-nav .brand,
+body.matrix .page-nav a,
+body.matrix .card-link h2 {
+  font-family: "Cormorant Garamond", "Georgia", "Songti SC", "STSong", "SimSun", serif;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+}
+
+body.matrix .page-head h1 {
+  color: #f4ead4;
+  font-size: clamp(38px, 4vw, 58px);
+  line-height: 1.08;
+  text-shadow: 0 0 34px rgba(201, 164, 92, 0.18);
+}
+
+body.matrix .page-head .subtitle { color: var(--sub); font-size: 17px; }
+body.matrix .card h2 { color: #e8d9b8; font-size: 17px; letter-spacing: 0.08em; }
+body.matrix .card-link h2 { color: #f2e7cf; font-size: 26px; }
+
+/* 面板：深靛色而不是灰黑 */
+body.matrix .stage { background: rgba(10, 14, 26, 0.72); border-color: var(--line); }
+body.matrix .card { background: rgba(10, 14, 26, 0.72); border-color: var(--line); }
+body.matrix .card-link { background: rgba(10, 14, 26, 0.78); border-color: var(--line); }
+
+/* 按钮：金线描边，主按钮金底墨字 */
+body.matrix button,
+body.matrix .btn,
+body.matrix .btn-primary,
+body.matrix .choose-btn {
+  border-color: var(--line);
+  color: #eadcc0;
+  background: rgba(201, 164, 92, 0.06);
+}
+body.matrix button.primary,
+body.matrix .btn-primary,
+body.matrix .cta {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #141018;
+}
+body.matrix input[type="range"]::-webkit-slider-thumb { background: var(--accent); }
+body.matrix select { background-color: #0c101d; color: #eadcc0; border-color: var(--line); }
+
+/* 树与图 */
+body.matrix #canvas-left .node-circle { stroke: var(--new); }
+body.matrix #canvas-left .node-value { fill: #dbe7f4; }
+body.matrix #canvas-left .edge { stroke: rgba(143, 166, 201, 0.3); }
+body.matrix #chart .chart-line-left { stroke: var(--new); }
+body.matrix #chart .chart-line-right { stroke: var(--accent); }
+body.matrix .legend-left { background: var(--new); }
+
+/* 首页卡片：罗马数字水印 */
+body.matrix.home .cards .card-link { position: relative; overflow: hidden; }
+body.matrix.home .cards .card-link::before {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  color: rgba(201, 164, 92, 0.16);
+  font-family: "Cormorant Garamond", "Georgia", "Songti SC", serif;
+  font-size: 64px;
+  line-height: 1;
+  pointer-events: none;
+}
+body.matrix.home .cards .card-link:nth-child(1)::before { content: "I"; }
+body.matrix.home .cards .card-link:nth-child(2)::before { content: "II"; }
+body.matrix.home .cards .card-link:nth-child(3)::before { content: "III"; }
+
+/* 金色外框与角花的层次：深靛底上更暖 */
+body.matrix .gold-frame { border-color: rgba(201, 164, 92, 0.6); }
+body.matrix .site-footer { border-top-color: rgba(201, 164, 92, 0.4); }
+
+/* ============================================================
+   塔罗启幕
+   ============================================================ */
+body.matrix .stage-intro {
+  background: radial-gradient(120% 90% at 50% 0%, #10162a 0%, #080a13 58%, #04060c 100%);
+}
+body.matrix .stage-panel {
+  background-color: #080a13;
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(236, 227, 207, 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 65% 70%, rgba(201, 164, 92, 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(80% 60% at 70% 20%, rgba(201, 164, 92, 0.12), transparent 70%);
+  background-size: 220px 180px, 300px 240px, auto;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.6);
+}
+body.matrix .stage-panel-left { border-right: 1px solid rgba(201, 164, 92, 0.35); }
+body.matrix .stage-panel-right { border-left: 1px solid rgba(201, 164, 92, 0.35); }
+
+body.matrix .tarot-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  perspective: 1400px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+body.matrix .stage-intro.is-visible .tarot-stage { opacity: 1; transform: translateY(0); }
+
+body.matrix .tarot-card {
+  position: relative;
+  width: clamp(250px, 23vw, 300px);
+  aspect-ratio: 2 / 3;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg) scale(0.96);
+  transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+body.matrix .stage-intro.is-flip .tarot-card { transform: rotateY(180deg) scale(1); }
+body.matrix .stage-intro.is-open .tarot-stage { opacity: 0; transform: translateY(-18px) scale(1.04); transition-delay: 0.15s; }
+body.matrix .stage-intro.is-open .tarot-card { transform: rotateY(180deg) scale(1.04); }
+body.matrix .stage-intro.is-skip .tarot-stage { transition-duration: 0.22s; }
+
+body.matrix .tarot-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(201, 164, 92, 0.35), 0 0 42px rgba(201, 164, 92, 0.18);
+}
+
+body.matrix .tarot-back {
+  background-color: #10162a;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(201, 164, 92, 0.18) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(-45deg, rgba(201, 164, 92, 0.18) 0 1px, transparent 1px 18px),
+    radial-gradient(circle at 50% 45%, rgba(201, 164, 92, 0.2), transparent 45%);
+  border: 1px solid var(--accent);
+  box-shadow: inset 0 0 0 6px #10162a, inset 0 0 0 7px rgba(201, 164, 92, 0.7), 0 40px 90px rgba(0, 0, 0, 0.7);
+}
+
+body.matrix .tarot-front {
+  transform: rotateY(180deg);
+  background: #efe4cc;
+  color: #2a2419;
+  border: 1px solid #8a6a34;
+  box-shadow: inset 0 0 0 6px #efe4cc, inset 0 0 0 7px rgba(138, 106, 52, 0.65), 0 40px 90px rgba(0, 0, 0, 0.7);
+  padding: 26px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+body.matrix .tarot-back::before,
+body.matrix .tarot-back::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(201, 164, 92, 0.5);
+}
+body.matrix .tarot-back::after { inset: 26px; border-style: dotted; opacity: 0.7; }
+body.matrix .tarot-seal {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 42px;
+  text-shadow: 0 0 22px rgba(201, 164, 92, 0.65);
+}
+body.matrix .tarot-back i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  opacity: 0.85;
+}
+body.matrix .tarot-back i:nth-of-type(1) { top: 34px; left: 34px; }
+body.matrix .tarot-back i:nth-of-type(2) { top: 34px; right: 34px; }
+body.matrix .tarot-back i:nth-of-type(3) { bottom: 34px; left: 34px; }
+body.matrix .tarot-back i:nth-of-type(4) { bottom: 34px; right: 34px; }
+
+body.matrix .tarot-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  color: #6d5428;
+}
+body.matrix .tarot-numeral {
+  font-family: "Cormorant Garamond", "Georgia", "Songti SC", serif;
+  font-size: 30px;
+  line-height: 1;
+  color: #8a6a34;
+}
+body.matrix .tarot-art { width: 78%; margin: 8px 0 2px; }
+body.matrix .tarot-art svg { width: 100%; height: auto; display: block; }
+body.matrix .tarot-bottom { margin-top: 2px; }
+body.matrix .tarot-kicker {
+  display: block;
+  font-size: 16px;
+  letter-spacing: 0.32em;
+  color: #8a6a34;
+  margin-bottom: 4px;
+}
+body.matrix .tarot-bottom h2 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.25;
+  color: #1f1a12;
+  font-weight: 600;
+}
+body.matrix .tarot-bottom p {
+  margin: 8px 0 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #5b4a30;
+}
+body.matrix .tarot-rule {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #8a6a34;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+body.matrix .tarot-rule::before,
+body.matrix .tarot-rule::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: rgba(138, 106, 52, 0.5);
+}
+body.matrix .tarot-rule span { white-space: nowrap; font-size: 16px; letter-spacing: 0.06em; }
+body.matrix .tarot-hint {
+  margin: 4px 0 0;
+  color: rgba(236, 227, 207, 0.62);
+  font-size: 16px;
+  letter-spacing: 0.24em;
+}
+
+@media (max-width: 640px) {
+  body.matrix .tarot-card { width: min(70vw, 260px); }
+  body.matrix .tarot-bottom h2 { font-size: 21px; }
+  body.matrix .tarot-rule span { font-size: 16px; }
+  body.matrix .tarot-hint { font-size: 16px; }
+}
+
+
+/* ============================================================
+   最终规范：正文宋体、标题楷书、配色只用蓝与金
+   ============================================================ */
+body.matrix,
+body.matrix p,
+body.matrix li,
+body.matrix label,
+body.matrix span,
+body.matrix small,
+body.matrix a,
+body.matrix button,
+body.matrix .btn,
+body.matrix .choose-btn,
+body.matrix input,
+body.matrix select,
+body.matrix .param,
+body.matrix .metric,
+body.matrix .status-note,
+body.matrix .card,
+body.matrix .card-link {
+  font-family: "Songti SC", "STSong", "SimSun", "宋体", serif;
+}
+
+body.matrix .page-head h1,
+body.matrix .card h2,
+body.matrix .card-link h2,
+body.matrix .site-footer h2,
+body.matrix .home-nav .brand,
+body.matrix .page-nav a,
+body.matrix .stage-intro h2,
+body.matrix .tarot-bottom h2,
+body.matrix .tarot-numeral,
+body.matrix .tarot-arcana {
+  font-family: "KaiTi", "STKaiti", "Kaiti SC", "楷体", "KaiTi_GB2312", serif;
+  font-weight: 600;
+}
+
+body.matrix svg text,
+body.matrix .node-value,
+body.matrix .node-interval,
+body.matrix .candidate-tag {
+  font-family: "Songti SC", "STSong", "SimSun", "宋体", serif !important;
+}
+
+/* 只有蓝与金：正文用旧金，次要信息用灰蓝 */
+body.matrix {
+  --bg: #050a18;
+  --card: #091224;
+  --ink: #efe2c0;
+  --sub: #b6a06a;
+  --accent: #c9a24a;
+  --accent-strong: #e0bd72;
+  --path: #e3bf6a;
+  --new: #7fa8d9;
+  --line: rgba(201, 162, 74, 0.34);
+  --accent-soft: rgba(201, 162, 74, 0.14);
+  --shadow-sm: none;
+  --shadow-md: none;
+}
+
+body.matrix .page-head h1 { color: #f0dfb4; }
+body.matrix .card h2 { color: #e6c87e; }
+body.matrix .card-link h2 { color: #f0e0bb; }
+body.matrix .subtitle,
+body.matrix .howto,
+body.matrix .card p,
+body.matrix .card li,
+body.matrix .param label,
+body.matrix .metric-label,
+body.matrix .site-footer p,
+body.matrix .site-footer a,
+body.matrix .page-nav a {
+  color: var(--ink);
+}
+body.matrix .muted,
+body.matrix .status-note,
+body.matrix .hint,
+body.matrix .page-head .kicker {
+  color: var(--sub);
+}
+
+body.matrix .stage,
+body.matrix .card,
+body.matrix .card-link {
+  background: rgba(9, 18, 36, 0.78);
+  border-color: var(--line);
+}
+
+body.matrix button,
+body.matrix .btn,
+body.matrix .choose-btn,
+body.matrix select {
+  background: rgba(201, 162, 74, 0.06);
+  border-color: var(--line);
+  color: #f0e2c0;
+}
+body.matrix button.primary,
+body.matrix .btn-primary,
+body.matrix .cta {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #081020;
+}
+body.matrix .cta:hover { background: var(--accent-strong); }
+
+body.matrix input[type="range"] { background: rgba(127, 168, 217, 0.25); }
+body.matrix input[type="range"]::-webkit-slider-thumb { background: var(--accent); }
+
+/* 判定态只用蓝 / 金 */
+body.matrix .choose-btn.is-correct { background: var(--accent); border-color: var(--accent); color: #081020; }
+body.matrix .choose-btn.is-wrong { background: rgba(127, 168, 217, 0.16); border-color: var(--new); color: #dbe6f5; }
+body.matrix #panel-feedback.ok { background: rgba(201, 162, 74, 0.16); color: #f0dfb4; border-left-color: var(--accent); }
+body.matrix #panel-feedback.warn { background: rgba(201, 162, 74, 0.1); color: #e6d3a2; border-left-color: var(--accent); }
+body.matrix #panel-feedback.bad { background: rgba(127, 168, 217, 0.14); color: #cfe0f4; border-left-color: var(--new); }
+body.matrix .check-line.ok { color: #e6c87e; }
+body.matrix .check-line.bad { color: #bcd2ec; }
+body.matrix .check-line.warn { color: #d8c08a; }
+
+body.matrix .node-circle.is-target { stroke: var(--accent); fill: rgba(201, 162, 74, 0.14); }
+body.matrix .node-circle.is-new { fill: var(--new); stroke: var(--new); }
+body.matrix .node-circle.is-candidate-a { stroke: #c9a24a; fill: rgba(201, 162, 74, 0.14); }
+body.matrix .node-circle.is-candidate-b { stroke: #7fa8d9; fill: rgba(127, 168, 217, 0.14); }
+body.matrix .node-circle.is-candidate-c { stroke: #e0bd72; fill: rgba(224, 189, 114, 0.1); }
+body.matrix .candidate-tag.key-a { fill: #c9a24a; }
+body.matrix .candidate-tag.key-b { fill: #7fa8d9; }
+body.matrix .candidate-tag.key-c { fill: #e0bd72; }
+body.matrix .pointer-line.candidate { stroke: #7fa8d9; }
+
+body.matrix #canvas-left .node-circle { stroke: #7fa8d9; }
+body.matrix #canvas-left .node-value { fill: #d7e5f6; }
+body.matrix #canvas-left .edge { stroke: rgba(127, 168, 217, 0.4); }
+body.matrix #canvas-right .node-circle { stroke: #c9a24a; }
+body.matrix #chart .chart-line-left { stroke: #7fa8d9; }
+body.matrix #chart .chart-line-right { stroke: #c9a24a; }
+body.matrix .legend-left { background: #7fa8d9; }
+
+/* 塔罗牌：深蓝牌面 + 金线，不再用米色纸 */
+body.matrix .tarot-front {
+  background: #0a1428;
+  color: #efe2c0;
+  border-color: rgba(201, 162, 74, 0.85);
+  box-shadow: inset 0 0 0 6px #0a1428, inset 0 0 0 7px rgba(201, 162, 74, 0.7), 0 40px 90px rgba(0, 0, 0, 0.75);
+}
+body.matrix .tarot-top { color: #c9a24a; }
+body.matrix .tarot-numeral,
+body.matrix .tarot-kicker,
+body.matrix .tarot-rule { color: #d8b872; }
+body.matrix .tarot-bottom h2 { color: #f2e2b6; }
+body.matrix .tarot-bottom p { color: #bfd0e8; }
+body.matrix .tarot-rule::before,
+body.matrix .tarot-rule::after { background: rgba(201, 162, 74, 0.55); }
+body.matrix .tarot-hint { color: rgba(239, 226, 192, 0.7); }
+body.matrix .tarot-stage { opacity: 1; transform: none; }
+
+/* 全站宋体：正文、标题、UI 文本统一宋体，数字/区间保留等宽 */
+body.matrix,
+body.matrix .page-head h1,
+body.matrix .stage-copy h2,
+body.matrix .card h2,
+body.matrix .card-link h2,
+body.matrix .feature-title,
+body.matrix .stage-kicker,
+body.matrix .stage-sub {
+  font-family: "Songti SC", "STSong", "SimSun", "宋体", serif;
+}
+body.matrix .page-head h1 { font-weight: 700; letter-spacing: 0.01em; }
+html.intro-pending body.matrix .wrap { visibility: hidden; }
+body.matrix .tarot-bottom h2,
+body.matrix .tarot-bottom h2 * {
+  font-family: "Songti SC", "STSong", "SimSun", "Songti TC", serif !important;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+/* 启幕期间先隐藏页面金色外框，避免与幕布角花叠成两层 */
+html.intro-active .gold-frame { opacity: 0; visibility: hidden; }
+.gold-frame { transition: opacity 0.45s ease; }
+/* 左下角花只做垂直翻转，旋转 180° 会把角移到面板内部 */
+body.matrix .stage-panel-left::after { transform: scaleY(-1); }
+
+/* ===== Lower 2DMV 配色：深靛黑 + 冷紫/青蓝 + 淡紫白 ===== */
+body.matrix {
+  --bg: #05060f;
+  --card: #0b0b19;
+  --ink: #ece9f7;
+  --sub: #a7a3c4;
+  --accent: #b89cff;
+  --accent-strong: #d3c2ff;
+  --path: #8fe3ff;
+  --new: #ff9ed2;
+  --line: rgba(176, 160, 220, 0.26);
+  --accent-soft: rgba(184, 156, 255, 0.14);
+}
+
+/* 标题/正文统一宋体（彻底去掉楷书） */
+body.matrix,
+body.matrix .page-head h1,
+body.matrix .card h2,
+body.matrix .card-link h2,
+body.matrix .site-footer h2,
+body.matrix .home-nav .brand,
+body.matrix .page-nav a,
+body.matrix .stage-intro h2,
+body.matrix .tarot-bottom h2,
+body.matrix .tarot-numeral,
+body.matrix .tarot-arcana,
+body.matrix .feature-title {
+  font-family: "Songti SC", "STSong", "SimSun", "宋体", serif;
+}
+
+body.matrix .page-head h1 { color: #f4f0ff; }
+body.matrix .card h2 { color: #cbb8ff; }
+body.matrix .card-link h2 { color: #f1ecff; }
+body.matrix .page-head .subtitle,
+body.matrix .card p,
+body.matrix .card li,
+body.matrix .param label,
+body.matrix .metric-label,
+body.matrix .site-footer p,
+body.matrix .site-footer a,
+body.matrix .page-nav a { color: var(--ink); }
+
+body.matrix .stage,
+body.matrix .card,
+body.matrix .card-link {
+  background: rgba(9, 9, 20, 0.72);
+  border-color: var(--line);
+  box-shadow:
+    inset 0 0 0 1px rgba(184, 156, 255, 0.08),
+    inset 0 0 0 7px rgba(184, 156, 255, 0.02);
+}
+body.matrix .card-link::after,
+body.matrix .card::after { border-color: rgba(184, 156, 255, 0.13); }
+body.matrix .topbar {
+  border-bottom-color: rgba(176, 160, 220, 0.28);
+  background: linear-gradient(180deg, rgba(184, 156, 255, 0.05), transparent);
+}
+body.matrix .site-footer {
+  border-top-color: rgba(176, 160, 220, 0.28);
+  background: linear-gradient(180deg, rgba(184, 156, 255, 0.04), transparent);
+}
+
+body.matrix button,
+body.matrix .btn,
+body.matrix .choose-btn,
+body.matrix select {
+  background: rgba(184, 156, 255, 0.06);
+  border-color: rgba(184, 156, 255, 0.24);
+  color: #ece9f7;
+}
+body.matrix button.primary,
+body.matrix .btn-primary,
+body.matrix .cta {
+  background: rgba(184, 156, 255, 0.18);
+  border-color: rgba(184, 156, 255, 0.6);
+  color: #f6f2ff;
+}
+body.matrix .cta:hover { background: rgba(184, 156, 255, 0.28); }
+body.matrix .cta,
+body.matrix .controls button,
+body.matrix .transport button,
+body.matrix .demo-controls button {
+  border-color: rgba(184, 156, 255, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(5, 6, 15, 0.35), inset 0 0 0 3px rgba(184, 156, 255, 0.09);
+}
+
+body.matrix input[type="range"] { background: rgba(184, 156, 255, 0.22); }
+body.matrix input[type="range"]::-webkit-slider-thumb { background: var(--accent); }
+
+body.matrix .choose-btn.is-correct { background: var(--accent); border-color: var(--accent); color: #0a0614; }
+body.matrix .choose-btn.is-wrong { background: rgba(255, 158, 210, 0.16); border-color: var(--new); color: #ffe0f0; }
+body.matrix #panel-feedback.ok { background: rgba(184, 156, 255, 0.16); color: #e7dcff; border-left-color: var(--accent); }
+body.matrix #panel-feedback.warn { background: rgba(143, 227, 255, 0.1); color: #d6f4ff; border-left-color: var(--path); }
+body.matrix #panel-feedback.bad { background: rgba(255, 158, 210, 0.14); color: #ffd9ec; border-left-color: var(--new); }
+body.matrix .check-line.ok { color: #cbb8ff; }
+body.matrix .check-line.bad { color: #ffb8dd; }
+body.matrix .check-line.warn { color: #a9e8ff; }
+
+body.matrix .node-circle.is-target { stroke: var(--accent); fill: rgba(184, 156, 255, 0.14); }
+body.matrix .node-circle.is-new { fill: var(--new); stroke: var(--new); }
+body.matrix .node-circle.is-candidate-a { stroke: #b89cff; fill: rgba(184, 156, 255, 0.14); }
+body.matrix .node-circle.is-candidate-b { stroke: #8fe3ff; fill: rgba(143, 227, 255, 0.14); }
+body.matrix .node-circle.is-candidate-c { stroke: #ff9ed2; fill: rgba(255, 158, 210, 0.12); }
+body.matrix .candidate-tag.key-a { fill: #b89cff; }
+body.matrix .candidate-tag.key-b { fill: #8fe3ff; }
+body.matrix .candidate-tag.key-c { fill: #ff9ed2; }
+body.matrix .pointer-line.candidate { stroke: #8fe3ff; }
+
+body.matrix #canvas-left .node-circle { stroke: #8fe3ff; }
+body.matrix #canvas-left .node-value { fill: #d8f6ff; }
+body.matrix #canvas-left .edge { stroke: rgba(143, 227, 255, 0.4); }
+body.matrix #canvas-right .node-circle { stroke: #b89cff; }
+body.matrix #chart .chart-line-left { stroke: #8fe3ff; }
+body.matrix #chart .chart-line-right { stroke: #b89cff; }
+body.matrix .legend-left { background: #8fe3ff; }
+body.matrix .legend-right { background: #b89cff; }
+
+/* 背景斜纹与星云改成冷紫/青蓝，减弱暖色 */
+body.matrix {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(184, 156, 255, 0.03) 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(-45deg, rgba(143, 227, 255, 0.025) 0 1px, transparent 1px 30px),
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.38) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 65%, rgba(143, 227, 255, 0.3) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 40% 85%, rgba(255, 255, 255, 0.22) 0 1px, transparent 1.5px),
+    radial-gradient(1100px 720px at 82% -12%, rgba(80, 62, 150, 0.45), transparent 66%),
+    radial-gradient(900px 620px at 4% 10%, rgba(30, 52, 96, 0.45), transparent 70%);
+  background-size: 30px 30px, 30px 30px, 340px 280px, 460px 380px, 620px 520px, auto, auto;
+}
