@@ -16,6 +16,7 @@
     var max = doc.scrollHeight - window.innerHeight;
     var ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     document.documentElement.style.setProperty("--scroll", ratio.toFixed(4));
+    document.documentElement.style.setProperty("--scroll-y", Math.round(window.scrollY) + "px");
     ticking = false;
   }
   function onScroll() {
@@ -64,3 +65,4 @@
     stage.style.setProperty("--my", "38%");
   });
 })();
+

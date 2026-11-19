@@ -873,3 +873,556 @@ body.matrix .check-line,
 body.matrix #panel-steps,
 body.matrix #panel-steps li,
 body.matrix .choose-btn { font-size: 14px; }
+
+/* =========================================================================
+   interstellar.css（追加层）：星际穿越风格
+   深空底 + 星尘 + 固定竖向引导线（随滚动上下移动）+ 琥珀/冰蓝双色。
+   只改观感，不改结构、脚本与数据。
+   ========================================================================= */
+
+:root {
+  --ink: #eaf1f8;
+  --sub: #93a6ba;
+  --line: rgba(168, 196, 226, 0.16);
+  --bg: #04060b;
+  --card: rgba(8, 13, 21, 0.66);
+  --accent: #d8a24a;
+  --accent-strong: #c08a32;
+  --accent-soft: rgba(216, 162, 74, 0.12);
+  --path: #e6b667;
+  --new: #9cc7e8;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+}
+
+html { background: #04060b; }
+
+body.matrix {
+  background-color: #04060b;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.38) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 65%, rgba(156, 199, 232, 0.3) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 40% 85%, rgba(255, 255, 255, 0.22) 0 1px, transparent 1.5px),
+    radial-gradient(1100px 720px at 82% -12%, rgba(44, 70, 102, 0.4), transparent 66%),
+    radial-gradient(900px 620px at 4% 10%, rgba(24, 40, 62, 0.45), transparent 70%);
+  background-size: 340px 280px, 460px 380px, 620px 520px, auto, auto;
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Inter", "Helvetica Neue", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 旧版极光不再使用 */
+.aurora { display: none !important; }
+
+/* —— 上下滑动引导线：竖向细线 + 随滚动下移的琥珀刻度 —— */
+body.matrix::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(150, 185, 220, 0.085) 0 1px,
+      transparent 1px 12.5%),
+    radial-gradient(circle, rgba(216, 162, 74, 0.5) 0 1px, transparent 1.7px);
+  background-size: auto, 12.5% 140px;
+  background-position: 0 0, 0 calc(var(--scroll-y, 0px) * -0.32);
+  opacity: 0.9;
+}
+
+/* 暗角 + 极轻微胶片颗粒 */
+body.matrix::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background-image:
+    radial-gradient(120% 90% at 50% 0%, transparent 52%, rgba(2, 4, 8, 0.55) 100%),
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.16;
+}
+
+body.matrix .wrap { position: relative; z-index: 2; }
+
+/* —— 导航与标题：细、宽字距、方角 —— */
+body.matrix .topbar {
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  letter-spacing: 0.14em;
+}
+body.matrix .topbar a {
+  color: var(--sub);
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  padding: 10px 2px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: none;
+}
+body.matrix .topbar a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+  background: none;
+}
+body.matrix .topbar .crumb {
+  border: 0;
+  border-radius: 0;
+  color: var(--sub);
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  background: none;
+  padding: 10px 0;
+}
+body.matrix .topbar .crumb[aria-current="page"] {
+  color: var(--accent);
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+body.matrix .page-head { position: relative; }
+body.matrix .page-head::before {
+  content: "";
+  position: absolute;
+  right: -14%;
+  top: -58%;
+  width: 760px;
+  height: 760px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 57.8%, rgba(216, 162, 74, 0.22) 58.1%, transparent 58.7%),
+    radial-gradient(circle, transparent 47.4%, rgba(156, 199, 232, 0.15) 47.7%, transparent 48.3%);
+  pointer-events: none;
+  opacity: 0.9;
+}
+body.matrix .page-head h1 {
+  color: var(--ink);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  font-size: clamp(40px, 4.6vw, 64px);
+  line-height: 1.18;
+  text-shadow: 0 0 32px rgba(156, 199, 232, 0.12);
+}
+body.matrix .page-head .subtitle { color: var(--sub); font-size: 18px; letter-spacing: 0.04em; }
+body.matrix .page-head .howto { color: var(--sub); font-size: 16px; }
+body.matrix .page-head .status-note {
+  border-left: 1px solid var(--accent);
+  background: rgba(216, 162, 74, 0.06);
+  color: #d9c39a;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+/* —— 首页卡片：技术手册条目 —— */
+body.matrix .card-link {
+  border: 1px solid var(--line);
+  border-top: 1px solid rgba(216, 162, 74, 0.45);
+  border-radius: 0;
+  background: rgba(8, 13, 21, 0.5);
+  box-shadow: none;
+  padding: 26px 24px 22px;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+body.matrix .card-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(216, 162, 74, 0.6);
+  background: rgba(14, 21, 32, 0.62);
+  box-shadow: none;
+}
+body.matrix .card-link h2 {
+  color: var(--ink);
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 0.03em;
+}
+body.matrix .card-link h2::before { content: none; }
+body.matrix .card-link p { color: var(--sub); font-size: 17px; line-height: 1.72; }
+body.matrix .card-link .type {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 16px;
+  letter-spacing: 0.16em;
+  padding: 0;
+}
+body.matrix .card-link .go {
+  color: var(--accent);
+  font-size: 16px;
+  letter-spacing: 0.12em;
+}
+body.matrix .card-link.visited { border-color: rgba(156, 199, 232, 0.5); }
+body.matrix .card-link.visited .type { color: var(--new); }
+
+body.matrix .cta {
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  box-shadow: none;
+}
+body.matrix .cta:hover {
+  background: var(--accent);
+  color: #0a0d12;
+  box-shadow: 0 0 30px rgba(216, 162, 74, 0.25);
+}
+
+/* —— 画布 / 卡片：细线 HUD 面板 —— */
+body.matrix .stage {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(6, 10, 17, 0.72);
+  box-shadow: none;
+  backdrop-filter: blur(3px);
+}
+body.matrix .stage::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(216, 162, 74, 0.12);
+  pointer-events: none;
+}
+body.matrix .card {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(7, 11, 18, 0.62);
+  box-shadow: none;
+  backdrop-filter: blur(3px);
+}
+body.matrix .card h2 {
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: none;
+}
+body.matrix .card h2::before { content: none; }
+body.matrix .transport {
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(4, 7, 12, 0.5);
+}
+body.matrix #status { color: var(--sub); font-size: 16px; letter-spacing: 0.08em; }
+
+/* —— 控件：方角、细边、琥珀主色 —— */
+body.matrix button {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  box-shadow: none;
+}
+body.matrix button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(216, 162, 74, 0.06);
+}
+body.matrix button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0a0d12;
+  box-shadow: 0 0 26px rgba(216, 162, 74, 0.22);
+}
+body.matrix button.primary:hover { background: #e7b562; color: #0a0d12; }
+body.matrix button:disabled { opacity: 0.35; }
+
+body.matrix .param label { color: var(--sub); font-size: 16px; letter-spacing: 0.06em; }
+body.matrix .param input[type="range"] { accent-color: var(--accent); }
+body.matrix .param .readout { color: var(--ink); font-weight: 300; }
+
+body.matrix select {
+  background-color: #070b12;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--ink);
+  font-size: 16px;
+  letter-spacing: 0.06em;
+}
+body.matrix select:hover { border-color: var(--accent); }
+body.matrix select:focus { outline: 1px solid var(--accent); outline-offset: 1px; }
+body.matrix select option { background: #070b12; color: var(--ink); }
+
+/* —— 读数 / 区间 / 候选 —— */
+body.matrix .metrics .metric {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(6, 10, 17, 0.55);
+}
+body.matrix .metric-label { color: var(--sub); font-size: 16px; letter-spacing: 0.1em; }
+body.matrix .metric-value { color: var(--ink); font-weight: 300; }
+body.matrix .metric-unit { color: var(--sub); font-size: 16px; }
+body.matrix .stage .mv-left { color: var(--new); }
+body.matrix .stage .mv-right { color: var(--accent); }
+
+body.matrix #panel-interval li { color: var(--sub); font-size: 16px; }
+body.matrix #panel-interval li::before { background: rgba(216, 162, 74, 0.4); }
+body.matrix #panel-interval li.now {
+  color: var(--ink);
+  background: rgba(216, 162, 74, 0.1);
+  border-color: rgba(216, 162, 74, 0.4);
+}
+body.matrix #panel-interval li.now::before { background: var(--accent); }
+body.matrix .candidates-line { color: var(--sub); font-size: 16px; letter-spacing: 0.06em; }
+body.matrix .candidates-line b { color: var(--ink); font-weight: 500; }
+
+/* —— SVG 树：白描边、琥珀路径、冰蓝新节点 —— */
+body.matrix .edge { stroke: rgba(160, 190, 220, 0.3); }
+body.matrix .edge.on-path { stroke: var(--path); }
+body.matrix .node-circle {
+  fill: #060a12;
+  stroke: #c6d8ea;
+  stroke-width: 1.4;
+}
+body.matrix .node-circle.on-path {
+  fill: rgba(216, 162, 74, 0.12);
+  stroke: var(--accent);
+}
+body.matrix .node-circle.is-new { stroke: var(--new); fill: rgba(156, 199, 232, 0.14); }
+body.matrix .node-value { fill: #eef4fa; font-weight: 400; }
+body.matrix .node-interval { fill: #7e93a8; font-size: 14px; }
+
+/* d2 状态色：目标红、后继琥珀、候选冰蓝/灰/红 */
+body.matrix .node-circle.is-target { stroke: #c46a6a; fill: rgba(196, 106, 106, 0.14); }
+body.matrix .node-circle.is-succ { stroke: var(--path); fill: rgba(216, 162, 74, 0.14); }
+body.matrix .node-circle.is-verified { stroke: #7fb58c; fill: rgba(127, 181, 140, 0.14); }
+body.matrix .node-circle.is-candidate-a { stroke: var(--new); fill: rgba(156, 199, 232, 0.14); }
+body.matrix .node-circle.is-candidate-b { stroke: #a9b7c8; fill: rgba(169, 183, 200, 0.12); }
+body.matrix .node-circle.is-candidate-c { stroke: #c46a6a; fill: rgba(196, 106, 106, 0.14); }
+body.matrix .node-circle.is-wrong-candidate { stroke: #d8a24a; }
+body.matrix .node-circle.is-broken { stroke: #c46a6a; fill: rgba(196, 106, 106, 0.16); }
+body.matrix .edge.is-new-link { stroke: var(--accent); }
+body.matrix .edge.is-broken { stroke: #c46a6a; }
+body.matrix .target-tag { fill: #d99a9a; }
+body.matrix .succ-tag { fill: var(--path); }
+body.matrix .candidate-tag.key-a { fill: var(--new); }
+body.matrix .candidate-tag.key-b { fill: #a9b7c8; }
+body.matrix .candidate-tag.key-c { fill: #d99a9a; }
+body.matrix .wrong-tag { fill: var(--accent); }
+body.matrix .ghost-circle { fill: rgba(6, 10, 18, 0.95); stroke: #c46a6a; }
+body.matrix .ghost-value, body.matrix .ghost-label, body.matrix .orphan-label { fill: #d99a9a; }
+body.matrix .pointer-line.walk { stroke: var(--new); }
+body.matrix .pointer-line.detach,
+body.matrix .pointer-line.cut { stroke: #c46a6a; }
+body.matrix .pointer-line.attach,
+body.matrix .pointer-line.new { stroke: var(--accent); }
+body.matrix .pointer-line.candidate { stroke: #a9b7c8; }
+body.matrix .pointer-label { fill: var(--ink); stroke: #060a12; }
+body.matrix .pointer-label.detach,
+body.matrix .pointer-label.cut { fill: #d99a9a; }
+body.matrix .pointer-label.attach,
+body.matrix .pointer-label.new { fill: var(--accent); }
+
+/* —— 难点 2 判定 / 反馈 / 步骤 —— */
+body.matrix #panel-choose {
+  border: 1px solid rgba(216, 162, 74, 0.35);
+  border-left: 2px solid var(--accent);
+  border-radius: 0;
+  background: rgba(216, 162, 74, 0.05);
+}
+body.matrix #choose-heading { color: var(--accent); letter-spacing: 0.16em; }
+body.matrix .choose-btn {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: rgba(6, 10, 17, 0.6);
+  color: var(--ink);
+  font-size: 16px;
+}
+body.matrix .choose-btn:hover { border-color: var(--accent); color: var(--accent); }
+body.matrix .choose-btn.is-correct {
+  border-color: #7fb58c;
+  background: rgba(127, 181, 140, 0.12);
+  color: #a8d8b3;
+}
+body.matrix .choose-btn.is-wrong {
+  border-color: #c46a6a;
+  background: rgba(196, 106, 106, 0.12);
+  color: #e0a3a3;
+}
+body.matrix #panel-feedback.ok { background: rgba(127, 181, 140, 0.1); color: #a8d8b3; }
+body.matrix #panel-feedback.warn { background: rgba(216, 162, 74, 0.1); color: #e0c48e; }
+body.matrix #panel-feedback.bad { background: rgba(196, 106, 106, 0.12); color: #e0a3a3; }
+body.matrix .check-line.ok { color: #a8d8b3; }
+body.matrix .check-line.bad { color: #e0a3a3; }
+body.matrix .check-line.warn { color: #e0c48e; }
+body.matrix .step-item { color: var(--sub); font-size: 16px; }
+body.matrix .step-item:hover { color: var(--ink); }
+body.matrix .step-item.done { color: #66788b; }
+body.matrix .step-item.now { color: var(--accent); }
+
+/* —— 难点 3：双画布 / 折线 —— */
+body.matrix .canvas-col svg {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+body.matrix .canvas-col .caption { color: var(--sub); font-size: 16px; letter-spacing: 0.04em; }
+body.matrix .chart-block { border-top-color: var(--line); }
+body.matrix .chart-title { color: var(--sub); font-size: 16px; letter-spacing: 0.1em; }
+body.matrix .chart-legend { color: var(--sub); font-size: 16px; }
+body.matrix .legend-left { background: var(--new); }
+body.matrix .legend-right { background: var(--accent); }
+body.matrix .chart-metric { color: var(--sub); font-size: 16px; }
+body.matrix .chart-metric select { font-size: 16px; }
+body.matrix #chart .chart-grid { stroke: rgba(160, 190, 220, 0.1); }
+body.matrix #chart .chart-axis { stroke: rgba(160, 190, 220, 0.2); }
+body.matrix #chart .chart-line-left { stroke: var(--new); }
+body.matrix #chart .chart-line-right { stroke: var(--accent); }
+body.matrix #chart .chart-dot-left { fill: var(--new); }
+body.matrix #chart .chart-dot-right { fill: var(--accent); }
+body.matrix #chart .chart-cursor { stroke: rgba(160, 190, 220, 0.18); }
+body.matrix #chart .chart-tick { fill: var(--sub); }
+body.matrix #chart .chart-axis-label { fill: var(--sub); }
+body.matrix .chart-note { color: var(--sub); font-size: 16px; }
+body.matrix #chart text { font-size: 14px; }
+body.matrix #panel-conclusion { border-left: 2px solid var(--accent); }
+body.matrix #panel-conclusion h2 { color: var(--accent); }
+
+/* —— 页脚 / 学习路径 / 进度 —— */
+body.matrix .site-footer { border-top: 1px solid var(--line); color: var(--sub); letter-spacing: 0.06em; }
+body.matrix .site-footer a { color: var(--sub); font-size: 16px; letter-spacing: 0.08em; }
+body.matrix .site-footer a:hover { color: var(--accent); }
+body.matrix .site-footer .who { color: #6d8094; }
+body.matrix .page-nav { border-top: 1px solid var(--line); }
+body.matrix .page-nav a {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--sub);
+  font-size: 16px;
+  letter-spacing: 0.08em;
+}
+body.matrix .page-nav a:hover { border-color: var(--accent); color: var(--accent); }
+body.matrix .progress-note { color: var(--accent); font-size: 16px; letter-spacing: 0.06em; }
+
+/* 顶部阅读进度条改为琥珀细线 */
+body.matrix .scroll-progress {
+  background: linear-gradient(90deg, var(--accent), #f2d08a);
+  box-shadow: 0 0 12px rgba(216, 162, 74, 0.4);
+}
+
+@media (max-width: 900px) {
+  body.matrix .page-head::before { display: none; }
+  body.matrix .page-head h1 { font-size: clamp(32px, 7vw, 44px); }
+}
+
+/* 修正旧皮肤残留：网格/圆点/顶部渐变线不再叠加 */
+body.matrix::after {
+  background-size: 100% 100%, 180px 180px;
+  background-repeat: no-repeat, repeat;
+  opacity: 0.14;
+}
+body.matrix .stage::before { display: none; }
+body.matrix .stage::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  height: auto;
+  background: none;
+  border: 1px solid rgba(216, 162, 74, 0.14);
+  pointer-events: none;
+}
+body.matrix .card-link::after { content: none; }
+
+/* 引导线更清楚：竖向细线 + 随滚动移动的琥珀刻度 */
+body.matrix::before {
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(168, 198, 232, 0.17) 0 1px,
+      transparent 1px 12.5%),
+    radial-gradient(circle, rgba(216, 162, 74, 0.85) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle, rgba(156, 199, 232, 0.5) 0 1px, transparent 1.6px);
+  background-size: auto, 12.5% 112px, 12.5% 280px;
+  background-position:
+    0 0,
+    0 calc(var(--scroll-y, 0px) * -0.32),
+    0 calc(var(--scroll-y, 0px) * -0.14);
+  opacity: 1;
+}
+
+/* 首页/演示页的轨道环，放到标题右后方可见位置 */
+body.matrix .page-head::before {
+  right: 2%;
+  top: -30%;
+  width: 560px;
+  height: 560px;
+  opacity: 0.85;
+  background:
+    radial-gradient(circle, transparent 57.6%, rgba(216, 162, 74, 0.32) 57.9%, transparent 58.5%),
+    radial-gradient(circle, transparent 47.2%, rgba(156, 199, 232, 0.2) 47.5%, transparent 48.1%);
+}
+
+@media (max-width: 900px) {
+  body.matrix .page-head::before { display: none; }
+}
+
+/* 清除旧皮肤残留的混合模式、动画与遮罩 */
+body.matrix::before {
+  mix-blend-mode: normal;
+  animation: none;
+}
+body.matrix::after {
+  animation: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* 引导线最终形态：竖线 + 线上的琥珀刻度（随滚动上下移动） */
+body.matrix::before {
+  background-image:
+    repeating-linear-gradient(90deg,
+      rgba(168, 198, 232, 0.22) 0 1px,
+      transparent 1px 12.5%),
+    radial-gradient(circle at 0 1px, rgba(216, 162, 74, 0.8) 0 1.7px, transparent 2.3px);
+  background-size: auto, 12.5% 140px;
+  background-position: 0 0, 0 calc(var(--scroll-y, 0px) * -0.32);
+}
+
+/* 轨道环放到可见的右上角 */
+body.matrix .page-head::before {
+  right: -6%;
+  top: -14%;
+  width: 640px;
+  height: 640px;
+  opacity: 0.9;
+}
+
+/* 面板半透明，让星尘与引导线透出来 */
+body.matrix .stage { background: rgba(6, 10, 17, 0.55); }
+body.matrix .card { background: rgba(6, 10, 17, 0.5); }
+body.matrix .page-head h1 {
+  font-family: "Inter Light", "Helvetica Neue", "Segoe UI Light", "Segoe UI", "PingFang SC", "Microsoft YaHei Light", "Microsoft YaHei", sans-serif;
+  font-weight: 200;
+}
+
+/* 标题断行：不让中文词被从中间劈开 */
+body.matrix .page-head h1 { text-wrap: balance; }
+body.matrix .page-head h1 .keep { white-space: nowrap; }
+body.matrix #page-title { font-size: clamp(36px, 3.8vw, 54px); }
+
+/* 引导线：琥珀刻度缓慢上移，滚动时整层轻微位移 */
+@keyframes guide-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 0, 0 -140px; }
+}
+body.matrix::before {
+  transform: translateY(calc(var(--scroll-y, 0px) * -0.15));
+  animation: guide-drift 26s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.matrix::before { animation: none; }
+}
