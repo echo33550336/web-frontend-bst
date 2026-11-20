@@ -94,6 +94,10 @@
   overlay.innerHTML =
     '<div class="ending" role="dialog" aria-modal="true" aria-labelledby="ending-title">' +
       '<button class="ending-close" type="button" aria-label="关闭结语">×</button>' +
+      '<div class="ending-visual" aria-hidden="true">' +
+        '<canvas class="ending-dna"></canvas>' +
+        '<span class="ending-dna-label">BASE PAIRS / 03</span>' +
+      '</div>' +
       '<div class="ending-inner">' +
         '<p class="ending-kicker">END · 结语</p>' +
         '<h2 id="ending-title">规则没有变，<br>树长成了不同的样子。</h2>' +
@@ -111,6 +115,89 @@
     '</div>';
   document.body.appendChild(overlay);
 
+  /* 结语右侧的 DNA 双螺旋：缓慢自转，只在面板打开时绘制 */
+  var dnaCanvas = overlay.querySelector(".ending-dna");
+  var dnaRaf = 0, dnaStart = 0;
+  var dnaReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function drawDna(ts) {
+    if (!dnaCanvas) return;
+    var w = dnaCanvas.clientWidth, h = dnaCanvas.clientHeight;
+    if (!w || !h) { dnaRaf = requestAnimationFrame(drawDna); return; }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (dnaCanvas.width !== Math.round(w * dpr) || dnaCanvas.height !== Math.round(h * dpr)) {
+      dnaCanvas.width = Math.round(w * dpr);
+      dnaCanvas.height = Math.round(h * dpr);
+    }
+    var ctx = dnaCanvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    if (!dnaStart) dnaStart = ts || 0;
+    var time = dnaReduced ? 1.4 : ((ts - dnaStart) / 1000) * 0.55;
+    var cx = w * 0.5, top = h * 0.07, span = h * 0.84;
+    var R = Math.min(w * 0.24, 70);
+    var turns = 3.15, N = 88;
+    var i, p, y, a, x1, x2, d1, d2, alpha;
+
+    ctx.lineWidth = 1;
+    for (i = 0; i <= N; i += 2) {
+      p = i / N; y = top + p * span;
+      a = p * Math.PI * 2 * turns + time;
+      x1 = cx + Math.sin(a) * R;
+      x2 = cx + Math.sin(a + Math.PI) * R;
+      d1 = Math.cos(a); d2 = -d1;
+      alpha = 0.08 + 0.22 * ((d1 + 1) / 2);
+      ctx.strokeStyle = "rgba(143, 227, 255, " + alpha.toFixed(3) + ")";
+      ctx.beginPath();
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
+      ctx.stroke();
+    }
+
+    for (var s = 0; s < 2; s++) {
+      var grad = ctx.createLinearGradient(0, top, 0, top + span);
+      grad.addColorStop(0, s ? "rgba(255, 158, 210, 0.75)" : "rgba(184, 156, 255, 0.9)");
+      grad.addColorStop(0.55, s ? "rgba(143, 227, 255, 0.75)" : "rgba(211, 194, 255, 0.8)");
+      grad.addColorStop(1, s ? "rgba(184, 156, 255, 0.3)" : "rgba(143, 227, 255, 0.3)");
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      for (i = 0; i <= N; i++) {
+        p = i / N; y = top + p * span;
+        a = p * Math.PI * 2 * turns + time + (s ? Math.PI : 0);
+        var x = cx + Math.sin(a) * R;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    for (i = 0; i <= N; i += 3) {
+      p = i / N; y = top + p * span;
+      a = p * Math.PI * 2 * turns + time;
+      d1 = Math.cos(a);
+      var r = 1.5 + 2.1 * ((d1 + 1) / 2);
+      x1 = cx + Math.sin(a) * R;
+      x2 = cx + Math.sin(a + Math.PI) * R;
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(184, 156, 255, " + (0.35 + 0.5 * ((d1 + 1) / 2)).toFixed(3) + ")";
+      ctx.arc(x1, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(143, 227, 255, " + (0.3 + 0.45 * ((1 - d1) / 2)).toFixed(3) + ")";
+      ctx.arc(x2, y, r * 0.92, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    dnaRaf = requestAnimationFrame(drawDna);
+  }
+  function startDna() {
+    if (!dnaCanvas || dnaRaf) return;
+    if (dnaReduced) { drawDna(0); return; }
+    dnaRaf = requestAnimationFrame(drawDna);
+  }
+  function stopDna() {
+    if (dnaRaf) cancelAnimationFrame(dnaRaf);
+    dnaRaf = 0;
+  }
+
   var openBtn = document.createElement("button");
   openBtn.type = "button";
   openBtn.className = "ending-open";
@@ -123,6 +210,7 @@
   function open() {
     overlay.classList.add("is-open");
     document.documentElement.classList.add("ending-lock");
+    startDna();
     setTimeout(function () {
       var closeBtn = overlay.querySelector(".ending-close");
       if (closeBtn) closeBtn.focus();
@@ -131,6 +219,7 @@
   function close() {
     overlay.classList.remove("is-open");
     document.documentElement.classList.remove("ending-lock");
+    stopDna();
   }
 
   overlay.addEventListener("click", function (event) {
