@@ -2349,3 +2349,202 @@ body.matrix .card {
   body.matrix .page-head h1 { font-size: 34px; line-height: 1.25; }
   body.matrix .page-head h1 .keep { display: block; white-space: nowrap; }
 }
+
+/* ============================================================
+   Lower 塔罗牌：冷紫牌面、青蓝星轨，去掉暖金
+   ============================================================ */
+body.matrix .stage-intro {
+  background: radial-gradient(120% 90% at 50% 0%, #15102c 0%, #0a0715 58%, #04030a 100%);
+  border-color: rgba(184, 156, 255, 0.28);
+}
+body.matrix .stage-panel {
+  background-color: #07050f;
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(211, 194, 255, 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 65% 70%, rgba(143, 227, 255, 0.45) 0 1px, transparent 1.5px),
+    radial-gradient(80% 60% at 70% 20%, rgba(184, 156, 255, 0.16), transparent 70%);
+  background-size: 220px 180px, 300px 240px, auto;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.65);
+}
+body.matrix .stage-panel-left { border-right-color: rgba(184, 156, 255, 0.34); }
+body.matrix .stage-panel-right { border-left-color: rgba(184, 156, 255, 0.34); }
+body.matrix .stage-panel::before,
+body.matrix .stage-panel::after {
+  filter: hue-rotate(208deg) saturate(0.55) brightness(1.15);
+}
+body.matrix .stage-copy h2 { color: #f3eeff; text-shadow: 0 0 30px rgba(184, 156, 255, 0.22); }
+body.matrix .stage-kicker { color: #b89cff; }
+body.matrix .stage-hint { color: rgba(214, 207, 238, 0.6); }
+
+body.matrix .tarot-face {
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(184, 156, 255, 0.45), 0 0 48px rgba(184, 156, 255, 0.22);
+}
+body.matrix .tarot-back {
+  background-color: #100a22;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(184, 156, 255, 0.22) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(-45deg, rgba(143, 227, 255, 0.14) 0 1px, transparent 1px 18px),
+    radial-gradient(circle at 50% 45%, rgba(184, 156, 255, 0.28), transparent 46%);
+  border-color: rgba(211, 194, 255, 0.85);
+  box-shadow: inset 0 0 0 6px #100a22, inset 0 0 0 7px rgba(211, 194, 255, 0.6), 0 40px 90px rgba(0, 0, 0, 0.75);
+}
+body.matrix .tarot-back::before,
+body.matrix .tarot-back::after { border-color: rgba(184, 156, 255, 0.55); }
+body.matrix .tarot-back::after { border-color: rgba(143, 227, 255, 0.4); }
+body.matrix .tarot-seal { color: #d3c2ff; text-shadow: 0 0 24px rgba(184, 156, 255, 0.8); }
+body.matrix .tarot-back i { background: #b89cff; box-shadow: 0 0 12px rgba(184, 156, 255, 0.7); }
+
+body.matrix .tarot-front {
+  background: linear-gradient(160deg, #191331 0%, #0b0818 62%, #06040d 100%);
+  color: #ece9f7;
+  border-color: rgba(184, 156, 255, 0.55);
+  box-shadow: inset 0 0 0 6px #0d0919, inset 0 0 0 7px rgba(184, 156, 255, 0.45), 0 40px 90px rgba(0, 0, 0, 0.78);
+}
+body.matrix .tarot-top { color: #a99fc6; }
+body.matrix .tarot-numeral { color: #d3c2ff; }
+body.matrix .tarot-kicker { color: #b89cff; }
+body.matrix .tarot-bottom h2 { color: #f4efff; }
+body.matrix .tarot-bottom p { color: #aaa2c2; }
+body.matrix .tarot-rule { color: #a99fc6; }
+body.matrix .tarot-rule::before,
+body.matrix .tarot-rule::after { background: rgba(184, 156, 255, 0.45); }
+body.matrix .tarot-hint { color: rgba(211, 204, 235, 0.62); }
+
+/* ============================================================
+   收束：三页之后的结束段落
+   ============================================================ */
+body.matrix .ending {
+  position: relative;
+  margin-top: 72px;
+  padding: 88px 0 72px;
+  border-top: 1px solid rgba(184, 156, 255, 0.28);
+  overflow: hidden;
+}
+body.matrix .ending::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto auto;
+  width: 46vw;
+  height: 46vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 156, 255, 0.18), rgba(143, 227, 255, 0.06) 42%, transparent 68%);
+  pointer-events: none;
+}
+body.matrix .ending::after {
+  content: "";
+  position: absolute;
+  right: -140px;
+  top: -120px;
+  width: 440px;
+  height: 440px;
+  border: 1px solid rgba(184, 156, 255, 0.22);
+  border-radius: 50%;
+  box-shadow: 0 0 0 24px rgba(143, 227, 255, 0.04);
+  pointer-events: none;
+}
+body.matrix .ending-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+body.matrix .ending-kicker {
+  margin: 0 0 18px;
+  color: #b89cff;
+  font-family: var(--mono);
+  font-size: 16px;
+  letter-spacing: 0.24em;
+}
+body.matrix .ending h2 {
+  margin: 0 0 20px;
+  font-family: var(--serif);
+  font-size: clamp(32px, 4.2vw, 54px);
+  line-height: 1.18;
+  color: #f2edff;
+  font-weight: 600;
+}
+body.matrix .ending-copy {
+  max-width: 52ch;
+  margin: 0 0 30px;
+  color: #aaa2c2;
+  font-size: 17px;
+  line-height: 1.85;
+}
+body.matrix .ending-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 22px;
+}
+body.matrix .ending-actions a {
+  color: #d3c2ff;
+  font-size: 16px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(184, 156, 255, 0.4);
+  padding-bottom: 5px;
+}
+body.matrix .ending-actions a:hover { color: #fff; border-bottom-color: #8fe3ff; }
+body.matrix .ending-actions .ending-primary {
+  padding: 12px 20px;
+  border: 1px solid rgba(211, 194, 255, 0.7);
+  background: rgba(184, 156, 255, 0.16);
+  color: #f4efff;
+}
+body.matrix .ending-actions .ending-primary:hover { background: rgba(184, 156, 255, 0.28); }
+body.matrix .ending-mark {
+  position: absolute;
+  right: 9%;
+  bottom: 18%;
+  color: rgba(211, 194, 255, 0.28);
+  font-size: 88px;
+  line-height: 1;
+  pointer-events: none;
+}
+@media (max-width: 760px) {
+  body.matrix .ending { padding: 64px 0 56px; margin-top: 48px; }
+  body.matrix .ending-mark { right: 6%; font-size: 56px; }
+  body.matrix .ending::after { width: 260px; height: 260px; right: -110px; top: -80px; }
+}
+/* 结束段落更饱满：标题两行、主按钮实底、页脚信息并入 */
+body.matrix .site-footer { display: none; }
+body.matrix .ending h2 { max-width: 24ch; font-size: clamp(32px, 4vw, 50px); }
+body.matrix .ending-actions .ending-primary {
+  background: #b89cff;
+  border-color: #b89cff;
+  color: #0b0718;
+  font-weight: 600;
+}
+body.matrix .ending-actions .ending-primary:hover {
+  background: #d3c2ff;
+  border-color: #d3c2ff;
+}
+body.matrix .ending-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 24px;
+  margin: 40px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(184, 156, 255, 0.22);
+  color: #807a98;
+  font-size: 16px;
+}
+@media (max-width: 760px) {
+  body.matrix .ending h2 { font-size: 32px; }
+  body.matrix .ending-actions { gap: 16px 20px; }
+  body.matrix .ending-meta { margin-top: 32px; }
+}
+/* 收束段落做成独立面板，避免背后的星系干扰文字 */
+body.matrix .ending {
+  margin: 88px 0 32px;
+  padding: 72px 64px 56px;
+  border: 1px solid rgba(184, 156, 255, 0.26);
+  background:
+    radial-gradient(120% 130% at 82% 0%, rgba(184, 156, 255, 0.14), transparent 58%),
+    rgba(7, 6, 16, 0.93);
+}
+@media (max-width: 760px) {
+  body.matrix .ending { margin: 56px 0 24px; padding: 44px 26px 38px; }
+}
+@media (max-width: 760px) {
+  body.matrix .ending h2 { font-size: 30px; }
+}

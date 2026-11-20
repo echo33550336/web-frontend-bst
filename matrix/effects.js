@@ -1,4 +1,4 @@
-/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
+﻿/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
 (function () {
   "use strict";
 
@@ -82,3 +82,35 @@
     '<i class="gold-center bottom"></i>';
   document.body.appendChild(frame);
 })();
+
+/* 页面收束：三页走完后的结束段落（统一注入，避免四份 HTML 重复） */
+(function () {
+  if (document.querySelector(".ending")) return;
+  var main = document.querySelector("main");
+  if (!main) return;
+  var section = document.createElement("section");
+  section.className = "ending";
+  section.setAttribute("aria-labelledby", "ending-title");
+  section.innerHTML =
+    '<div class="ending-inner">' +
+      '<p class="ending-kicker">END · 结语</p>' +
+      '<h2 id="ending-title">规则没有变，<br>树长成了不同的样子。</h2>' +
+      '<p class="ending-copy">位置由比较路径决定，结构由删除维护，代价由插入顺序决定。三个难点走完，回到最开始那条规则：左边全小、右边全大。</p>' +
+      '<div class="ending-actions">' +
+        '<a class="ending-primary" href="index.html">回到首页 →</a>' +
+        '<a href="../docs/演示脚本.md">演示脚本</a>' +
+        '<a href="../docs/期末报告.md">期末报告</a>' +
+        '<a href="README.md">README</a>' +
+        '<a href="https://echo33550336.github.io/web-frontend-bst/" target="_blank" rel="noopener">在线访问 ↗</a>' +
+      '</div>' +
+      '<p class="ending-meta"><span>Web 前端开发课程项目 · 张格颖</span><span>纯静态页面 · 无第三方运行时依赖</span></p>' +
+    '</div>' +
+    '<span class="ending-mark" aria-hidden="true">✦</span>';
+  var footer = document.querySelector(".site-footer");
+  if (footer && footer.parentNode) {
+    footer.parentNode.insertBefore(section, footer);
+  } else {
+    main.appendChild(section);
+  }
+})();
+

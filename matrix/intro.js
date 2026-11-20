@@ -25,24 +25,24 @@
   var art =
     '<svg viewBox="0 0 200 150" role="presentation" aria-hidden="true">' +
     '<defs><radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">' +
-    '<stop offset="0%" stop-color="#f6e2ae" stop-opacity="0.45"/>' +
-    '<stop offset="100%" stop-color="#f6e2ae" stop-opacity="0"/>' +
+    '<stop offset="0%" stop-color="#d3c2ff" stop-opacity="0.45"/>' +
+    '<stop offset="100%" stop-color="#d3c2ff" stop-opacity="0"/>' +
     "</radialGradient></defs>" +
     '<circle cx="100" cy="52" r="34" fill="url(#moonGlow)"/>' +
-    '<circle cx="100" cy="52" r="21" fill="none" stroke="#d8b872" stroke-width="0.8"/>' +
-    '<circle cx="107" cy="48" r="18" fill="#0b1224"/>' +
-    '<g stroke="#a9bfe0" stroke-width="0.8" fill="none">' +
+    '<circle cx="100" cy="52" r="21" fill="none" stroke="#b89cff" stroke-width="0.8"/>' +
+    '<circle cx="107" cy="48" r="18" fill="#0d0a18"/>' +
+    '<g stroke="#9d92bd" stroke-width="0.8" fill="none">' +
     '<line x1="100" y1="73" x2="100" y2="100"/>' +
     '<line x1="100" y1="100" x2="56" y2="124"/><line x1="100" y1="100" x2="144" y2="124"/>' +
     "</g>" +
-    '<g fill="#0b1224" stroke="#d8b872" stroke-width="0.9">' +
+    '<g fill="#0d0a18" stroke="#b89cff" stroke-width="0.9">' +
     '<circle cx="100" cy="100" r="9"/><circle cx="56" cy="124" r="8"/><circle cx="144" cy="124" r="8"/>' +
     "</g>" +
-    '<g fill="#f6e2ae">' +
+    '<g fill="#d3c2ff">' +
     '<path d="M158 34l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z"/>' +
     '<circle cx="38" cy="46" r="1.3"/><circle cx="66" cy="28" r="1"/><circle cx="170" cy="76" r="1.1"/>' +
     "</g>" +
-    '<line x1="34" y1="138" x2="166" y2="138" stroke="#6d7fa8" stroke-width="0.6"/>' +
+    '<line x1="34" y1="138" x2="166" y2="138" stroke="#4b3f68" stroke-width="0.6"/>' +
     "</svg>";
 
   var root = document.createElement("div");
@@ -106,5 +106,6 @@
   window.addEventListener("wheel", begin, { passive: true });
   window.addEventListener("touchstart", begin, { passive: true });
 })();
+
 
 
