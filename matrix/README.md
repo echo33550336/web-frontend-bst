@@ -24,9 +24,11 @@ node tools/serve.js 8000
   刻度随页面滚动上下移动（由 `effects.js` 写入 `--scroll-y`，CSS 计算 `background-position`）。
   它只是背景层，不接收鼠标事件，也不遮挡内容。
 - **金色描边**：视口一圈双层金线，四角藤蔓式角花，上下中央各一枚菱形饰件；卡片、画布、按钮带内嵌金线与金色细边，标题与页脚有金色饰线。角花与饰件是 `img/corner-gold.svg`、`img/divider-gold.svg`，由 `effects.js` 注入，纯装饰不挡点击。
+- **一屏布局**：桌面 1440×900 下四页都不需要上下滚动。页头压到 44px 标题，侧栏固定 420px 两列卡片；d1/d2 画布垂直居中、控制条贴底，d3 把折线图收进「折线图」按钮，正文只留双树、指标和控制条。
+- **浮层交互**：d2 第 5 步的 A/B/C 判定是右下角固定浮层，不再撑高页面；d3 的折线图是独立全屏面板，Esc、点遮罩或「关闭」返回；第三幕结束面板是固定 overlay，关闭后回到最终步。
 - **HUD 面板**：画布与侧栏是半透明深色面板 + 1px 细线 + 内嵌细框，没有圆角、阴影和渐变；
   树节点白描边，比较路径青蓝，新节点粉；d3 左树/左折线青蓝、右树/右折线冷紫。
-- **收束面板**：第三幕 `d3.html` 走到第 20 步后，由 `effects.js` 在页尾注入一块结束面板，用大标题、结语、文档链接和作者信息收尾；首页与 d1/d2 不出现结语，避免提前收束。
+- **收束面板**：第三幕 `d3.html` 走到第 20 步后，`effects.js` 打开固定结束 overlay，用大标题、结语、文档链接和作者信息收尾；首页与 d1/d2 不出现结语，避免提前收束。
 - **字体**：全站宋体（Songti SC / STSong / SimSun），标题 600 字重、字距略宽；
   正文 17px，最小 16px；数字、区间、读数用等宽字体。
 - **动效**：塔罗翻牌启幕 + 滚动引导线 + 页面入场；`prefers-reduced-motion` 下停止入场与翻牌动画。
@@ -54,9 +56,11 @@ matrix/
 ## 预览截图
 
 `img/index.png`（首页）、`img/d1.png`、`img/d2.png`、`img/d3.png`、
-`img/d2-choose.png`（判定步）、`img/d3-step10.png`、`img/d3-final.png`、
-`img/home-390.png`、`img/d1-390.png`、`img/intro.png`（幕布）、
-`img/intro-front.png`（翻牌后牌面）、`img/d3-end.png`（第三幕结束面板）。
+`img/d2-choose.png`（判定浮层）、`img/d3-step10.png`、`img/d3-final.png`、
+`img/d3-chart.png`（折线图面板）、
+`img/home-390.png`、`img/d1-390.png`、`img/d2-390.png`、`img/d3-390.png`、
+`img/intro.png`（幕布）、`img/intro-front.png`（翻牌后牌面）、
+`img/d3-end.png`（第三幕结束 overlay）。
 
 课程提交与演示默认仍用 `src/`；这套皮肤用于对比和展示另一种设计方向。
 

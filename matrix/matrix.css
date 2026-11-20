@@ -1,4 +1,4 @@
-/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
+﻿/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
    先加载 ../src/css/style.css，再加载本文件。
    背景特效为纯 CSS：缓慢漂移的极光色团 + 细网格 + 颗粒，无需 JS。 */
 
@@ -2547,3 +2547,357 @@ body.matrix .ending {
 @media (max-width: 760px) {
   body.matrix .ending h2 { font-size: 30px; }
 }
+
+/* ============================================================
+   一屏布局：压缩页头、侧栏改为双列、画布限高
+   ============================================================ */
+body.matrix .topbar { padding: 12px 0; }
+body.matrix .page-head { margin: 16px 0 12px; }
+body.matrix .page-head h1 { font-size: clamp(30px, 2.8vw, 38px); line-height: 1.1; margin: 0 0 4px; }
+body.matrix .page-head h1::after { display: none; }
+body.matrix .page-head .subtitle { font-size: 16px; margin: 0; }
+body.matrix .layout { margin-top: 0; gap: 14px; grid-template-columns: minmax(0, 1fr) 380px; align-items: stretch; }
+body.matrix .side { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; }
+body.matrix .side .card { padding: 12px 14px; }
+body.matrix .side .card h2 { font-size: 16px; margin: 0 0 6px; letter-spacing: 0.02em; }
+body.matrix .page-nav { margin-top: 12px; padding-top: 10px; }
+body.matrix .stage { padding: 14px; }
+
+/* d1/d2：侧栏 2×2 / 2×3，步骤列表压成行内 */
+body.d1 .side,
+body.d2 .side { grid-auto-rows: min-content; }
+body.d2 #panel-steps { display: flex; flex-wrap: wrap; gap: 2px 14px; padding-left: 0; list-style: none; }
+body.d2 #panel-steps li { font-size: 16px; }
+body.d2 #panel-choose { grid-column: 1 / -1; }
+
+/* d3：侧栏 2 列，画布与折线限高 */
+body.d3 .side { grid-template-columns: 1fr 1fr; }
+body.d3 .side > .card:first-child { grid-row: span 2; }
+body.d3 .stage { display: flex; flex-direction: column; gap: 8px; }
+body.d3 .canvases { gap: 8px; }
+body.d3 .canvases svg { height: 200px; }
+body.d3 .metrics { gap: 8px; }
+body.d3 .chart-block { margin-top: 4px; }
+body.d3 #chart { height: 190px; }
+body.d3 .chart-note { display: none; }
+body.d3 .transport { margin-top: 2px; }
+
+/* 结束页：固定层，不占页面高度 */
+html.ending-lock, html.ending-lock body { overflow: hidden !important; }
+body.matrix .ending-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(4, 3, 10, 0.86);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+body.matrix .ending-screen.is-open { opacity: 1; visibility: visible; }
+body.matrix .ending-screen .ending {
+  position: relative;
+  width: min(880px, 100%);
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+  margin: 0;
+  padding: 64px 64px 48px;
+  border: 1px solid rgba(184, 156, 255, 0.32);
+  background:
+    radial-gradient(120% 130% at 82% 0%, rgba(184, 156, 255, 0.16), transparent 58%),
+    rgba(8, 7, 18, 0.97);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+}
+body.matrix .ending-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(184, 156, 255, 0.4);
+  background: transparent;
+  color: #d3c2ff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+body.matrix .ending-open {
+  margin-left: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(184, 156, 255, 0.45);
+  background: rgba(184, 156, 255, 0.12);
+  color: #d3c2ff;
+  font-size: 16px;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  body.matrix .layout { grid-template-columns: 1fr; }
+  body.matrix .side,
+  body.d3 .side { grid-template-columns: 1fr 1fr; }
+  body.d3 .side > .card:first-child { grid-row: auto; }
+}
+@media (max-width: 640px) {
+  body.matrix .side,
+  body.d3 .side { grid-template-columns: 1fr; }
+  body.d3 .canvases svg { height: 180px; }
+  body.matrix .ending-screen { padding: 14px; }
+  body.matrix .ending-screen .ending { padding: 42px 24px 32px; }
+}
+/* 参数滑杆压成两行：标签/读数一行，滑杆一行 */
+body.matrix #params .param {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 8px;
+  margin-bottom: 6px;
+}
+body.matrix #params .param label { grid-column: 1; margin: 0; font-size: 16px; }
+body.matrix #params .param .readout { grid-column: 2; font-size: 20px; line-height: 1; }
+body.matrix #params .param input[type="range"] { grid-column: 1 / -1; margin: 2px 0 0; }
+body.matrix .side .card .controls { margin-top: 8px; }
+body.matrix .side .card .controls button { min-height: 36px; padding: 7px 12px; font-size: 16px; }
+body.d3 .side > .card:first-child { grid-row: auto; }
+body.matrix .metrics .metric { padding: 8px 10px; }
+body.matrix .metrics .metric-value { font-size: 20px; }
+body.d3 .stage { padding: 10px; gap: 6px; }
+body.d3 .chart-block { padding-top: 4px; }
+body.d3 .transport { padding: 8px 10px; }
+/* 一屏收束：d2/d3 参数说明不占正文高度，步骤列表两列 */
+body.matrix #params .param .hint { display: none; }
+body.d2 #panel-steps ol { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+body.d2 #panel-steps li { margin: 0; }
+body.matrix .side .card .controls button { min-height: 32px; padding: 5px 8px; }
+body.d3 #chart { height: 170px !important; }
+body.d3 .metrics .metric { padding: 6px 8px; }
+body.d3 .metrics .metric-value { font-size: 18px; }
+/* 一屏收束第二轮 */
+body.d2 #panel-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+}
+body.matrix .page-head { margin-bottom: 10px; }
+body.matrix .page-nav { margin-top: 12px; }
+body.d3 .canvases svg { height: 180px; }
+body.d3 #chart { height: 160px !important; }
+body.d3 .transport { padding: 6px 10px; }
+/* 一屏收束第三轮 */
+body.matrix .side .card h2 { margin-bottom: 6px; }
+body.matrix .side .card p { line-height: 1.55; margin: 4px 0; }
+body.d1 #params .controls { gap: 6px; }
+body.matrix #params .controls button { padding: 4px 6px; min-height: 34px; }
+body.d2 #panel-steps li { padding: 2px 0; line-height: 1.5; }
+body.d3 .canvases svg { height: 160px; }
+body.d3 #chart { height: 150px !important; }
+body.d3 .metrics .metric { padding: 5px 7px; }
+body.d3 .stage { padding: 8px; gap: 5px; }
+/* 一屏收束第四轮 */
+body.d1 .side .card .controls { gap: 6px; }
+body.d1 .side .card .controls button { padding: 4px 6px; min-height: 34px; font-size: 16px; }
+body.d2 .side > .card:has(#panel-steps) { display: none; }
+body.d3 .canvases svg { height: 145px; }
+body.d3 #chart { height: 130px !important; }
+body.d3 .metrics .metric { padding: 4px 7px; }
+body.d3 .metrics .metric-value { font-size: 17px; }
+body.d3 .stage { padding: 6px; gap: 4px; }
+body.d3 .transport { padding: 5px 8px; }
+/* 一屏收束第五轮 */
+body.d1 .side .card .controls { gap: 5px; }
+body.d1 .side .card .controls button { padding: 3px 4px; }
+body.d3 .canvases svg { height: 140px; }
+body.d3 #chart { height: 120px !important; }
+body.d3 .transport { padding: 4px 8px; }
+body.matrix .page-nav { margin-top: 8px; }
+body.d3 #chart { height: 110px !important; }
+/* d3 一屏重排：树图与折线都保留可读高度 */
+body.d3 .canvases svg { height: 150px; }
+body.d3 #chart { height: 180px !important; }
+body.d3 .metrics .metric { padding: 5px 8px; }
+body.d3 .metrics .metric-value { font-size: 18px; }
+body.d3 .transport { padding: 5px 8px; }
+body.d3 .page-head h1 { font-size: 44px; }
+body.d3 .page-head { margin-bottom: 8px; }
+/* d3 读数压成一行，把高度让给折线图 */
+body.d3 .metrics { gap: 8px; }
+body.d3 .metrics .metric {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 8px;
+}
+body.d3 .metrics .metric-label { white-space: nowrap; }
+body.d3 .metrics .metric-unit { display: none; }
+body.d3 .metrics .metric-value { font-size: 18px; line-height: 1.2; }
+body.d3 .canvases svg { height: 145px; }
+body.d3 #chart { height: 158px !important; }
+/* d3 读数改为一行，把高度让给两棵树与折线图 */
+body.d3 .metrics {
+  display: flex;
+  gap: 20px;
+  padding: 0 2px;
+  background: none;
+  border: 0;
+}
+body.d3 .metrics .metric {
+  flex: 0 1 auto;
+  padding: 0;
+  background: none;
+  border: 0;
+  gap: 6px;
+}
+body.d3 .metrics .metric-label { Font-size: 16px; }
+body.d3 .metrics .metric-value { font-size: 18px; }
+body.d3 .canvases svg { height: 170px; }
+body.d3 #chart { height: 190px !important; }
+body.d3 .chart-block { gap: 4px; }
+body.d3 .side .hint { display: none; }
+body.d3 .canvases svg { height: 160px; }
+body.d3 #chart { height: 180px !important; }
+body.d3 .transport { padding: 4px 8px; }
+body.d3 .stage { gap: 3px; }
+body.d3 #chart { height: 176px !important; }
+/* 第三幕折线图默认收起，点「折线图」放大查看 */
+body.d3 .chart-block { display: none; }
+body.d3.chart-open .chart-peer {
+  position: fixed;
+  z-index: 10002;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(1040px, 92vw);
+  height: min(660px, 86vh);
+  padding: 26px 28px 22px;
+  background: rgba(7, 6, 16, 0.97);
+  border: 1px solid rgba(184, 156, 255, 0.42);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+}
+body.d3.chart-open .chart-peer #chart { height: auto !important; flex: 1; min-height: 0; }
+body.d3 .chart-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(3, 2, 10, 0.86);
+}
+body.d3.chart-open .chart-backdrop { display: block; }
+body.d3 .chart-toggle {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid rgba(184, 156, 255, 0.35);
+  background: rgba(184, 156, 255, 0.1);
+  color: #d3c2ff;
+  font-size: 16px;
+}
+body.d3 .chart-close {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid rgba(184, 156, 255, 0.35);
+  background: transparent;
+  color: #d3c2ff;
+  font-size: 16px;
+}
+body.d3 .canvases svg { height: 230px; }
+/* 一屏版式：画布垂直居中，控件贴底 */
+body.d1 .stage {
+  display: flex;
+  flex-direction: column;
+}
+body.d1 .stage > svg {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 12px 0;
+}
+body.d1 .stage .transport { margin-top: auto; }
+/* 下拉参数标签单独一行 */
+body.matrix #params .param:not(:has(input[type="range"])) {
+  display: block;
+}
+body.matrix #params .param:not(:has(input[type="range"])) label {
+  margin: 0 0 3px;
+}
+body.matrix #params .param:not(:has(input[type="range"])) select {
+  width: 100%;
+}
+/* d3 三联读数加分隔 */
+body.d3 .metrics { gap: 0; }
+body.d3 .metrics .metric { padding: 0 18px; }
+body.d3 .metrics .metric:first-child { padding-left: 2px; }
+body.d3 .metrics .metric + .metric { border-left: 1px solid var(--line); }
+body.matrix .layout { grid-template-columns: minmax(0, 1fr) 420px; }
+body.d2 .stage { display: flex; flex-direction: column; }
+body.d2 .stage > svg { flex: 1 1 auto; min-height: 0; margin: 12px 0; }
+body.d2 .stage .transport { margin-top: auto; }
+body.d3 .canvases svg { height: 300px; }
+body.d1 .page-head h1,
+body.d2 .page-head h1,
+body.d3 .page-head h1 { font-size: 44px; }
+/* 第二步选择面板浮在侧栏上，避免撑高页面 */
+body.d2 #panel-choose:not([hidden]) {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9000;
+  width: min(440px, calc(100vw - 48px));
+  max-height: min(520px, calc(100vh - 48px));
+  overflow: auto;
+  background: rgba(9, 9, 22, 0.97);
+  border: 1px solid rgba(184, 156, 255, 0.36);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+@media (max-width: 760px) {
+  body.d2 #panel-choose:not([hidden]) {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    max-height: 62vh;
+  }
+}
+body.matrix .page-head { margin-bottom: 8px; }
+
+body.d3.chart-open .chart-peer { overflow: hidden; }
+body.d3.chart-open .chart-peer svg { overflow: hidden; }
+
+body.d3 .chart-backdrop {
+  background:
+    radial-gradient(80% 90% at 50% 40%, rgba(20, 16, 40, 0.6), transparent 70%),
+    rgba(3, 2, 10, 0.985);
+}
+@media (max-width: 900px) {
+  body.matrix .layout { grid-template-columns: 1fr; }
+  body.matrix .side,
+  body.d3 .side { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  body.matrix .side,
+  body.d3 .side { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  body.d3 .canvases { grid-template-columns: 1fr; }
+  body.d3 .canvases svg { height: 220px; }
+}
+@media (max-width: 640px) {
+  body.d3 .metrics { flex-wrap: wrap; gap: 4px 16px; }
+  body.d3 .metrics .metric { flex: 1 1 45%; padding: 0; border-left: 0; }
+}
+/* d2 侧栏：参数与校验并排，步骤说明占整行 */
+body.d2 .side > * { order: 0; }
+body.d2 #panel-step { order: 2; grid-column: 1 / -1; }
+body.d2 .side > *:nth-child(3) { order: 1; }
+body.d2 .side > .card:nth-child(2) { grid-column: 1 / -1; order: 2; }
+body.d2 .side > .card:nth-child(4) { order: 1; }
+/* 移动端只保留首页与当前难点，避免导航换行 */
+@media (max-width: 640px) {
+  body.matrix .topbar a[href^="d"] { display: none; }
+  body.matrix .page-head .subtitle { text-wrap: balance; }
+}
+body.d2 #panel-choose:not([hidden]) { background: #0a0916; }
