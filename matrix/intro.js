@@ -1,4 +1,4 @@
-﻿/* 塔罗牌启幕：等待点击后翻牌，再拉开星空幕布。
+/* 塔罗牌启幕：等待点击后翻牌，再拉开星空幕布。
    - 点击 / 按键 / 滚轮 / 触摸后开始，不再自动跳转
    - prefers-reduced-motion 与 ?intro=0 直接跳过 */
 (function () {
@@ -54,6 +54,7 @@
     '<div class="stage-panel stage-panel-right"></div>' +
     '<div class="intro-flash"></div>' +
     '<div class="intro-shards" aria-hidden="true"></div>' +
+    '<div class="intro-blackout"></div>' +
     '<div class="tarot-stage">' +
     '<div class="tarot-card">' +
     '<div class="tarot-face tarot-back"><span class="tarot-seal">✦</span><i></i><i></i><i></i><i></i></div>' +

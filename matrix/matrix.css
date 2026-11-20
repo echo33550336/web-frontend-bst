@@ -3118,3 +3118,21 @@ body.matrix .stage-intro.is-open {
   0% { opacity: 1; }
   100% { opacity: 0; }
 }
+/* 启幕期间不显示任何正文，避免转场前内容提前出现 */
+html.intro-active body > *:not(.stage-intro) { visibility: hidden; }
+body.matrix .stage-intro.is-open { animation: none; }
+body.matrix .intro-blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #04060c;
+  opacity: 0;
+  pointer-events: none;
+}
+body.matrix .stage-intro.is-open .intro-blackout {
+  animation: introBlackout 0.5s 0.85s ease-in forwards;
+}
+@keyframes introBlackout {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
