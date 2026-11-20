@@ -49,8 +49,11 @@
   root.className = "stage-intro";
   root.setAttribute("aria-hidden", "true");
   root.innerHTML =
+    '<div class="intro-warp"></div>' +
     '<div class="stage-panel stage-panel-left"></div>' +
     '<div class="stage-panel stage-panel-right"></div>' +
+    '<div class="intro-flash"></div>' +
+    '<div class="intro-shards" aria-hidden="true"></div>' +
     '<div class="tarot-stage">' +
     '<div class="tarot-card">' +
     '<div class="tarot-face tarot-back"><span class="tarot-seal">✦</span><i></i><i></i><i></i><i></i></div>' +
@@ -87,6 +90,41 @@
     document.documentElement.classList.remove("intro-pending");
     document.documentElement.classList.add("intro-done");
   }
+  function shatter(target) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var host = target.querySelector(".intro-shards");
+    if (!host || host.childElementCount) return;
+    var shapes = [
+      "polygon(0 0, 100% 14%, 76% 100%, 8% 82%)",
+      "polygon(12% 0, 100% 0, 72% 72%, 0 100%)",
+      "polygon(0 20%, 84% 0, 100% 100%, 26% 84%)",
+      "polygon(0 0, 62% 8%, 100% 74%, 22% 100%)",
+      "polygon(18% 0, 100% 22%, 68% 100%, 0 68%)"
+    ];
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < 30; i++) {
+      var angle = (Math.PI * 2 * i) / 30 + (Math.random() - 0.5) * 0.5;
+      var dist = 210 + Math.random() * 470;
+      var w = 46 + Math.random() * 92;
+      var h = 46 + Math.random() * 104;
+      var shard = document.createElement("i");
+      shard.className = "intro-shard";
+      shard.style.cssText =
+        "left:" + (48 + (Math.random() - 0.5) * 10) + "%;" +
+        "top:" + (44 + (Math.random() - 0.5) * 10) + "%;" +
+        "width:" + w + "px;height:" + h + "px;" +
+        "clip-path:" + shapes[i % shapes.length] + ";" +
+        "--tx:" + Math.cos(angle) * dist + "px;" +
+        "--ty:" + Math.sin(angle) * dist + "px;" +
+        "--rot:" + (Math.random() * 520 - 260) + "deg;" +
+        "--delay:" + (Math.random() * 0.1) + "s;" +
+        "--dur:" + (0.62 + Math.random() * 0.3) + "s;";
+      frag.appendChild(shard);
+    }
+    host.appendChild(frag);
+    host.classList.add("is-live");
+  }
+
   function begin() {
     if (done || opening) return;
     opening = true;
@@ -94,7 +132,8 @@
     root.classList.add("is-flip");
     timers.push(setTimeout(function () {
       root.classList.add("is-open");
-      timers.push(setTimeout(remove, 1250));
+      shatter(root);
+      timers.push(setTimeout(remove, 1400));
     }, 720));
   }
 
@@ -106,6 +145,8 @@
   window.addEventListener("wheel", begin, { passive: true });
   window.addEventListener("touchstart", begin, { passive: true });
 })();
+
+
 
 
 
