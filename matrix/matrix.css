@@ -1,4 +1,4 @@
-﻿/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
+/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
    先加载 ../src/css/style.css，再加载本文件。
    背景特效为纯 CSS：缓慢漂移的极光色团 + 细网格 + 颗粒，无需 JS。 */
 
@@ -2505,7 +2505,6 @@ body.matrix .ending-mark {
   body.matrix .ending::after { width: 260px; height: 260px; right: -110px; top: -80px; }
 }
 /* 结束段落更饱满：标题两行、主按钮实底、页脚信息并入 */
-body.matrix .site-footer { display: none; }
 body.matrix .ending h2 { max-width: 24ch; font-size: clamp(32px, 4vw, 50px); }
 body.matrix .ending-actions .ending-primary {
   background: #b89cff;

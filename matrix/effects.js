@@ -1,4 +1,4 @@
-﻿/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
+/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
 (function () {
   "use strict";
 
@@ -83,8 +83,10 @@
   document.body.appendChild(frame);
 })();
 
-/* 页面收束：三页走完后的结束段落（统一注入，避免四份 HTML 重复） */
+/* 页面收束：只在第三幕 d3 走到最后时出现 */
 (function () {
+  var act = location.pathname.split("/").pop() || "";
+  if (act !== "d3.html") return;
   if (document.querySelector(".ending")) return;
   var main = document.querySelector("main");
   if (!main) return;
