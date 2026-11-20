@@ -3221,3 +3221,26 @@ body.matrix .intro-flash::after {
   filter: blur(0.5px);
   pointer-events: none;
 }
+body.matrix svg.intro-shard {
+  mix-blend-mode: screen;
+  filter:
+    drop-shadow(0 0 6px rgba(127, 247, 255, 0.6))
+    drop-shadow(0 0 16px rgba(255, 138, 223, 0.42))
+    drop-shadow(0 0 32px rgba(255, 211, 122, 0.28));
+}
+body.matrix .intro-flash::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), rgba(127, 247, 255, 0.85), rgba(255, 138, 223, 0.7), rgba(255, 224, 138, 0.6), transparent);
+}
+body.matrix .intro-shards {
+  animation: introHue 3.6s linear infinite;
+}
+@keyframes introHue {
+  to { filter: hue-rotate(360deg); }
+}
+body.matrix svg.intro-shard {
+  filter:
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.8))
+    drop-shadow(0 0 8px rgba(127, 247, 255, 0.85))
+    drop-shadow(0 0 20px rgba(255, 90, 217, 0.6))
+    drop-shadow(0 0 42px rgba(255, 207, 61, 0.42));
+}

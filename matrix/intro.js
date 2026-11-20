@@ -1,4 +1,4 @@
-﻿/* 塔罗牌启幕：等待点击后翻牌，再拉开星空幕布。
+/* 塔罗牌启幕：等待点击后翻牌，再拉开星空幕布。
    - 点击 / 按键 / 滚轮 / 触摸后开始，不再自动跳转
    - prefers-reduced-motion 与 ?intro=0 直接跳过 */
 (function () {
@@ -60,21 +60,30 @@
     '<svg class="intro-glass-defs" width="0" height="0" aria-hidden="true" focusable="false">' +
     '<defs>' +
     '<linearGradient id="glass-cool" x1="0" y1="0" x2="1" y2="1">' +
-    '<stop offset="0" stop-color="#ffffff" stop-opacity="0.9"/>' +
-    '<stop offset="0.42" stop-color="#8fe3ff" stop-opacity="0.5"/>' +
-    '<stop offset="0.78" stop-color="#b89cff" stop-opacity="0.3"/>' +
-    '<stop offset="1" stop-color="#b89cff" stop-opacity="0.08"/>' +
+    '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
+    '<stop offset="0.4" stop-color="#7ff7ff" stop-opacity="0.9"/>' +
+    '<stop offset="0.72" stop-color="#b98cff" stop-opacity="0.72"/>' +
+    '<stop offset="1" stop-color="#ff8adf" stop-opacity="0.5"/>' +
     "</linearGradient>" +
     '<linearGradient id="glass-warm" x1="0" y1="1" x2="1" y2="0">' +
-    '<stop offset="0" stop-color="#ff9ed2" stop-opacity="0.55"/>' +
-    '<stop offset="0.45" stop-color="#b89cff" stop-opacity="0.45"/>' +
-    '<stop offset="1" stop-color="#ffffff" stop-opacity="0.75"/>' +
+    '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
+    '<stop offset="0.38" stop-color="#ffd37a" stop-opacity="0.92"/>' +
+    '<stop offset="0.72" stop-color="#ff8adf" stop-opacity="0.7"/>' +
+    '<stop offset="1" stop-color="#7ff7ff" stop-opacity="0.55"/>' +
     "</linearGradient>" +
     '<linearGradient id="glass-white" x1="0" y1="0" x2="1" y2="1">' +
     '<stop offset="0" stop-color="#ffffff" stop-opacity="1"/>' +
-    '<stop offset="0.45" stop-color="#e6f8ff" stop-opacity="0.8"/>' +
-    '<stop offset="0.75" stop-color="#8fe3ff" stop-opacity="0.45"/>' +
-    '<stop offset="1" stop-color="#d3c2ff" stop-opacity="0.2"/>' +
+    '<stop offset="0.45" stop-color="#e9fdff" stop-opacity="0.92"/>' +
+    '<stop offset="0.75" stop-color="#ffd7ff" stop-opacity="0.68"/>' +
+    '<stop offset="1" stop-color="#fff3b0" stop-opacity="0.48"/>' +
+    "</linearGradient>" +
+    '<linearGradient id="glass-edge" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#ffffff"/>' +
+    '<stop offset="0.22" stop-color="#7ff7ff"/>' +
+    '<stop offset="0.45" stop-color="#8fffd8"/>' +
+    '<stop offset="0.66" stop-color="#ffe08a"/>' +
+    '<stop offset="0.84" stop-color="#ff8adf"/>' +
+    '<stop offset="1" stop-color="#b89cff"/>' +
     "</linearGradient>" +
     "</defs>" +
     "</svg>" +
@@ -151,8 +160,8 @@
       var poly = document.createElementNS(NS, "polygon");
       poly.setAttribute("points", shapes[i % shapes.length]);
       poly.setAttribute("fill", "url(#" + (i % 6 === 0 ? "glass-white" : (i % 3 === 0 ? "glass-warm" : "glass-cool")) + ")");
-      poly.setAttribute("stroke", "rgba(238, 250, 255, " + (0.5 + Math.random() * 0.32) + ")");
-      poly.setAttribute("stroke-width", "0.8");
+      poly.setAttribute("stroke", "url(#glass-edge)");
+      poly.setAttribute("stroke-width", "1.7");
       svg.appendChild(poly);
       var verts = shapes[i % shapes.length].split(" ").map(function (pair) { return pair.split(","); });
       var v1 = verts[Math.floor(Math.random() * verts.length)];
@@ -160,10 +169,10 @@
       var facet = document.createElementNS(NS, "polyline");
       facet.setAttribute("points", v1.join(",") + " 50,50 " + v2.join(","));
       facet.setAttribute("fill", "none");
-      facet.setAttribute("stroke", "rgba(255, 255, 255, 0.2)");
+      facet.setAttribute("stroke", "rgba(255, 255, 255, 0.55)");
       facet.setAttribute("stroke-width", "0.5");
       svg.appendChild(facet);
-      poly.setAttribute("opacity", ((large ? 0.72 : 0.5) + Math.random() * 0.26).toFixed(2));
+      poly.setAttribute("fill-opacity", ((large ? 0.64 : 0.5) + Math.random() * 0.16).toFixed(2)); poly.setAttribute("opacity", "1");
       frag.appendChild(svg);
     }
     for (var s = 0; s < 26; s++) {
@@ -215,9 +224,108 @@
     }
   }
 
+  var audio = null;
+
+  function initAudio() {
+    if (audio) {
+      if (audio.ctx.state === "suspended") audio.ctx.resume().catch(function () {});
+      return audio;
+    }
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try {
+      var ctx = new AC();
+      var master = ctx.createGain();
+      master.gain.value = 0.42;
+      var comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -20;
+      comp.knee.value = 24;
+      comp.ratio.value = 5;
+      comp.attack.value = 0.004;
+      comp.release.value = 0.28;
+      master.connect(comp);
+      comp.connect(ctx.destination);
+      var noise = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 2), ctx.sampleRate);
+      var data = noise.getChannelData(0);
+      for (var i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      audio = { ctx: ctx, master: master, noise: noise };
+      if (ctx.state === "suspended") ctx.resume().catch(function () {});
+      return audio;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function panTo(ctx, node, value) {
+    if (!ctx.createStereoPanner) return node;
+    var p = ctx.createStereoPanner();
+    p.pan.value = value;
+    node.connect(p);
+    return p;
+  }
+
+  function noiseSweep(a, start, dur, type, f0, f1, gain, pan) {
+    var ctx = a.ctx;
+    var src = ctx.createBufferSource();
+    src.buffer = a.noise;
+    var filter = ctx.createBiquadFilter();
+    filter.type = type;
+    filter.frequency.setValueAtTime(f0, start);
+    filter.frequency.exponentialRampToValueAtTime(Math.max(40, f1), start + dur);
+    filter.Q.value = 0.9;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, start);
+    g.gain.exponentialRampToValueAtTime(gain, start + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    src.connect(filter);
+    filter.connect(g);
+    panTo(ctx, g, pan || 0).connect(a.master);
+    src.start(start);
+    src.stop(start + dur + 0.05);
+  }
+
+  function tone(a, start, dur, type, f0, f1, gain, pan) {
+    var ctx = a.ctx;
+    var osc = ctx.createOscillator();
+    osc.type = type;
+    osc.frequency.setValueAtTime(f0, start);
+    if (f1 && f1 !== f0) osc.frequency.exponentialRampToValueAtTime(Math.max(30, f1), start + dur);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, start);
+    g.gain.exponentialRampToValueAtTime(gain, start + Math.min(0.02, dur * 0.2));
+    g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    osc.connect(g);
+    panTo(ctx, g, pan || 0).connect(a.master);
+    osc.start(start);
+    osc.stop(start + dur + 0.03);
+  }
+
+  function playIntroSound() {
+    var a = initAudio();
+    if (!a) return;
+    var t = a.ctx.currentTime + 0.02;
+    // 翻牌：低频空气感 + 上升的金属呼吸
+    noiseSweep(a, t, 0.9, "bandpass", 160, 1900, 0.16, -0.08);
+    noiseSweep(a, t + 0.05, 0.75, "lowpass", 90, 520, 0.12, 0.1);
+    tone(a, t + 0.06, 0.7, "sine", 130, 260, 0.05, -0.12);
+    // 720ms 后：低频冲击 + 玻璃碎裂
+    var hit = t + 0.7;
+    tone(a, hit, 0.6, "sine", 96, 38, 0.52, 0);
+    noiseSweep(a, hit, 0.32, "highpass", 2600, 7200, 0.2, 0);
+    for (var i = 0; i < 15; i++) {
+      var at = hit + Math.random() * 0.34;
+      var freq = 1500 + Math.random() * 4300;
+      tone(a, at, 0.16 + Math.random() * 0.38, i % 4 === 0 ? "triangle" : "sine", freq, freq * (0.72 + Math.random() * 0.2), 0.035 + Math.random() * 0.055, Math.random() * 1.6 - 0.8);
+    }
+    noiseSweep(a, hit + 0.12, 0.8, "highpass", 4200, 9000, 0.05, 0.2);
+    // 压黑前下坠
+    tone(a, t + 1.5, 0.55, "sine", 74, 34, 0.16, 0);
+  }
+
   function begin() {
     if (done || opening) return;
     opening = true;
+    playIntroSound();
     clearTimers();
     root.classList.add("is-flip");
     timers.push(setTimeout(function () {
@@ -235,6 +343,11 @@
   window.addEventListener("wheel", begin, { passive: true });
   window.addEventListener("touchstart", begin, { passive: true });
 })();
+
+
+
+
+
 
 
 
