@@ -103,7 +103,7 @@
         '<a href="README.md">README</a>' +
         '<a href="https://echo33550336.github.io/web-frontend-bst/" target="_blank" rel="noopener">在线访问 ↗</a>' +
       '</div>' +
-      '<p class="ending-meta"><span>Web 前端开发课程项目 · 张格颖</span><span>纯静态页面 · 无第三方运行时依赖</span></p>' +
+      '<p class="ending-meta"><span>Web 前端开发课程项目 · 张格靓</span><span>纯静态页面 · 无第三方运行时依赖</span></p>' +
     '</div>' +
     '<span class="ending-mark" aria-hidden="true">✦</span>';
   var footer = document.querySelector(".site-footer");
@@ -113,4 +113,5 @@
     main.appendChild(section);
   }
 })();
+
 
