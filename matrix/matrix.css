@@ -2338,3 +2338,14 @@ body.matrix {
     radial-gradient(900px 620px at 4% 10%, rgba(30, 52, 96, 0.45), transparent 70%);
   background-size: 30px 30px, 30px 30px, 340px 280px, 460px 380px, 620px 520px, auto, auto;
 }
+/* 卡片统一实底，避免背景星云把三张卡染成不同颜色 */
+body.matrix .cards .card-link,
+body.matrix .card {
+  background: rgba(9, 9, 20, 0.95);
+}
+
+/* 移动端标题收窄，避免「有序性是怎么被维护的」溢出 */
+@media (max-width: 640px) {
+  body.matrix .page-head h1 { font-size: 34px; line-height: 1.25; }
+  body.matrix .page-head h1 .keep { display: block; white-space: nowrap; }
+}
