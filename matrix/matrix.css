@@ -2973,3 +2973,22 @@ body.matrix .ending-close:focus-visible { outline: none; border-color: #8fe3ff; 
 @media (max-width: 900px) {
   body.matrix .ending-screen .ending { padding: 40px 24px 30px; }
 }
+/* 选项与导航文字加粗一档，避免宋体细笔画发虚 */
+body.matrix .topbar a,
+body.matrix .topbar .crumb,
+body.matrix .card-link h2,
+body.matrix .card-link .go,
+body.matrix .card-link .type,
+body.matrix .page-nav a,
+body.matrix .page-nav button,
+body.matrix .ending-actions a,
+body.matrix .ending-open,
+body.matrix .site-footer a {
+  font-weight: 600;
+}
+body.matrix .card-link p,
+body.matrix .card-link span,
+body.matrix .site-footer {
+  font-weight: 500;
+}
+body.matrix .page-head .subtitle { max-width: none; }

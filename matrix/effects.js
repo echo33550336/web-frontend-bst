@@ -1,4 +1,4 @@
-/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
+﻿/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
 (function () {
   "use strict";
 
@@ -96,7 +96,7 @@
       '<button class="ending-close" type="button" aria-label="关闭结语">×</button>' +
       '<div class="ending-visual" aria-hidden="true">' +
         '<canvas class="ending-dna"></canvas>' +
-        '<span class="ending-dna-label">BASE PAIRS / 03</span>' +
+        '<span class="ending-dna-label">BINARY SEARCH TREE / 03</span>' +
       '</div>' +
       '<div class="ending-inner">' +
         '<p class="ending-kicker">END · 结语</p>' +
@@ -115,14 +115,14 @@
     '</div>';
   document.body.appendChild(overlay);
 
-  /* 结语右侧的 DNA 双螺旋：缓慢自转，只在面板打开时绘制 */
+  /* 结语右侧的树形动态图：只在面板打开时绘制 */
   var dnaCanvas = overlay.querySelector(".ending-dna");
   var dnaRaf = 0, dnaStart = 0;
   var dnaReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function drawDna(ts) {
+  function drawTree(ts) {
     if (!dnaCanvas) return;
     var w = dnaCanvas.clientWidth, h = dnaCanvas.clientHeight;
-    if (!w || !h) { dnaRaf = requestAnimationFrame(drawDna); return; }
+    if (!w || !h) { dnaRaf = requestAnimationFrame(drawTree); return; }
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     if (dnaCanvas.width !== Math.round(w * dpr) || dnaCanvas.height !== Math.round(h * dpr)) {
       dnaCanvas.width = Math.round(w * dpr);
@@ -132,66 +132,142 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
     if (!dnaStart) dnaStart = ts || 0;
-    var time = dnaReduced ? 1.4 : ((ts - dnaStart) / 1000) * 0.55;
-    var cx = w * 0.5, top = h * 0.07, span = h * 0.84;
-    var R = Math.min(w * 0.24, 70);
-    var turns = 3.15, N = 88;
-    var i, p, y, a, x1, x2, d1, d2, alpha;
+    var time = dnaReduced ? 2.6 : (ts - dnaStart) / 1000;
+    var grow = dnaReduced ? 1 : Math.min(1, time / 1.4);
+    var ease = 1 - Math.pow(1 - grow, 3);
 
+    var layout = [
+      [0.50, 0.12, 50, -1],
+      [0.28, 0.35, 30, 0],
+      [0.72, 0.35, 70, 0],
+      [0.15, 0.58, 20, 1],
+      [0.41, 0.58, 40, 1],
+      [0.60, 0.58, 60, 2],
+      [0.85, 0.58, 80, 2],
+      [0.63, 0.81, 65, 5]
+    ];
+    var pathSet = { 0: 1, 2: 1, 5: 1, 7: 1 };
+    var nodes = layout.map(function (n) {
+      return { x: w * n[0], y: h * n[1], v: n[2], p: n[3] };
+    });
+
+    var cx = w * 0.5, cy = h * 0.48;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.sin(time * 0.16) * 0.012);
+    ctx.translate(-cx, -cy);
+
+    /* 背景轨道与光晕 */
     ctx.lineWidth = 1;
-    for (i = 0; i <= N; i += 2) {
-      p = i / N; y = top + p * span;
-      a = p * Math.PI * 2 * turns + time;
-      x1 = cx + Math.sin(a) * R;
-      x2 = cx + Math.sin(a + Math.PI) * R;
-      d1 = Math.cos(a); d2 = -d1;
-      alpha = 0.08 + 0.22 * ((d1 + 1) / 2);
-      ctx.strokeStyle = "rgba(143, 227, 255, " + alpha.toFixed(3) + ")";
-      ctx.beginPath();
-      ctx.moveTo(x1, y);
-      ctx.lineTo(x2, y);
-      ctx.stroke();
+    ctx.strokeStyle = "rgba(184,156,255,0.10)";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.5, h * 0.47, w * 0.44, h * 0.39, -0.18, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(143,227,255,0.07)";
+    ctx.beginPath();
+    ctx.ellipse(w * 0.5, h * 0.47, w * 0.36, h * 0.32, 0.22, 0, Math.PI * 2);
+    ctx.stroke();
+
+    function bevel(a, b, t) {
+      var mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2 - 10;
+      var u = 1 - t;
+      return [u * u * a.x + 2 * u * t * mx + t * t * b.x, u * u * a.y + 2 * u * t * my + t * t * b.y];
     }
 
-    for (var s = 0; s < 2; s++) {
-      var grad = ctx.createLinearGradient(0, top, 0, top + span);
-      grad.addColorStop(0, s ? "rgba(255, 158, 210, 0.75)" : "rgba(184, 156, 255, 0.9)");
-      grad.addColorStop(0.55, s ? "rgba(143, 227, 255, 0.75)" : "rgba(211, 194, 255, 0.8)");
-      grad.addColorStop(1, s ? "rgba(184, 156, 255, 0.3)" : "rgba(143, 227, 255, 0.3)");
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      for (i = 0; i <= N; i++) {
-        p = i / N; y = top + p * span;
-        a = p * Math.PI * 2 * turns + time + (s ? Math.PI : 0);
-        var x = cx + Math.sin(a) * R;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    /* 枝干：从根向外生长，再持续轻微呼吸 */
+    var i, t, p, q, pt;
+    for (i = 1; i < nodes.length; i++) {
+      var a = nodes[nodes[i].p], b = nodes[i];
+      var hot = pathSet[i] && pathSet[nodes[i].p];
+      var delay = 0.1 + (b.y / h) * 0.35;
+      var edgeGrow = Math.max(0, Math.min(1, (ease - delay) / (1 - delay)));
+      if (edgeGrow <= 0) continue;
+      pt = [];
+      for (t = 0; t <= 24; t++) {
+        p = (t / 24) * edgeGrow;
+        pt.push(bevel(a, b, p));
       }
+      ctx.beginPath();
+      ctx.moveTo(pt[0][0], pt[0][1]);
+      for (q = 1; q < pt.length; q++) ctx.lineTo(pt[q][0], pt[q][1]);
+      ctx.lineWidth = hot ? 1.9 : 1.25;
+      ctx.strokeStyle = hot ? "rgba(255,158,210,0.78)" : "rgba(184,156,255,0.48)";
+      ctx.shadowColor = hot ? "rgba(255,158,210,0.55)" : "rgba(143,227,255,0.35)";
+      ctx.shadowBlur = 10;
       ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      /* 沿枝干流动的光点 */
+      if (edgeGrow > 0.6 && !dnaReduced) {
+        for (var k = 0; k < 2; k++) {
+          var flow = (time * 0.32 + (i * 0.21) + k * 0.5) % 1;
+          if (flow > edgeGrow) continue;
+          var fp = bevel(a, b, flow);
+          ctx.beginPath();
+          ctx.fillStyle = hot ? "rgba(255,196,226,0.9)" : "rgba(196,240,255,0.85)";
+          ctx.shadowColor = hot ? "#ff9ed2" : "#8fe3ff";
+          ctx.shadowBlur = 12;
+          ctx.arc(fp[0], fp[1], 2.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      }
     }
 
-    for (i = 0; i <= N; i += 3) {
-      p = i / N; y = top + p * span;
-      a = p * Math.PI * 2 * turns + time;
-      d1 = Math.cos(a);
-      var r = 1.5 + 2.1 * ((d1 + 1) / 2);
-      x1 = cx + Math.sin(a) * R;
-      x2 = cx + Math.sin(a + Math.PI) * R;
+    /* 节点 */
+    for (i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      var appear = Math.max(0, Math.min(1, (ease - (n.y / h) * 0.35) / 0.35));
+      if (appear <= 0.02) continue;
+      var hotNode = pathSet[i];
+      var base = hotNode ? [255, 158, 210] : [184, 156, 255];
+      var pulse = 0.5 + 0.5 * Math.sin(time * 1.25 + i * 0.7);
+      var r = (11.5 + pulse * 1.2) * appear;
+      var halo = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 3.1);
+      halo.addColorStop(0, "rgba(" + base[0] + "," + base[1] + "," + base[2] + ",0.32)");
+      halo.addColorStop(1, "rgba(" + base[0] + "," + base[1] + "," + base[2] + ",0)");
       ctx.beginPath();
-      ctx.fillStyle = "rgba(184, 156, 255, " + (0.35 + 0.5 * ((d1 + 1) / 2)).toFixed(3) + ")";
-      ctx.arc(x1, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = halo;
+      ctx.arc(n.x, n.y, r * 3.1, 0, Math.PI * 2);
       ctx.fill();
+
       ctx.beginPath();
-      ctx.fillStyle = "rgba(143, 227, 255, " + (0.3 + 0.45 * ((1 - d1) / 2)).toFixed(3) + ")";
-      ctx.arc(x2, y, r * 0.92, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(9,8,20,0.94)";
+      ctx.strokeStyle = "rgba(" + base[0] + "," + base[1] + "," + base[2] + ",0.92)";
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = "rgba(" + base[0] + "," + base[1] + "," + base[2] + ",0.6)";
+      ctx.shadowBlur = 12;
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      if (appear > 0.65) {
+        ctx.fillStyle = "rgba(238,233,255,0.92)";
+        ctx.font = "600 11px ui-monospace, SFMono-Regular, Consolas, monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(String(n.v), n.x, n.y + 0.5);
+      }
+    }
+
+    /* 边缘漂浮微粒，呼应专辑封面的颗粒感 */
+    for (i = 0; i < 18; i++) {
+      var ax = (Math.sin(i * 12.9898 + time * 0.14) * 0.5 + 0.5) * w;
+      var ay = (Math.cos(i * 78.233 + time * 0.09) * 0.5 + 0.5) * h;
+      ctx.beginPath();
+      ctx.fillStyle = i % 3 ? "rgba(143,227,255,0.22)" : "rgba(255,158,210,0.24)";
+      ctx.arc(ax, ay, i % 4 === 0 ? 1.6 : 1, 0, Math.PI * 2);
       ctx.fill();
     }
-    dnaRaf = requestAnimationFrame(drawDna);
+    ctx.restore();
+    dnaRaf = requestAnimationFrame(drawTree);
   }
+
   function startDna() {
     if (!dnaCanvas || dnaRaf) return;
-    if (dnaReduced) { drawDna(0); return; }
-    dnaRaf = requestAnimationFrame(drawDna);
+    if (dnaReduced) { drawTree(0); return; }
+    dnaRaf = requestAnimationFrame(drawTree);
   }
   function stopDna() {
     if (dnaRaf) cancelAnimationFrame(dnaRaf);
