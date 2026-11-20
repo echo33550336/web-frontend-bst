@@ -1,4 +1,4 @@
-﻿/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
+/* 参考站微交互：顶部阅读进度 + 画布跟随光斑（装饰，不阻断交互） */
 (function () {
   "use strict";
 
@@ -96,7 +96,6 @@
       '<button class="ending-close" type="button" aria-label="关闭结语">×</button>' +
       '<div class="ending-visual" aria-hidden="true">' +
         '<canvas class="ending-dna"></canvas>' +
-        '<span class="ending-dna-label">BINARY SEARCH TREE / 03</span>' +
       '</div>' +
       '<div class="ending-inner">' +
         '<p class="ending-kicker">END · 结语</p>' +
@@ -109,7 +108,7 @@
           '<a href="README.md">README</a>' +
           '<a href="https://echo33550336.github.io/web-frontend-bst/" target="_blank" rel="noopener">在线访问 ↗</a>' +
         '</div>' +
-        '<p class="ending-meta"><span>Web 前端开发课程项目 · 张格靓</span><span>纯静态页面 · 无第三方运行时依赖</span></p>' +
+        '<p class="ending-meta"><span>张格靓 · Web 前端开发课程项目</span></p>' +
       '</div>' +
       '<span class="ending-mark" aria-hidden="true">✦</span>' +
     '</div>';

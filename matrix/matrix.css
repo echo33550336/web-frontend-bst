@@ -2992,3 +2992,8 @@ body.matrix .site-footer {
   font-weight: 500;
 }
 body.matrix .page-head .subtitle { max-width: none; }
+body.matrix .ending-screen .ending-meta {
+  justify-content: flex-start;
+  color: #b8b0cc;
+  font-weight: 500;
+}
