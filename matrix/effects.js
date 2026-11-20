@@ -273,14 +273,8 @@
     dnaRaf = 0;
   }
 
-  var openBtn = document.createElement("button");
-  openBtn.type = "button";
-  openBtn.className = "ending-open";
-  openBtn.textContent = "结语";
-  var nav = document.querySelector(".page-nav");
-  if (nav) {
-    nav.appendChild(openBtn);
-  }
+  /* 第 20 步前不出现出口；完成后只保留一个「回到首页」入口 */
+  var finishBtn = document.getElementById("btn-finish");
 
   function open() {
     overlay.classList.add("is-open");
@@ -303,7 +297,6 @@
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") close();
   });
-  openBtn.addEventListener("click", open);
 
   var opened = false;
   var tries = 0;
@@ -313,6 +306,7 @@
     if (!opened && status && /20\s*\/\s*20/.test(status.textContent) && next && next.disabled) {
       opened = true;
       clearInterval(timer);
+      if (finishBtn) finishBtn.hidden = false;
       setTimeout(open, 900);
     }
     if (++tries > 1200) clearInterval(timer);
@@ -370,8 +364,7 @@
     }
   }
 
-  openBtn.addEventListener("click", open);
-  closeBtn.addEventListener("click", close);
+  openBtn.addEventListener("click", open);closeBtn.addEventListener("click", close);
   backdrop.addEventListener("click", close);
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") close();

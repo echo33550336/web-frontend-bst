@@ -1,4 +1,4 @@
-﻿/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
+/* matrix.css —— 黑客帝国 / 极光风格皮肤：只覆盖观感，不改结构与交互。
    先加载 ../src/css/style.css，再加载本文件。
    背景特效为纯 CSS：缓慢漂移的极光色团 + 细网格 + 颗粒，无需 JS。 */
 
@@ -2450,7 +2450,7 @@ body.matrix .ending-inner {
 body.matrix .ending-kicker {
   margin: 0 0 18px;
   color: #b89cff;
-  font-family: var(--mono);
+  font-family: "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
   font-size: 16px;
   letter-spacing: 0.24em;
 }
@@ -2929,7 +2929,7 @@ body.matrix .ending-screen .ending-visual::before {
   top: 10px;
   z-index: 0;
   color: rgba(184, 156, 255, 0.1);
-  font-family: var(--mono);
+  font-family: "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
   font-size: 142px;
   line-height: 1;
   letter-spacing: -0.06em;
@@ -2948,7 +2948,7 @@ body.matrix .ending-dna-label {
   bottom: 16px;
   z-index: 2;
   color: rgba(167, 163, 196, 0.6);
-  font-family: var(--mono);
+  font-family: "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
   font-size: 11px;
   letter-spacing: 0.2em;
 }
@@ -3244,3 +3244,272 @@ body.matrix svg.intro-shard {
     drop-shadow(0 0 20px rgba(255, 90, 217, 0.6))
     drop-shadow(0 0 42px rgba(255, 207, 61, 0.42));
 }
+/* 只调整「点击翻牌启幕」六个字：更大、更亮的灰白动态字幕 */
+body.matrix .tarot-hint {
+  margin: 2px 0 0;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  color: transparent;
+  background: linear-gradient(100deg, #8f90a4 0%, #eef1f7 32%, #ffffff 50%, #b6b8c8 68%, #8f90a4 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: hintSheen 3.2s linear infinite;
+  text-shadow: 0 0 20px rgba(184, 156, 255, 0.25);
+}
+@keyframes hintSheen {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+@media (max-width: 640px) {
+  body.matrix .tarot-hint { font-size: 17px; }
+}
+/* 「点击翻牌启幕」只做清晰可读的灰白字 */
+body.matrix .tarot-hint {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #f3f5fb;
+  -webkit-text-fill-color: #f3f5fb;
+  background: none;
+  animation: none;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.75),
+    0 0 16px rgba(184, 156, 255, 0.45);
+}
+@media (max-width: 640px) {
+  body.matrix .tarot-hint { font-size: 18px; }
+}
+
+/* ===== P0 试改：画布下状态带、单列侧栏、首页不对称卡片 ===== */
+body.d1 .stage-meta,
+body.d2 .stage-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+  padding: 7px 12px 4px;
+  border-top: 1px solid rgba(184, 156, 255, 0.16);
+}
+
+body.d1 .stage > svg,
+body.d2 .stage > svg {
+  flex: 1;
+  min-height: 0;
+}
+
+body.d1 .meta-row,
+body.d2 .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+body.d1 .meta-label,
+body.d2 .meta-label {
+  margin: 0;
+  flex: none;
+  font: 600 14px/1.2 "Songti SC", "STSong", "SimSun", "宋体", serif;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+body.d1 #panel-interval {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.d1 #panel-interval li {
+  padding: 1px 6px;
+  border: 1px solid transparent;
+  color: var(--sub);
+  font: 14px/1.45 "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
+  white-space: nowrap;
+}
+
+body.d1 #panel-interval li.now {
+  border-color: rgba(184, 156, 255, 0.4);
+  background: rgba(184, 156, 255, 0.12);
+  color: var(--accent-strong);
+}
+
+body.d1 .candidates-line {
+  margin: 0;
+  color: var(--sub);
+  font: 14px/1.45 "Songti SC", "STSong", "SimSun", "宋体", serif;
+  white-space: nowrap;
+}
+
+body.d1 .candidates-line b {
+  color: var(--accent-strong);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+body.d1 .meta-row .hint {
+  margin: 0;
+  color: var(--sub);
+  font: 14px/1.5 "Songti SC", "STSong", "SimSun", "宋体", serif;
+}
+
+body.d2 #panel-check {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  font: 14px/1.5 "Songti SC", "STSong", "SimSun", "宋体", serif;
+  color: var(--sub);
+}
+
+body.d2 #panel-check p {
+  margin: 0;
+}
+
+body.d2 #panel-check p.bad {
+  color: #ffb4c8;
+}
+
+body.d1 .side,
+body.d2 .side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+body.d1 .side .card,
+body.d2 .side .card {
+  flex: 0 0 auto;
+}
+
+body.d1 #panel-step,
+body.d2 #panel-step {
+  font-weight: 400;
+}
+
+body.home .cards {
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 18px;
+}
+
+body.home .card-link {
+  position: relative;
+  padding-bottom: 100px;
+}
+
+body.home .card-link:first-child {
+  padding-bottom: 116px;
+}
+
+body.home .card-link h2 {
+  max-width: calc(100% - 110px);
+}
+
+body.home .card-link:first-child h2 {
+  max-width: calc(100% - 150px);
+}
+
+body.home .card-link p {
+  font-weight: 400;
+  max-width: calc(100% - 120px);
+}
+
+body.home .card-link:first-child p {
+  max-width: calc(100% - 160px);
+}
+
+body.home .card-art {
+  position: absolute;
+  right: 16px;
+  bottom: 42px;
+  width: 112px;
+  height: 88px;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+body.home .card-link:first-child .card-art {
+  width: 150px;
+  height: 104px;
+  right: 24px;
+  bottom: 46px;
+}
+
+body.home .card-art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+body.home .card-art .e {
+  stroke: rgba(167, 163, 196, 0.4);
+  stroke-width: 1;
+}
+
+body.home .card-art .e.hot {
+  stroke: var(--path);
+  stroke-width: 1.4;
+}
+
+body.home .card-art .n {
+  fill: rgba(9, 9, 20, 0.92);
+  stroke: #948cab;
+  stroke-width: 1.4;
+}
+
+body.home .card-art .n.hot {
+  fill: rgba(184, 156, 255, 0.14);
+  stroke: var(--accent);
+}
+
+body.home .card-art .n.target {
+  stroke: var(--new);
+  stroke-dasharray: 3 2;
+}
+
+@media (max-width: 900px) {
+  body.home .cards { grid-template-columns: 1fr; }
+  body.home .card-art { display: none; }
+  body.home .card-link h2,
+  body.home .card-link p { max-width: none; }
+}
+
+/* P0 修正：隐藏但仍供脚本读取的步骤列表 */
+body.d2 #panel-steps[hidden] { display: none !important; }
+
+/* 首页文字只让首卡避让迷你树，其余卡保持满宽 */
+body.home .card-link h2,
+body.home .card-link p { max-width: none; }
+body.home .card-link:first-child h2 { max-width: calc(100% - 150px); }
+body.home .card-link:first-child p { max-width: calc(100% - 160px); }
+
+/* 去掉旧编号水印，给迷你树让位 */
+body.home .card-link::before { content: none; }
+
+/* P0 修正二：首页旧编号水印彻底隐藏，首卡文字不再被迷你树挤窄 */
+body.matrix.home .cards .card-link::before { content: none; }
+body.home .card-link h2 { max-width: none; }
+body.home .card-link p { max-width: none; }
+
+/* P0 修正三 */
+body.matrix.home .cards .card-link:nth-child(1)::before,
+body.matrix.home .cards .card-link:nth-child(2)::before,
+body.matrix.home .cards .card-link:nth-child(3)::before { content: none; }
+body.home .card-link:first-child h2,
+body.home .card-link:first-child p { max-width: none; }
+
+/* d3 完成前不显示出口 */
+body.d3 .page-nav a[hidden] { display: none !important; }
+
+/* d3 末步结论卡压缩，避免第 20 步把页面撑出 900 */
+body.d3 #conclusion-card { padding: 9px 11px; }
+body.d3 #conclusion-card h2 { font-size: 14px; margin-bottom: 3px; }
+body.d3 #panel-conclusion { font-size: 14px; line-height: 1.55; }
+/* 末步页高微调：902 -> 900 */
+body.d3 #conclusion-card { padding: 8px 11px; }

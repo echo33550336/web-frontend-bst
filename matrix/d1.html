@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="intro-pending">
 <head>
   <meta charset="utf-8">
@@ -6,8 +6,8 @@
   <meta name="description" content="难点 1：拖动插入值，看二叉搜索树的比较路径如何一步步收窄区间，从 8 个候选位置收敛到唯一位置。">
   <title>难点 1 · 插入时的比较路径</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Cpath d='M16 7v8M16 15l-6 5M16 15l6 5' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='21' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='21' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=20261119o">
-  <link rel="stylesheet" href="matrix.css?v=20261119o">
+  <link rel="stylesheet" href="css/style.css?v=20261119q">
+  <link rel="stylesheet" href="matrix.css?v=20261120b">
 </head>
 <body class="matrix d1">
 <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
@@ -28,6 +28,18 @@
     <div class="layout">
       <section class="stage">
         <svg id="canvas" viewBox="0 0 536 244" role="img" aria-label="二叉搜索树：高亮节点是当前比较路径，节点下方标注允许的取值范围"></svg>
+        <div class="stage-meta">
+          <div class="meta-row">
+            <h2 id="card-interval-title" class="meta-label">允许区间</h2>
+            <ul id="panel-interval" aria-live="polite"></ul>
+            <p class="candidates-line"><span id="candidates-label">候选位置</span>：<b id="panel-candidates" aria-live="polite">—</b> 个</p>
+          </div>
+          <div class="meta-row">
+            <h2 id="card-inorder-title" class="meta-label">中序序列</h2>
+            <p id="panel-inorder" class="hint" aria-live="polite">—</p>
+            <p id="inorder-check" class="hint" aria-live="polite">—</p>
+          </div>
+        </div>
         <div class="transport">
           <button id="btn-play" class="primary">播放</button>
           <button id="btn-pause">暂停</button>
@@ -46,18 +58,6 @@
             <button id="btn-insert" class="primary">插入演示</button>
             <button id="btn-regen">重生成</button>
           </div>
-        </div>
-
-        <div class="card">
-          <h2 id="card-interval-title">允许区间</h2>
-          <ul id="panel-interval" aria-live="polite"></ul>
-          <p class="candidates-line"><span id="candidates-label">候选位置</span>：<b id="panel-candidates" aria-live="polite">—</b> 个</p>
-        </div>
-
-        <div class="card">
-          <h2 id="card-inorder-title">中序序列</h2>
-          <p id="panel-inorder" class="hint" aria-live="polite">—</p>
-          <p id="inorder-check" class="hint" aria-live="polite">—</p>
         </div>
 
         <div class="card">
@@ -81,13 +81,15 @@
       D1.mount();
     });
   </script>
-  <script src="transition.js?v=20261119o"></script>
-  <script src="effects.js?v=20261119o"></script>
+  <script src="transition.js?v=20261119q"></script>
+  <script src="effects.js?v=20261119q"></script>
   <canvas id="galaxy" aria-hidden="true"></canvas>
-  <script src="galaxy.js?v=20261119o"></script>
-  <script src="intro.js?v=20261119o"></script>
+  <script src="galaxy.js?v=20261119q"></script>
+  <script src="intro.js?v=20261119q"></script>
 </body>
 </html>
+
+
 
 
 

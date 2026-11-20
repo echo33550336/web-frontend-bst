@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="intro-pending">
 <head>
   <meta charset="utf-8">
@@ -6,7 +6,7 @@
   <meta name="description" content="难点 2：用八步快照推演删除双孩子节点——进入右子树、一路向左找到中序后继、摘挂替换，并在关键一步做 A/B/C 判定。">
   <title>难点 2 · 删除双孩子节点</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231f3a5f'/%3E%3Cpath d='M16 7v8M16 15l-6 5M16 15l6 5' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='21' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='21' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=20261119o">
+  <link rel="stylesheet" href="css/style.css?v=20261119q">
   <style>
     /* d2 页面专属样式：只增不改，共用观感仍由 style.css 负责 */
     .param select {
@@ -134,7 +134,7 @@
       .choose-btn { font-size: 13px; }
     }
   </style>
-  <link rel="stylesheet" href="matrix.css?v=20261119o">
+  <link rel="stylesheet" href="matrix.css?v=20261120b">
 </head>
 <body class="matrix d2">
 <div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
@@ -155,6 +155,12 @@
     <div class="layout">
       <section class="stage">
         <svg id="canvas" viewBox="0 0 610 326" role="group" aria-label="二叉搜索树：高亮显示删除路径、替换节点、待摘位置与待挂位置"></svg>
+        <div class="stage-meta">
+          <div class="meta-row">
+            <h2 class="meta-label">中序与区间校验</h2>
+            <div id="panel-check"></div>
+          </div>
+        </div>
         <div class="transport">
           <button id="btn-play" class="primary">播放</button>
           <button id="btn-pause">暂停</button>
@@ -184,16 +190,7 @@
           <p id="panel-feedback" hidden role="status" aria-live="polite"></p>
           <p id="choose-hint"></p>
         </div>
-
-        <div class="card">
-          <h2>中序与区间校验</h2>
-          <div id="panel-check"></div>
-        </div>
-
-        <div class="card">
-          <h2>步骤</h2>
-          <ol id="panel-steps"></ol>
-        </div>
+        <ol id="panel-steps" hidden></ol>
       </aside>
     </div>
     <nav class="page-nav" aria-label="学习路径">
@@ -210,13 +207,15 @@
       window.D2.mount();
     });
   </script>
-  <script src="transition.js?v=20261119o"></script>
-  <script src="effects.js?v=20261119o"></script>
+  <script src="transition.js?v=20261119q"></script>
+  <script src="effects.js?v=20261119q"></script>
   <canvas id="galaxy" aria-hidden="true"></canvas>
-  <script src="galaxy.js?v=20261119o"></script>
-  <script src="intro.js?v=20261119o"></script>
+  <script src="galaxy.js?v=20261119q"></script>
+  <script src="intro.js?v=20261119q"></script>
 </body>
 </html>
+
+
 
 
 
