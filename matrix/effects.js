@@ -108,7 +108,7 @@
           '<a href="README.md">README</a>' +
           '<a href="https://echo33550336.github.io/web-frontend-bst/" target="_blank" rel="noopener">在线访问 ↗</a>' +
         '</div>' +
-        '<p class="ending-meta"><span>张格靓 · Web 前端开发课程项目</span></p>' +
+        '<p class="ending-meta"><span>张三 · Web 前端开发课程项目</span></p>' +
       '</div>' +
       '<span class="ending-mark" aria-hidden="true">✦</span>' +
     '</div>';
@@ -274,7 +274,14 @@
   }
 
   /* 第 20 步前不出现出口；完成后只保留一个「回到首页」入口 */
-  var finishBtn = document.getElementById("btn-finish");
+  var openBtn = document.createElement("button");
+  openBtn.type = "button";
+  openBtn.className = "ending-open";
+  openBtn.textContent = "结语";
+  var nav = document.querySelector(".page-nav");
+  if (nav) {
+    nav.appendChild(openBtn);
+  }
 
   function open() {
     overlay.classList.add("is-open");
@@ -298,6 +305,8 @@
     if (event.key === "Escape") close();
   });
 
+  openBtn.addEventListener("click", open);
+
   var opened = false;
   var tries = 0;
   var timer = setInterval(function () {
@@ -306,7 +315,6 @@
     if (!opened && status && /20\s*\/\s*20/.test(status.textContent) && next && next.disabled) {
       opened = true;
       clearInterval(timer);
-      if (finishBtn) finishBtn.hidden = false;
       setTimeout(open, 900);
     }
     if (++tries > 1200) clearInterval(timer);

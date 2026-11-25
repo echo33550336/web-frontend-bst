@@ -77,13 +77,18 @@
     '<stop offset="0.75" stop-color="#ffd7ff" stop-opacity="0.68"/>' +
     '<stop offset="1" stop-color="#fff3b0" stop-opacity="0.48"/>' +
     "</linearGradient>" +
+    '<linearGradient id="glass-clear" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#ffffff" stop-opacity="0.68"/>' +
+    '<stop offset="0.38" stop-color="#e8fbff" stop-opacity="0.3"/>' +
+    '<stop offset="0.72" stop-color="#ffffff" stop-opacity="0.1"/>' +
+    '<stop offset="1" stop-color="#bdefff" stop-opacity="0.24"/>' +
+    "</linearGradient>" +
     '<linearGradient id="glass-edge" x1="0" y1="0" x2="1" y2="1">' +
     '<stop offset="0" stop-color="#ffffff"/>' +
-    '<stop offset="0.22" stop-color="#7ff7ff"/>' +
-    '<stop offset="0.45" stop-color="#8fffd8"/>' +
-    '<stop offset="0.66" stop-color="#ffe08a"/>' +
-    '<stop offset="0.84" stop-color="#ff8adf"/>' +
-    '<stop offset="1" stop-color="#b89cff"/>' +
+    '<stop offset="0.3" stop-color="#f4feff" stop-opacity="0.98"/>' +
+    '<stop offset="0.62" stop-color="#c8f4ff" stop-opacity="0.92"/>' +
+    '<stop offset="0.84" stop-color="#ffffff" stop-opacity="0.96"/>' +
+    '<stop offset="1" stop-color="#dff8ff" stop-opacity="0.9"/>' +
     "</linearGradient>" +
     "</defs>" +
     "</svg>" +
@@ -139,29 +144,30 @@
       "12,4 72,0 100,30 86,92 28,100 0,62"
     ];
     var frag = document.createDocumentFragment();
-    for (var i = 0; i < 16; i++) {
-      var angle = (Math.PI * 2 * i) / 16 + (Math.random() - 0.5) * 0.55;
-      var large = i < 10;
-      var dist = large ? 230 + Math.random() * 380 : 170 + Math.random() * 430;
-      var w = large ? 150 + Math.random() * 150 : 54 + Math.random() * 76;
+    for (var i = 0; i < 42; i++) {
+      var angle = (Math.PI * 2 * i) / 42 + (Math.random() - 0.5) * 0.8;
+      var large = i < 12;
+      var dist = large ? 340 + Math.random() * 500 : 340 + Math.random() * 620;
+      var w = large ? 120 + Math.random() * 120 : 28 + Math.random() * 66;
       var svg = document.createElementNS(NS, "svg");
       svg.setAttribute("class", "intro-shard");
       svg.setAttribute("viewBox", "0 0 100 100");
       svg.setAttribute("preserveAspectRatio", "none");
       svg.style.cssText =
-        "left:" + (47 + (Math.random() - 0.5) * 9) + "%;" +
-        "top:" + (45 + (Math.random() - 0.5) * 9) + "%;" +
-        "width:" + w + "px;height:" + (w * (0.85 + Math.random() * 0.5)) + "px;" +
+        "left:" + (47 + (Math.random() - 0.5) * 14) + "%;" +
+        "top:" + (45 + (Math.random() - 0.5) * 14) + "%;" +
+        "width:" + w + "px;height:" + (w * (0.7 + Math.random() * 0.8)) + "px;" +
         "--tx:" + Math.cos(angle) * dist + "px;" +
         "--ty:" + Math.sin(angle) * dist + "px;" +
-        "--rot:" + (Math.random() * 240 - 120) + "deg;" +
-        "--delay:" + (Math.random() * 0.08) + "s;" +
-        "--dur:" + (0.92 + Math.random() * 0.32) + "s;";
+        "--rot:" + (Math.random() * 260 - 130) + "deg;" +
+        "--delay:" + (Math.random() * 0.12) + "s;" +
+        "--dur:" + (1.05 + Math.random() * 0.45) + "s;";
       var poly = document.createElementNS(NS, "polygon");
       poly.setAttribute("points", shapes[i % shapes.length]);
-      poly.setAttribute("fill", "url(#" + (i % 6 === 0 ? "glass-white" : (i % 3 === 0 ? "glass-warm" : "glass-cool")) + ")");
+      poly.setAttribute("fill", "url(#glass-clear)");
       poly.setAttribute("stroke", "url(#glass-edge)");
-      poly.setAttribute("stroke-width", "1.7");
+      poly.setAttribute("stroke-width", (large ? 1.5 : 1.25));
+      poly.setAttribute("stroke-opacity", "0.92");
       svg.appendChild(poly);
       var verts = shapes[i % shapes.length].split(" ").map(function (pair) { return pair.split(","); });
       var v1 = verts[Math.floor(Math.random() * verts.length)];
@@ -169,15 +175,22 @@
       var facet = document.createElementNS(NS, "polyline");
       facet.setAttribute("points", v1.join(",") + " 50,50 " + v2.join(","));
       facet.setAttribute("fill", "none");
-      facet.setAttribute("stroke", "rgba(255, 255, 255, 0.55)");
-      facet.setAttribute("stroke-width", "0.5");
+      facet.setAttribute("stroke", "rgba(255, 255, 255, 0.82)");
+      facet.setAttribute("stroke-width", "0.55");
       svg.appendChild(facet);
-      poly.setAttribute("fill-opacity", ((large ? 0.64 : 0.5) + Math.random() * 0.16).toFixed(2)); poly.setAttribute("opacity", "1");
+      var glint = document.createElementNS(NS, "polyline");
+      glint.setAttribute("points", v1.join(",") + " " + v2.join(","));
+      glint.setAttribute("fill", "none");
+      glint.setAttribute("stroke", "rgba(228, 250, 255, 0.62)");
+      glint.setAttribute("stroke-width", "0.7");
+      svg.appendChild(glint);
+      poly.setAttribute("fill-opacity", (0.58 + Math.random() * 0.18).toFixed(2));
+      poly.setAttribute("opacity", "1");
       frag.appendChild(svg);
     }
-    for (var s = 0; s < 26; s++) {
+    for (var s = 0; s < 46; s++) {
       var a = Math.random() * Math.PI * 2;
-      var d = 90 + Math.random() * 330;
+      var d = 120 + Math.random() * 520;
       var spark = document.createElement("i");
       spark.className = "intro-spark";
       spark.style.cssText =

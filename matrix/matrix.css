@@ -3101,7 +3101,7 @@ body.matrix .intro-shard:nth-child(3n) {
   0% { opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(1.14); }
   10% { opacity: 0.95; }
   55% { opacity: 0.55; }
-  100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(0.34); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(0.5); }
 }
 /* 星门收束：粒子更密，末段淡出接入页面 */
 body.matrix .intro-warp::after {
@@ -3513,3 +3513,16 @@ body.d3 #conclusion-card h2 { font-size: 14px; margin-bottom: 3px; }
 body.d3 #panel-conclusion { font-size: 14px; line-height: 1.55; }
 /* 末步页高微调：902 -> 900 */
 body.d3 #conclusion-card { padding: 8px 11px; }
+
+/* 透明玻璃：去掉彩色渐变与色相循环，只留清透的冰白棱边 */
+body.matrix .intro-shards { animation: none !important; }
+body.matrix .intro-shard { background: transparent !important; box-shadow: none !important; }
+body.matrix svg.intro-shard {
+  filter:
+    brightness(1.16)
+    drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95))
+    drop-shadow(0 0 10px rgba(201, 244, 255, 0.5)) !important;
+}
+body.matrix .intro-cracks {
+  filter: drop-shadow(0 0 3px rgba(210, 248, 255, 0.55));
+}
